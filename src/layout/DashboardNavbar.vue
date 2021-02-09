@@ -125,6 +125,8 @@ export default {
                     return ['saleView']
                 case '/sale_history':
                     return ['saleHistoryView']
+                case '/driver':
+                    return ['driverView']
                 default:
                     return []
             }

@@ -2,11 +2,14 @@ export default {
     commonView: {
         publicVariable: {
             arrSelect: ['customerSelect', 'supplierSelect', 'colorSelect', 'warehouseSelect', 'shelfSelect', 'operatorSelect', 'cascadingWarehouseShelfSelect'],
-            arrView: ['colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView'],
+            arrView: ['colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView', 'driverView', 'userView'],
             requestingTasksCount: 0,
         },
         labelNotFound: "无可选项",
         labelSearchPlaceholder: "请输入搜索内容",
+        levelSelect: {
+            data: [{value: 0, text: '根级管理员'}, {value: 1, text: '一级管理员'}]
+        },
         cascadingWarehouseShelfSelect: {
             isLoading: false,
             err_code: 0,
@@ -240,7 +243,6 @@ export default {
         },
         saleSummary: {},
         table: {
-            resetFlag: '0',
             isLoading: false,
             perPage: 18,
             queryCondition: {
@@ -300,7 +302,45 @@ export default {
         },
         saleDetail: {
             isShow: false,
-            objData: []
+            objData: {}
+        }
+    },
+    driverView: {
+        form: {
+            isLoading: false,
+            name: '',
+            phone: '',
+            plate: ''
+        },
+        table: {
+            isLoading: false,
+            perPage: 10,
+            queryCondition: {
+                name: '',
+                plate: '',
+                currentPageCount: 1
+            },
+            data: []
+        }
+    },
+    userView: {
+        form: {
+            username: '',
+            password: '',
+            name: '',
+            level: '',
+            levelSelect: {
+                selectedValue: {value: 0, text: '根级管理员'}
+            }
+        },
+        table: {
+            isLoading: false,
+            perPage: 10,
+            queryCondition: {
+                name: '',
+                currentPageCount: 1
+            },
+            data: []
         }
     }
 }

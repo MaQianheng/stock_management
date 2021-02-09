@@ -1,23 +1,23 @@
 import {
     requestAddColor,
-    requestAddCustomer,
+    requestAddCustomer, requestAddDriver,
     requestAddProduct,
     requestAddSale,
     requestAddShelf,
-    requestAddSupplier,
+    requestAddSupplier, requestAddUser,
     requestAddWarehouse,
     requestDeleteColor,
-    requestDeleteCustomer,
+    requestDeleteCustomer, requestDeleteDriver,
     requestDeleteProduct,
     requestDeleteShelf,
-    requestDeleteSupplier,
+    requestDeleteSupplier, requestDeleteUser,
     requestDeleteWarehouse,
     requestQueryCascadingWarehouseShelfOptions,
     requestQueryCodeOptions,
     requestQueryColor,
     requestQueryColorOptions,
     requestQueryCustomer,
-    requestQueryCustomerOptions,
+    requestQueryCustomerOptions, requestQueryDriver,
     requestQueryOperatorOptions,
     requestQueryProduct,
     requestQueryProductOptions,
@@ -26,14 +26,14 @@ import {
     requestQueryShelf,
     requestQueryShelfOptions,
     requestQuerySupplier,
-    requestQuerySupplierOptions,
+    requestQuerySupplierOptions, requestQueryUser,
     requestQueryWarehouse,
     requestQueryWarehouseOptions,
     requestUpdateColor,
-    requestUpdateCustomer,
+    requestUpdateCustomer, requestUpdateDriver,
     requestUpdateProduct,
     requestUpdateShelf,
-    requestUpdateSupplier,
+    requestUpdateSupplier, requestUpdateUser,
     requestUpdateWarehouse
 } from "@/api";
 
@@ -101,6 +101,12 @@ export default {
                     break
                 case "saleHistoryView":
                     data = (await requestQuerySaleHistory(this.state.saleHistoryView.table.queryCondition)).data
+                    break
+                case "driverView":
+                    data = (await requestQueryDriver(this.state.driverView.table.queryCondition)).data
+                    break
+                case "userView":
+                    data = (await requestQueryUser(this.state.userView.table.queryCondition)).data
                     break
                 default:
                     return
@@ -193,6 +199,12 @@ export default {
                 case 'saleView':
                     data = (await requestAddSale(objSubmitData)).data
                     break
+                case 'driverView':
+                    data = (await requestAddDriver(objSubmitData)).data
+                    break
+                case 'userView':
+                    data = (await requestAddUser(objSubmitData)).data
+                    break
                 default:
                     return
             }
@@ -229,6 +241,12 @@ export default {
                     break
                 case 'productView':
                     data = (await requestUpdateProduct(objUpdateData)).data
+                    break
+                case 'driverView':
+                    data = (await requestUpdateDriver(objUpdateData)).data
+                    break
+                case 'userView':
+                    data = (await requestUpdateUser(objUpdateData)).data
                     break
                 default:
                     return
@@ -269,6 +287,12 @@ export default {
                     break
                 case "productView":
                     data = (await requestDeleteProduct({_id})).data
+                    break
+                case "driverView":
+                    data = (await requestDeleteDriver({_id})).data
+                    break
+                case "userView":
+                    data = (await requestDeleteUser({_id})).data
                     break
                 default:
                     return

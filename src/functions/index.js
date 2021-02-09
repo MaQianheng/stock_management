@@ -175,6 +175,12 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
         case 'saleHistoryView':
             arrRequiredReloadViewTable = ['saleHistoryView']
             break
+        case 'driverView':
+            arrRequiredReloadViewTable = ['driverView']
+            break
+        case 'userView':
+            arrRequiredReloadViewTable = ['userView']
+            break
         default:
             break
     }
@@ -270,11 +276,14 @@ export const handleSubmitTableRow = (that, view, index, arrKeys) => {
             title: message
         })
         if (err_code === 0) {
-            that.updateCommonSelectSubValue({
-                key: `${view.substring(0, view.length - 4)}Select`,
-                subKey: 'isLoading',
-                value: true
-            })
+            const select = `${view.substring(0, view.length - 4)}Select`
+            if (that.commonView.publicVariable.arrSelect.indexOf(select) !== -1) {
+                that.updateCommonSelectSubValue({
+                    key: `${view.substring(0, view.length - 4)}Select`,
+                    subKey: 'isLoading',
+                    value: true
+                })
+            }
             that.updateTableRowData({view, index, objKV: {status: 0}})
         } else {
             that.updateTableRowData({view, index, objKV: {status: 1}})

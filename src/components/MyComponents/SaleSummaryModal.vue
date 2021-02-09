@@ -282,8 +282,8 @@ export default {
             return this.saleView.form.action === 0 ? '入' : '出'
         },
         columns: function () {
-            let arr = ['货号', '颜色', '图片', '名称', '价格', '库房', '货架', '原剩余(kg)', '', '总价格', '变更后(kg)', '操作']
-            this.saleView.form.action === 0 ? arr[8] = '入数量(kg)' : arr[8] = '出数量(kg)'
+            const arr = ['货号', '颜色', '图片', '名称', '价格', '库房', '货架', '原剩余(kg)', '出数量(kg)', '总价格', '变更后(kg)', '操作']
+            if (this.saleView.form.action === 0) arr[8] = '入数量(kg)'
             return arr
         },
         driver: function () {

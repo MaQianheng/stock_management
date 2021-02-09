@@ -65,6 +65,16 @@ export default new Router({
                     path: '/color',
                     name: '颜色信息',
                     component: () => import(/* webpackChunkName: "demo" */ './views/Color.vue')
+                },
+                {
+                    path: '/user',
+                    name: '管理员信息',
+                    component: () => import(/* webpackChunkName: "demo" */ './views/User.vue')
+                },
+                {
+                    path: '/driver',
+                    name: '司机信息',
+                    component: () => import(/* webpackChunkName: "demo" */ './views/Driver.vue')
                 }
             ]
         },

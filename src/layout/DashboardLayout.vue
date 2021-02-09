@@ -12,9 +12,11 @@
                 <sidebar-item :link="{name: '销售记录', icon: 'ni ni-books text-teal', path: '/sale_history'}"/>
                 <sidebar-item :link="{name: '供应商信息', icon: 'ni ni-delivery-fast text-dark', path: '/supplier'}"/>
                 <sidebar-item :link="{name: '客户信息', icon: 'ni ni-single-02 text-yellow', path: '/profile'}"/>
+                <sidebar-item :link="{name: '司机信息', icon: 'ni ni-circle-08 text-gray-dark', path: '/driver'}"/>
                 <sidebar-item :link="{name: '商品信息', icon: 'ni ni-box-2 text-red', path: '/product'}"/>
                 <sidebar-item :link="{name: '库房信息', icon: 'ni ni-building text-gray', path: '/warehouse'}"/>
                 <sidebar-item :link="{name: '颜色信息', icon: 'ni ni-palette text-pink', path: '/color'}"/>
+                <sidebar-item :link="{name: '管理员信息', icon: 'ni ni-badge text-indigo', path: '/user'}"/>
                 <sidebar-item :link="{name: '登陆', icon: 'ni ni-key-25 text-info', path: '/login'}"/>
                 <!--                <sidebar-item :link="{name: 'Register', icon: 'ni ni-circle-08 text-pink', path: '/register'}"/>-->
 
@@ -97,7 +99,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "customerView", "supplierView", "productView", "saleView", "saleHistoryView"])
+        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "customerView", "supplierView", "productView", "saleView", "saleHistoryView", 'driverView', 'userView'])
     },
     watch: {
         "commonView.customerSelect.isLoading": {
@@ -241,6 +243,22 @@ export default {
         "saleHistoryView.table.isLoading": {
             handler: function (newVal) {
                 const view = 'saleHistoryView'
+                if (newVal === true) this.getTable({view}).then(() => {
+                    this.getTableCallBack(view)
+                })
+            }
+        },
+        "driverView.table.isLoading": {
+            handler: function (newVal) {
+                const view = 'driverView'
+                if (newVal === true) this.getTable({view}).then(() => {
+                    this.getTableCallBack(view)
+                })
+            }
+        },
+        "userView.table.isLoading": {
+            handler: function (newVal) {
+                const view = 'userView'
                 if (newVal === true) this.getTable({view}).then(() => {
                     this.getTableCallBack(view)
                 })

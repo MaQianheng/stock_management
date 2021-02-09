@@ -60,3 +60,17 @@ export function getDateTime(timeStamp) {
     let s = time.getSeconds();
     return `${add0(y)}-${add0(m)}-${add0(d)} ${add0(h)}:${add0(mm)}:${add0(s)}`
 }
+
+export function validateInputNumber(value) {
+    let result = ""
+    for (let i = 0; i < value.length; i++) {
+        let val = value[i]
+        if (isNaN(val)) continue
+        result += val
+    }
+    return result
+}
+
+export function validateInputAlphaBetAndNumber(value) {
+    return value.replace(/[\W]/g, '')
+}

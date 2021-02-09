@@ -96,8 +96,8 @@ export default {
             return objData.action
         },
         columns: function () {
-            const arr = ['货号', '商品名称', '颜色', '图片', '库房', '货架', '原剩余(kg)', '入数量(kg)', '变更后(kg)', '价格']
-            if (this.action === 1) arr[7] = '出数量'
+            const arr = ['货号', '商品名称', '颜色', '图片', '库房', '货架', '原剩余(kg)', '出数量(kg)', '变更后(kg)', '价格']
+            if (this.action === 0) arr[7] = '入数量(kg)'
             return arr
         },
         supplierOrCustomer: function () {

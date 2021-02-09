@@ -8,7 +8,7 @@ export const baseUrl = "http://192.168.1.244:3000"
 
 export const requestLogin = (user) => httpRequest(baseUrl + '/users/login', user, 'POST')
 export const requestAddUser = (user) => httpRequest(baseUrl + '/users/add', user, 'POST')
-export const requestUpdateUser = (user) => httpRequest(baseUrl + '/users/update', user, 'POST')
+
 
 
 export const requestQueryColorOptions = (queryCondition) => httpRequest(baseUrl + '/color/query_color_options', queryCondition, 'GET')
@@ -29,17 +29,19 @@ export const requestAddShelf = (shelf) => httpRequest(baseUrl + '/shelf/add', sh
 export const requestAddCustomer = (customer) => httpRequest(baseUrl + '/customer/add', customer, 'GET')
 export const requestAddSupplier = (supplier) => httpRequest(baseUrl + '/supplier/add', supplier, 'GET')
 export const requestAddProduct = (product) => httpRequest(baseUrl + '/product/add', product, 'POST')
-export const requestAddSale = (product) => httpRequest(baseUrl + '/sale/add', product, 'GET')
+export const requestAddSale = (sale) => httpRequest(baseUrl + '/sale/add', sale, 'GET')
+export const requestAddDriver = (driver) => httpRequest(baseUrl + '/driver/add', driver, 'GET')
 
 
 
-export const requestDeleteUser = (userId) => httpRequest(baseUrl + '/users/delete', userId, 'POST')
 export const requestDeleteColor = (colorId) => httpRequest(baseUrl + '/color/delete', colorId, 'GET')
 export const requestDeleteWarehouse = (warehouseId) => httpRequest(baseUrl + '/warehouse/delete', warehouseId, 'GET')
 export const requestDeleteShelf = (shelfId) => httpRequest(baseUrl + '/shelf/delete', shelfId, 'GET')
 export const requestDeleteCustomer = (customerId) => httpRequest(baseUrl + '/customer/delete', customerId, 'GET')
 export const requestDeleteSupplier = (supplierId) => httpRequest(baseUrl + '/supplier/delete', supplierId, 'GET')
 export const requestDeleteProduct = (productId) => httpRequest(baseUrl + '/product/delete', productId, 'GET')
+export const requestDeleteDriver = (driverId) => httpRequest(baseUrl + '/driver/delete', driverId, 'GET')
+export const requestDeleteUser = (userId) => httpRequest(baseUrl + '/users/delete', userId, 'GET')
 
 
 
@@ -49,6 +51,8 @@ export const requestUpdateShelf = (shelf) => httpRequest(baseUrl + '/shelf/updat
 export const requestUpdateCustomer = (customer) => httpRequest(baseUrl + '/customer/update', customer, 'GET')
 export const requestUpdateSupplier = (supplier) => httpRequest(baseUrl + '/supplier/update', supplier, 'GET')
 export const requestUpdateProduct = (product) => httpRequest(baseUrl + '/product/update', product, 'POST')
+export const requestUpdateDriver = (driver) => httpRequest(baseUrl + '/driver/update', driver, 'GET')
+export const requestUpdateUser = (user) => httpRequest(baseUrl + '/users/update', user, 'POST')
 
 
 
@@ -60,6 +64,8 @@ export const requestQuerySupplier = (queryCondition) => httpRequest(baseUrl + '/
 export const requestQueryProduct = (queryCondition) => httpRequest(baseUrl + '/product/query', queryCondition, 'GET')
 export const requestQuerySaleProduct = (queryCondition) => httpRequest(baseUrl + '/sale/query_product', queryCondition, 'GET')
 export const requestQuerySaleHistory = (queryCondition) => httpRequest(baseUrl + '/sale/query_history', queryCondition, 'GET')
+export const requestQueryDriver = (queryCondition) => httpRequest(baseUrl + '/driver/query', queryCondition, 'GET')
+export const requestQueryUser = (queryCondition) => httpRequest(baseUrl + '/users/query', queryCondition, 'GET')
 
 
 

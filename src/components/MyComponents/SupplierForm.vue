@@ -70,6 +70,7 @@
 
 import {mapActions, mapState} from "vuex";
 import {handleSubmitForm, handleUpdateForm} from "@/functions";
+import {validateInputNumber} from "@/functions/utils";
 
 export default {
     name: "SupplierForm",
@@ -99,15 +100,7 @@ export default {
     methods: {
         ...mapActions(["updateViewComponent", "submitForm", "updateFormSingleData", "updateCommonSelectSubValue", "increaseRequestingTasksCount"]),
         getInput(key, value) {
-            if (key === 'phone') {
-                let result = ""
-                for (let i = 0; i < value.length; i++) {
-                    let val = value[i]
-                    if (isNaN(val)) continue
-                    result += val
-                }
-                value = result
-            }
+            if (key === 'phone') value = validateInputNumber(value)
             handleUpdateForm(this, 'supplierView', key, value)
         },
         getTextArea(e) {
