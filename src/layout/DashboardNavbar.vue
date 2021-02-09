@@ -21,7 +21,7 @@
                             <img alt="Image placeholder" src="img/theme/user-icon.jpg">
                         </span>
                         <div class="media-body ml-2 d-none d-lg-block">
-                            <span class="mb-0 text-sm  font-weight-bold">管理员</span>
+                            <span class="mb-0 text-sm  font-weight-bold">{{ name }}</span>
                         </div>
                     </div>
 
@@ -30,10 +30,10 @@
                             <h6 class="text-overflow m-0">欢迎!</h6>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <router-link to="/profile" class="dropdown-item">
+                        <span class="dropdown-item" @click="handleClick" style="cursor:pointer;">
                             <i class="ni ni-user-run"></i>
                             <span>退出登录</span>
-                        </router-link>
+                        </span>
                     </template>
                 </base-dropdown>
             </li>
@@ -41,7 +41,7 @@
     </base-nav>
 </template>
 <script>
-import {mapActions, mapState} from "vuex";
+import {mapActions, mapState, mapMutations} from "vuex";
 // import {funcGetLikeIdKey} from "@/functions";
 
 export default {
@@ -54,6 +54,7 @@ export default {
     },
     methods: {
         ...mapActions(["updateViewComponent", "increaseRequestingTasksCount"]),
+        ...mapMutations(['UPDATE_VIEW']),
         toggleSidebar() {
             this.$sidebar.displaySidebar(!this.$sidebar.showSidebar);
         },
@@ -83,10 +84,30 @@ export default {
             for (let i = 0; i < arrView.length; i++) {
                 this.updateViewComponent({view: arrView[i], component: 'table', objKV: {isLoading: true}})
             }
+        },
+        handleClick() {
+            localStorage.removeItem('qianhengma_stock_management_token')
+            localStorage.removeItem('qianhengma_stock_management_name')
+            localStorage.removeItem('qianhengma_stock_management_level')
+            this.UPDATE_VIEW({
+                view: 'loginView',
+                objKV: {
+                    err_code: 0,
+                    message: '',
+                    token: '',
+                    form: {
+                        isLoading: false
+                    }
+                }
+            })
+            this.$router.replace('/login')
         }
     },
     computed: {
-        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "productView", "customerView", "supplierView"]),
+        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "productView", "customerView", "supplierView", 'loginView']),
+        name: function () {
+            return this.loginView.name
+        },
         arrSelect: function () {
             switch (this.$route.path) {
                 case '/color':
@@ -111,9 +132,6 @@ export default {
                     // break
                     return ['colorView']
                 case '/warehouse':
-                    // if (String(this.warehouseView.table._id) === "0") arr.push('warehouseView')
-                    // if (String(this.shelfView.table.warehouseRef) === "0") arr.push('shelfView')
-                    // break
                     return ['warehouseView', 'shelfView']
                 case '/product':
                     return ['productView']
@@ -127,6 +145,8 @@ export default {
                     return ['saleHistoryView']
                 case '/driver':
                     return ['driverView']
+                case '/user':
+                    return ['userView']
                 default:
                     return []
             }

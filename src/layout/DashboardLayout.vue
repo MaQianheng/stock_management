@@ -10,14 +10,14 @@
                 <sidebar-item :link="{name: '图标', icon: 'ni ni-atom text-purple', path: '/icon'}"/>
                 <sidebar-item :link="{name: '销售', icon: 'ni ni-money-coins sale-icon-gradient', path: '/sale'}"/>
                 <sidebar-item :link="{name: '销售记录', icon: 'ni ni-books text-teal', path: '/sale_history'}"/>
-                <sidebar-item :link="{name: '供应商信息', icon: 'ni ni-delivery-fast text-dark', path: '/supplier'}"/>
-                <sidebar-item :link="{name: '客户信息', icon: 'ni ni-single-02 text-yellow', path: '/profile'}"/>
-                <sidebar-item :link="{name: '司机信息', icon: 'ni ni-circle-08 text-gray-dark', path: '/driver'}"/>
+                <sidebar-item :link="{name: '供应商信息', icon: 'ni ni-delivery-fast text-dark', path: '/supplier'}" v-if="userLevel === 0"/>
+                <sidebar-item :link="{name: '客户信息', icon: 'ni ni-single-02 text-yellow', path: '/customer'}" v-if="userLevel === 0"/>
+                <sidebar-item :link="{name: '司机信息', icon: 'ni ni-circle-08 text-gray-dark', path: '/driver'}" v-if="userLevel === 0"/>
                 <sidebar-item :link="{name: '商品信息', icon: 'ni ni-box-2 text-red', path: '/product'}"/>
                 <sidebar-item :link="{name: '库房信息', icon: 'ni ni-building text-gray', path: '/warehouse'}"/>
                 <sidebar-item :link="{name: '颜色信息', icon: 'ni ni-palette text-pink', path: '/color'}"/>
-                <sidebar-item :link="{name: '管理员信息', icon: 'ni ni-badge text-indigo', path: '/user'}"/>
-                <sidebar-item :link="{name: '登陆', icon: 'ni ni-key-25 text-info', path: '/login'}"/>
+                <sidebar-item :link="{name: '管理员信息', icon: 'ni ni-badge text-indigo', path: '/user'}" v-if="userLevel === 0"/>
+<!--                <sidebar-item :link="{name: '登陆', icon: 'ni ni-key-25 text-info', path: '/login'}"/>-->
                 <!--                <sidebar-item :link="{name: 'Register', icon: 'ni ni-circle-08 text-pink', path: '/register'}"/>-->
 
             </template>
@@ -47,6 +47,11 @@ export default {
         DashboardNavbar,
         ContentFooter,
         FadeTransition
+    },
+    created() {
+        let {arrView} = this.commonView.publicVariable
+        arrView = this.loginView.level === 0 ? ['colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView', 'driverView', 'userView'] : ['colorView', 'warehouseView', 'shelfView', 'productView', 'saleView', 'saleHistoryView']
+        this.updateViewComponent({view: 'commonView', component: 'publicVariable', objKV: {arrView}})
     },
     mounted() {
         this.$notify({
@@ -99,45 +104,48 @@ export default {
         }
     },
     computed: {
-        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "customerView", "supplierView", "productView", "saleView", "saleHistoryView", 'driverView', 'userView'])
+        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "customerView", "supplierView", "productView", "saleView", "saleHistoryView", 'driverView', 'userView', 'loginView']),
+        userLevel() {
+            return this.loginView.level
+        }
     },
     watch: {
-        "commonView.customerSelect.isLoading": {
-            handler: function (newVal) {
-                const component = 'customerSelect'
-                // request customer option
-                if (newVal === true) this.getSelect({component}).then(() => {
-                    this.getSelectCallBack(component)
-                })
-            }
-        },
-        "commonView.supplierSelect.isLoading": {
-            handler: function (newVal) {
-                const component = 'supplierSelect'
-                // request supplier option
-                if (newVal === true) this.getSelect({component}).then(() => {
-                    this.getSelectCallBack(component)
-                })
-            }
-        },
-        "commonView.codeSelect.isLoading": {
-            handler: function (newVal) {
-                const component = 'codeSelect'
-                // request code option
-                if (newVal === true) this.getSelect({component}).then(() => {
-                    this.getSelectCallBack(component)
-                })
-            }
-        },
-        "commonView.productSelect.isLoading": {
-            handler: function (newVal) {
-                const component = 'productSelect'
-                // request product option
-                if (newVal === true) this.getSelect({component}).then(() => {
-                    this.getSelectCallBack(component)
-                })
-            }
-        },
+        // "commonView.customerSelect.isLoading": {
+        //     handler: function (newVal) {
+        //         const component = 'customerSelect'
+        //         // request customer option
+        //         if (newVal === true) this.getSelect({component}).then(() => {
+        //             this.getSelectCallBack(component)
+        //         })
+        //     }
+        // },
+        // "commonView.supplierSelect.isLoading": {
+        //     handler: function (newVal) {
+        //         const component = 'supplierSelect'
+        //         // request supplier option
+        //         if (newVal === true) this.getSelect({component}).then(() => {
+        //             this.getSelectCallBack(component)
+        //         })
+        //     }
+        // },
+        // "commonView.codeSelect.isLoading": {
+        //     handler: function (newVal) {
+        //         const component = 'codeSelect'
+        //         // request code option
+        //         if (newVal === true) this.getSelect({component}).then(() => {
+        //             this.getSelectCallBack(component)
+        //         })
+        //     }
+        // },
+        // "commonView.productSelect.isLoading": {
+        //     handler: function (newVal) {
+        //         const component = 'productSelect'
+        //         // request product option
+        //         if (newVal === true) this.getSelect({component}).then(() => {
+        //             this.getSelectCallBack(component)
+        //         })
+        //     }
+        // },
         "commonView.colorSelect.isLoading": {
             handler: function (newVal) {
                 const component = 'colorSelect'
@@ -165,15 +173,15 @@ export default {
                 })
             }
         },
-        "commonView.operatorSelect.isLoading": {
-            handler: function (newVal) {
-                const component = 'operatorSelect'
-                // request operator option
-                if (newVal === true) this.getSelect({component}).then(() => {
-                    this.getSelectCallBack(component)
-                })
-            }
-        },
+        // "commonView.operatorSelect.isLoading": {
+        //     handler: function (newVal) {
+        //         const component = 'operatorSelect'
+        //         // request operator option
+        //         if (newVal === true) this.getSelect({component}).then(() => {
+        //             this.getSelectCallBack(component)
+        //         })
+        //     }
+        // },
         "commonView.cascadingWarehouseShelfSelect.isLoading": {
             handler: function (newVal) {
                 // cascadingWarehouseShelfSelect

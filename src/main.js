@@ -40,11 +40,12 @@ import axios from "axios"
 // axios.defaults.baseURL = "http://127.0.0.1:3000"
 axios.interceptors.request.use(config => {
     // 在发送请求之前做些什么
-    let pathname = location.pathname;
-    if ((pathname !== '/' && pathname !== '/login') && (localStorage.getItem('token'))) {
-        config.headers.common['token'] = localStorage.getItem('token');
+    const pathname = location.pathname;
+    if (pathname !== '/login') {
+        const {token} = store.state.loginView;
+        token && (config.headers.Authorization = token);
+        // config.headers.common['token'] = localStorage.getItem('token');
     }
-    // console.log(config)
     return config;
 }, error => {
     console.log(error)
@@ -81,12 +82,19 @@ axios.interceptors.response.use(response => {
                 break
             // 返回401，清除token信息并跳转到登录页面
             case 401:
-                localStorage.removeItem('token');
+                if (location.pathname === '/login') break
+                localStorage.removeItem('token')
                 router.replace({
                     path: '/login'
                     //登录成功后跳入浏览的当前页面
                     // query: {redirect: router.currentRoute.fullPath}
                 })
+                break
+            case 403:
+                if (location.pathname === '/login') break
+                localStorage.removeItem('token')
+                router.replace({path: '/login'})
+                // store.commit('UPDATE_LOGIN_STATUS', false)
                 break
             case 404:
                 return Promise.reject("address not found")

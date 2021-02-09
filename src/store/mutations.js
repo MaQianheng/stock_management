@@ -75,6 +75,10 @@ export default {
         const {view, key, value} = objData
         state[view]["form"][key] = value
     },
+    UPDATE_VIEW(state, objData) {
+        const {view, objKV} = objData
+        state[view] = {...state[view], ...objKV}
+    },
     UPDATE_VIEW_COMPONENT(state, objData) {
         const {view, component, objKV} = objData
         // Vue.set(state[view], component, {objKV})
@@ -93,9 +97,6 @@ export default {
         const {view, index, objKV} = objData
         let tmp = {...state[view]["table"]["data"][index].sub, ...objKV}
         Vue.set(state[view]["table"]["data"][index], 'sub', tmp)
-    },
-    UPDATE_RESET_FLAG(state, str) {
-        Vue.set(state.saleView.table, 'resetFlag', str)
     },
     UPDATE_TABLE_SUB_ROW_DATA(state, objData) {
         const {view, index, subIndex, objKV} = objData

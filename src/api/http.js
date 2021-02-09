@@ -36,7 +36,6 @@ export default function httpRequest(url, data, type) {
         // return axios.get(`${url}?username=${data.username}&password=${data.password}`)
     } else {
         if ("productImages" in data) {
-            console.log(data)
             const fd = new FormData()
             Object.keys(data).forEach(key => {
                 console.log(key, data[key])

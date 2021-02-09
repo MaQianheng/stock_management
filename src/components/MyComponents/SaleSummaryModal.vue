@@ -129,7 +129,7 @@ export default {
         }
     ),
     methods: {
-        ...mapActions(['updateViewComponent', 'updateTableRowSubData', 'updateResetFlag', 'updateFormSingleData', 'increaseRequestingTasksCount', 'updateViewComponent', 'submitForm']),
+        ...mapActions(['updateViewComponent', 'updateTableRowSubData', 'updateFormSingleData', 'increaseRequestingTasksCount', 'updateViewComponent', 'submitForm']),
         getDeliveryFeeInput(key, value) {
             value = parseInt(value)
             if (isNaN(value)) value = 0
@@ -342,10 +342,6 @@ export default {
     width: 30px;
     transition: .5s all;
     opacity: .5;
-}
-
-.list-group-item {
-    margin-bottom: 5px;
 }
 
 .list-group-item p {

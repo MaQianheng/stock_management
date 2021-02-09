@@ -65,14 +65,14 @@
                             :options="commonView.levelSelect.data"
                             v-model="userView.table.data[row.row].level"
                             :labelSearchPlaceholder="commonView.labelSearchPlaceholder"
-                            :disabled="userView.table.isLoading"
+                            :disabled="row.status === 2"
                             style="margin-bottom: 15px;"
                         />
                     </td>
                     <td class="text-center">
                         <base-button :type="row.status === 0 ? 'primary' : 'warning'" :outline="true"
                                      :row-id="row.row" size="sm"
-                                     :disabled="row.status !== 1"
+                                     :disabled="row.status === 2"
                                      @click="handleEditClick">
                             <b-spinner small type="grow" v-if="row.status === 2"/>
                             更新
@@ -157,6 +157,8 @@ export default {
             handleUpdateTableRow(this, 'userView', index, key, value)
         },
         handleEditClick(e, index) {
+            // console.log(this.userView.table)
+            // if (index !== -1000) return
             handleSubmitTableRow(this, 'userView', index, ['username', 'password', 'name', 'level'])
         },
         handleDeleteClick(e, index) {
@@ -186,14 +188,7 @@ export default {
         modalHeader: function () {
             return `正在删除一条管理员信息`
         }
-    },
-    // watch: {
-    //     "userView.select.selectedValue.value": {
-    //         handler: function (newVal, oldVal) {
-    //             watchHandleSelectedValue(newVal, oldVal, this, 'userView')
-    //         }
-    //     }
-    // }
+    }
 }
 </script>
 

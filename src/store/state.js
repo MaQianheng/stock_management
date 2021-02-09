@@ -1,8 +1,18 @@
 export default {
+    loginView: {
+        err_code: 0,
+        message: '',
+        name: localStorage.getItem('qianhengma_stock_management_name') ? localStorage.getItem('qianhengma_stock_management_name') : '',
+        token: localStorage.getItem('qianhengma_stock_management_token') ? localStorage.getItem('qianhengma_stock_management_token') : '',
+        level: localStorage.getItem('qianhengma_stock_management_user_level') ? parseInt(localStorage.getItem('qianhengma_stock_management_user_level')) : -1,
+        form: {
+            isLoading: false
+        }
+    },
     commonView: {
         publicVariable: {
-            arrSelect: ['customerSelect', 'supplierSelect', 'colorSelect', 'warehouseSelect', 'shelfSelect', 'operatorSelect', 'cascadingWarehouseShelfSelect'],
-            arrView: ['colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView', 'driverView', 'userView'],
+            arrSelect: ['colorSelect', 'warehouseSelect', 'shelfSelect', 'cascadingWarehouseShelfSelect'],
+            arrView: [],
             requestingTasksCount: 0,
         },
         labelNotFound: "无可选项",

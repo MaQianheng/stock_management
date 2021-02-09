@@ -94,7 +94,6 @@ export const funcGetTableSelectedValue = (that, view) => {
     }
 }
 
-// !!!maybe deprecated!!!
 export const handleGetTableData = (that, view, ifNotify = false) => {
     // view: colorView
     if (ifNotify) that.$notify({
@@ -184,8 +183,7 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
         default:
             break
     }
-    that.increaseRequestingTasksCount(arrRequiredReloadSelect.length)
-    that.increaseRequestingTasksCount(arrRequiredReloadViewTable.length)
+    that.increaseRequestingTasksCount(arrRequiredReloadSelect.length + arrRequiredReloadViewTable.length)
     for (let i = 0; i < arrRequiredReloadSelect.length; i++) {
         that.updateViewComponent({
             view: 'commonView',
@@ -205,7 +203,6 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
                     break
                 case 'afterSubmit':
                     dataCount += 1
-                    // todo: if err_code !== 0, return
                     break
                 default:
                     break
@@ -284,7 +281,9 @@ export const handleSubmitTableRow = (that, view, index, arrKeys) => {
                     value: true
                 })
             }
-            that.updateTableRowData({view, index, objKV: {status: 0}})
+            let status
+            view === 'userView' ? status = 1 : status = 0
+            that.updateTableRowData({view, index, objKV: {status}})
         } else {
             that.updateTableRowData({view, index, objKV: {status: 1}})
         }

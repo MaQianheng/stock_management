@@ -2,10 +2,12 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import DashboardLayout from '@/layout/DashboardLayout'
 import AuthLayout from '@/layout/AuthLayout'
+// import store from "vue-upload-component/docs/store";
+import store from "./store/"
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
     linkExactActiveClass: 'active',
     routes: [
         {
@@ -47,7 +49,7 @@ export default new Router({
                     component: () => import(/* webpackChunkName: "demo" */ './views/SupplierInfo.vue')
                 },
                 {
-                    path: '/profile',
+                    path: '/customer',
                     name: '客户信息',
                     component: () => import(/* webpackChunkName: "demo" */ './views/CustomerInfo.vue')
                 },
@@ -97,3 +99,20 @@ export default new Router({
         }
     ]
 })
+router.beforeEach((to, from, next) => {
+    if (to.path === '/login') {
+        next();
+    } else {
+        const {token, level} = store.state.loginView
+        if (!token || token === '') {
+            next('/login');
+        } else {
+            if (level !== 0) {
+                if (to.path === '/customer' || to.path === '/supplier' || to.path === '/user' || to.path === '/driver') return next(from.path)
+            }
+            next();
+        }
+    }
+})
+
+export default router;

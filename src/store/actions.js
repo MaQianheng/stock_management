@@ -11,7 +11,7 @@ import {
     requestDeleteProduct,
     requestDeleteShelf,
     requestDeleteSupplier, requestDeleteUser,
-    requestDeleteWarehouse,
+    requestDeleteWarehouse, requestLogin,
     requestQueryCascadingWarehouseShelfOptions,
     requestQueryCodeOptions,
     requestQueryColor,
@@ -39,6 +39,23 @@ import {
 
 const objServerErrorFeedBack = {err_code: 1, message: "服务器连接失败", data: []}
 export default {
+    async login({commit}, objData) {
+        const view = 'loginView'
+        commit('UPDATE_FORM_SINGLE_DATA', {view, key: 'isLoading', value: true})
+        let data
+        try {
+            data = (await requestLogin(objData)).data
+            commit('UPDATE_FORM_SINGLE_DATA', {view, key: 'isLoading', value: false})
+            commit('UPDATE_VIEW', {view, objKV: data})
+        } catch (err) {
+            commit('UPDATE_FORM_SINGLE_DATA', {view, key: 'isLoading', value: false})
+            if (err.data) {
+                commit('UPDATE_VIEW', {view, objKV: err.data})
+            } else {
+                commit('UPDATE_VIEW', {view, objKV: objServerErrorFeedBack})
+            }
+        }
+    },
     increaseRequestingTasksCount ({commit}, count) {
         commit('INCREASE_REQUESTING_TASKS_COUNT', count)
     },
@@ -59,9 +76,6 @@ export default {
     },
     updateTableRowSubData({commit}, objData) {
         commit('UPDATE_TABLE_ROW_SUB_DATA', objData)
-    },
-    updateResetFlag({commit}, str) {
-        commit('UPDATE_RESET_FLAG', str)
     },
     updateTableSubRowData({commit}, objData) {
         commit('UPDATE_TABLE_SUB_ROW_DATA', objData)

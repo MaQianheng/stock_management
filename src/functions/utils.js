@@ -43,9 +43,6 @@ export function getDate(timeStamp, addOneMoreDay = true) {
     let y = time.getFullYear();
     let m = time.getMonth() + 1;
     let d = time.getDate();
-    // let h = time.getHours();
-    // let mm = time.getMinutes();
-    // let s = time.getSeconds();
     return y + '-' + add0(m) + '-' + add0(d);
 }
 
