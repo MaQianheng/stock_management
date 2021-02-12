@@ -233,6 +233,7 @@ export default {
             name: '',
             colorRef: '',
             price: '',
+            remark: '',
             colorSelect: {
                 selectedValue: {value: "0", text: '正在请求数据'},
                 data: []
@@ -244,7 +245,7 @@ export default {
         form: {
             isLoading: false,
             action: 0,
-            operatorRef: '6019fb8c2e2bb3dba3c87354',
+            // operatorRef: '6019fb8c2e2bb3dba3c87354',
             supplierRef: {},
             customerRef: {},
             driverRef: {},

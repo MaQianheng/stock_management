@@ -16,8 +16,8 @@
                         <th>宽度</th>
                         <th>高度</th>
                         <th>大小</th>
-<!--                        <th>速度</th>-->
-<!--                        <th>状态</th>-->
+                        <!--                        <th>速度</th>-->
+                        <!--                        <th>状态</th>-->
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -33,29 +33,29 @@
                     <tr v-for="(file, index) in files" :key="file.id">
                         <td>{{ index }}</td>
                         <td>
-                            <img class="td-image-thumb" v-if="file.thumb" :src="file.thumb"/>
+                            <img class="td-image-thumb" v-if="file.thumb" :src="file.thumb" @click="modals.isShow = true" style="cursor: pointer;"/>
                             <span v-else>No Image</span>
                         </td>
                         <td>
                             <div class="filename">
                                 {{ file.name }}
                             </div>
-<!--                            <div class="progress" v-if="file.active || file.progress !== '0.00'">-->
-<!--                                <div-->
-<!--                                    :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}"-->
-<!--                                    role="progressbar" :style="{width: file.progress + '%'}">{{ file.progress }}%-->
-<!--                                </div>-->
-<!--                            </div>-->
+                            <!--                            <div class="progress" v-if="file.active || file.progress !== '0.00'">-->
+                            <!--                                <div-->
+                            <!--                                    :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}"-->
+                            <!--                                    role="progressbar" :style="{width: file.progress + '%'}">{{ file.progress }}%-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
                         </td>
                         <td>{{ file.width || 0 }}</td>
                         <td>{{ file.height || 0 }}</td>
                         <td>{{ file.size | formatSize }}</td>
-<!--                        <td>{{ file.speed | formatSize }}</td>-->
+                        <!--                        <td>{{ file.speed | formatSize }}</td>-->
 
-<!--                        <td v-if="file.error">{{ file.error }}</td>-->
-<!--                        <td v-else-if="file.success">成功</td>-->
-<!--                        <td v-else-if="file.active">激活</td>-->
-<!--                        <td v-else></td>-->
+                        <!--                        <td v-if="file.error">{{ file.error }}</td>-->
+                        <!--                        <td v-else-if="file.success">成功</td>-->
+                        <!--                        <td v-else-if="file.active">激活</td>-->
+                        <!--                        <td v-else></td>-->
                         <td>
                             <div class="btn-group">
                                 <!--                                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button">-->
@@ -135,6 +135,15 @@
                 <!--                </button>-->
             </div>
         </div>
+        <modal :show.sync="modals.isShow">
+            <h6 slot="header" class="modal-title" id="modal-title-default">{{ files[0] ? files[0].name : '' }}</h6>
+            <div class="row">
+                <img :src="files[0] ? files[0].thumb : ''" style="box-shadow: 3px 3px 10px;">
+            </div>
+            <template slot="footer">
+                <base-button type="secondary" @click="handleCloseModalClick">关闭</base-button>
+            </template>
+        </modal>
     </div>
 </template>
 
@@ -145,10 +154,13 @@ import {mapActions, mapState} from "vuex";
 
 export default {
     components: {
-        FileUpload,
+        FileUpload
     },
     data() {
         return {
+            modals: {
+                isShow: false
+            },
             files: [],
             accept: 'image/png,image/gif,image/jpeg,image/webp',
             extensions: 'gif,jpg,jpeg,png,webp',
@@ -190,6 +202,9 @@ export default {
     },
     methods: {
         ...mapActions(['updateFormSingleData']),
+        handleCloseModalClick() {
+            this.modals.isShow = false
+        },
         inputFilter(newFile, oldFile, prevent) {
             if (newFile && !oldFile) {
                 // Before adding a file

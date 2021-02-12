@@ -61,6 +61,11 @@
                         </div>
                     </div>
                     <hr>
+                    <div class="col-12">
+                        <label class="form-control-label">备注</label>
+                        <yimo-vue-editor v-model="productView.form.remark" @input="updateRemark"/>
+                    </div>
+                    <hr>
                     <div class="row">
                         <FileUpload/>
                     </div>
@@ -82,12 +87,14 @@ import VSelect from '@alfsnd/vue-bootstrap-select'
 import FileUpload from "@/components/MyComponents/FileUpload";
 import {mapActions, mapState} from "vuex";
 import {handleSubmitForm, handleUpdateForm} from "@/functions";
+import YimoVueEditor from 'yimo-vue-editor'
 
 export default {
     name: "ProductForm",
     components: {
         VSelect,
-        FileUpload
+        FileUpload,
+        YimoVueEditor
     },
     data: () => (
         {
@@ -116,6 +123,11 @@ export default {
                     type: 'String',
                     isRequired: false,
                     str: '商品图片'
+                },
+                remark: {
+                    type: 'String',
+                    isRequired: false,
+                    str: '备注'
                 }
             }
         }
@@ -127,10 +139,13 @@ export default {
         },
         handleSubmit() {
             handleSubmitForm(this, 'productView', this.productFormKeys)
+        },
+        updateRemark(value) {
+            this.updateFormSingleData({view: 'productView', key: 'remark', value})
         }
     },
     computed: {
-        ...mapState(['productView', 'commonView'])
+        ...mapState(['productView', 'commonView', 'colorView'])
     },
     watch: {
         "productView.form.colorSelect.selectedValue.value": {

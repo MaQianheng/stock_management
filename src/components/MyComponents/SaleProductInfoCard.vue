@@ -1,7 +1,7 @@
 <template>
     <b-card
         :title="item.code + '-' + item.name"
-        :img-src="item.imageURLs.length === 0 ? 'http://127.0.0.1:3000/images/product_default.jpeg' : 'http://127.0.0.1:3000/images/' + item.imageURLs[0]"
+        :img-src="item.imageURLs.length === 0 ? baseUrl + 'product_default.jpeg' : baseUrl + item.imageURLs[0]"
         img-alt="Image"
         img-top
     >
@@ -74,6 +74,7 @@ import {ZoomCenterTransition} from 'vue2-transitions';
 import {mapActions, mapState} from "vuex";
 import {gsap} from 'gsap'
 import {deepClone} from "@/functions/utils";
+import {baseUrl} from "@/api";
 
 export default {
     name: "SaleProductInfoCard",
@@ -202,6 +203,9 @@ export default {
                 }
             }
             return {status: false, text: `添加至本次${this.inOrOut}库记录`}
+        },
+        baseUrl: function () {
+            return baseUrl + '/images/'
         }
     },
     watch: {

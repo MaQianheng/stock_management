@@ -27,7 +27,7 @@
                             <td v-if="i===0" :rowspan="Object.keys(item.sub).length">
                                 <div class="align-items-center">
                                     <img alt="Image placeholder"
-                                         :src="item.imageURLs[0] ? 'http://127.0.0.1:3000/images/' + item.imageURLs[0] : 'http://127.0.0.1:3000/images/product_default.jpeg'"
+                                         :src="item.imageURLs[0] ? baseUrl + item.imageURLs[0] : baseUrl + '/images/product_default.jpeg'"
                                          style="height: 120px">
                                 </div>
                             </td>
@@ -120,6 +120,7 @@
 <script>
 import {mapActions, mapState} from "vuex";
 import {handleSubmitForm} from "@/functions";
+import {baseUrl} from "@/api";
 
 export default {
     name: "SaleSummaryModal",
@@ -306,6 +307,9 @@ export default {
                 }
             }
             return isNaN(totalPrice) ? 0 : totalPrice
+        },
+        baseUrl: function () {
+            return baseUrl + '/images/'
         }
     }
 }

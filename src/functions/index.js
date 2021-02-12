@@ -453,8 +453,11 @@ export const handleSubmitForm = (that, view, objFormKeys) => {
     }).then(() => {
         that.updateFormSingleData({view, key: 'isLoading', value: false})
         const {err_code, message} = that[view].form
-        // if there is no error, reload table
-        // that.increaseRequestingTasksCount(1)
+        console.log(err_code, message)
+        that.$notify({
+            type: funcComputeAlertLevel(err_code),
+            title: message
+        })
         if (err_code === 0) {
             // that.updateViewComponent({view, component: 'table', objKV: {isLoading: true}})
             handleReloadTableAndOptionData(that, view, 'afterSubmit')
@@ -463,10 +466,6 @@ export const handleSubmitForm = (that, view, objFormKeys) => {
                 that.isShow = false
             }
         }
-        that.$notify({
-            type: funcComputeAlertLevel(err_code),
-            title: message
-        })
     })
 }
 

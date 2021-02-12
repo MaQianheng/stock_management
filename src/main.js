@@ -108,6 +108,44 @@ axios.interceptors.response.use(response => {
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
+import YimoVueEditor from 'yimo-vue-editor'
+
+Vue.use(YimoVueEditor, {
+    name: 'v-editor-app',//Custom name
+    config: {
+        menus: [
+            'source',
+            '|',
+            'bold',
+            'underline',
+            'italic',
+            'strikethrough',
+            'eraser',
+            'forecolor',
+            'bgcolor',
+            '|',
+            'quote',
+            'fontfamily',
+            'fontsize',
+            'head',
+            'unorderlist',
+            'orderlist',
+            'alignleft',
+            'aligncenter',
+            'alignright',
+            '|',
+            'link',
+            'unlink',
+            'table',
+            'emotion',
+            '|',
+            'undo',
+            'redo',
+            'fullscreen'
+        ]
+    }
+})
+
 Vue.filter('formatSize', function (size) {
     if (size > 1024 * 1024 * 1024 * 1024) {
         return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'

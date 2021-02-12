@@ -89,7 +89,7 @@
                         <td v-if="i===0" :rowspan="item.sub.length">
                             <div class="align-items-center">
                                 <img alt="Image placeholder"
-                                     :src="item.imageURLs[0] ? 'http://127.0.0.1:3000/images/' + item.imageURLs[0] : 'http://127.0.0.1:3000/images/product_default.jpeg'"
+                                     :src="item.imageURLs[0] ? baseImageUrl + item.imageURLs[0] : baseImageUrl + 'product_default.jpeg'"
                                      style="height: 120px">
                             </div>
                         </td>
@@ -106,6 +106,7 @@
                         <td>{{ sub.shelf }}</td>
                         <td>{{ sub.remainingWeight }}</td>
                         <td>{{ sub.soldWeight }}</td>
+                        <td v-if="i===0" :rowspan="item.sub.length" v-html="item.remark"></td>
                         <td v-if="i===0" :rowspan="item.sub.length">
                             <base-button type="primary" :outline="true" size="sm"
                                          :disabled="item.status === 2"
@@ -170,7 +171,7 @@
                     <label class="form-control-label">颜色</label>
                     <v-select
                         :searchable=true
-                        :options="productView.form.colorSelect.data"
+                        :options="commonView.colorSelect.data"
                         v-model="modals.dataSource.colorRef"
                         :labelSearchPlaceholder="commonView.labelSearchPlaceholder"/>
                 </div>
@@ -185,6 +186,9 @@
                     v-model="modals.dataSource.price"
                     @input="getInput"
                 />
+            </div>
+            <div class="col-12">
+                <yimo-vue-editor v-html="modals.dataSource.remark" @input="updateRemark"/>
             </div>
             <div class="row">
                 <div class="img-upload" @click="handleChangeImageClick">
@@ -214,13 +218,17 @@ import {BSkeletonTable} from 'bootstrap-vue'
 import {funcComputeAlertLevel, handleChangePage, handleConfirmDeleteTableRow} from "@/functions";
 import {requestFuzzyQueryProductCode, requestFuzzyQueryProductName} from "@/api";
 import Autocomplete from '@trevoreyre/autocomplete-vue'
+import {baseUrl} from '@/api'
+import {validateInputNumber} from "@/functions/utils";
+import YimoVueEditor from 'yimo-vue-editor'
 
 export default {
     name: 'inventory-table',
     components: {
         Autocomplete,
         VSelect,
-        BSkeletonTable
+        BSkeletonTable,
+        YimoVueEditor
     },
     props: {
         type: {
@@ -244,14 +252,21 @@ export default {
                     isShow: false
                 }
             },
-            columns: ['货号', '图片', '名称', '颜色', '价格', '库房', '货架', '库存(KG)', '已售(KG)', '操作']
+            columns: ['货号', '图片', '名称', '颜色', '价格', '库房', '货架', '库存(KG)', '已售(KG)', '备注', '操作']
         }
     ),
     methods: {
         ...mapActions(['getTable', 'updateViewComponent', 'updateTableRowData', 'submitUpdateData', 'submitDeleteId', "updateCommonSelectSubValue", "updateCascadingShelf", "updateFormSingleData", "increaseRequestingTasksCount"]),
         getInput(key, value) {
+            if (key === 'price') {
+                value = validateInputNumber(value)
+                if (!value) value = 0
+            }
             this.modals.dataSource[key] = value
             // this.updateTableRowData({view: 'productView', index: this.arrOperatingRow[0], objKV})
+        },
+        updateRemark(v) {
+            this.modals.remark = v
         },
         searchCode(input) {
             if (input.length === 0) {
@@ -323,6 +338,7 @@ export default {
                 }
             )
         },
+
         handleRemoveImgClick() {
             // this.modals.primary.imgIsRemoved = true
             this.$set(this.modals.dataSource, "imageURLs", [])
@@ -331,6 +347,7 @@ export default {
         handleEditClick(index) {
             this.arrOperatingRow[0] = index
             this.modals.dataSource = {...this.productView.table.data[index]}
+            // no ref
             this.modals.dataSource.imageURLs = [...this.productView.table.data[index].imageURLs]
             this.modals.primary.imgIsRemoved = false
             this.modals.primary.isShow = true
@@ -343,14 +360,23 @@ export default {
             const {dataSource} = this.modals
             const objUpdateData = {}
             const index = this.arrOperatingRow[0]
+            const tmp = this.productView.table.data[index]
             objUpdateData._id = dataSource._id
-            objUpdateData.code = dataSource.code
-            objUpdateData.name = dataSource.name
-            if (dataSource.colorRef) objUpdateData.colorRef = dataSource.colorRef.value
-            objUpdateData.price = dataSource.price
+            if (tmp.code !== dataSource.code) objUpdateData.code = dataSource.code
+            if (tmp.name !== dataSource.name) objUpdateData.name = dataSource.name
+            if (dataSource.colorRef && tmp.colorRef.value !== dataSource.colorRef.value) objUpdateData.colorRef = dataSource.colorRef.value
+            if (tmp.price !== dataSource.price) objUpdateData.price = dataSource.price
+            if (tmp.remark !== dataSource.remark) objUpdateData.remark = dataSource.remark
+            // remove image
+            if (dataSource.imageURLs.length === 0 && tmp.imageURLs.length !== 0) objUpdateData.imageURLs = []
+            // change image
             if (this.$refs.inputFile.files.length !== 0) {
                 objUpdateData.productImages = this.$refs.inputFile.files[0]
             }
+            // if (index > 0) {
+            //     console.log(objUpdateData)
+            //     return
+            // }
             this.modals.primary.isShow = false
             // console.log(index, objUpdateData, this.modals.dataSource)
             // if (dataSource !== {}) {
@@ -391,7 +417,7 @@ export default {
             this.$refs.inputFile.click()
         },
         onChangeImage() {
-            if (this.$refs.inputFile.files.length <= 0) return
+            // if (this.$refs.inputFile.files.length <= 0) return
             let file = this.$refs.inputFile.files[0]
             //KB单位,可以获取图片的大小，到时候可以根据图片大小进行选择上传
             let imgSize = file.size / 1024
@@ -439,9 +465,12 @@ export default {
         imageSrc: function () {
             const {imageURLs} = this.modals.dataSource
             if (imageURLs[0]) {
-                return imageURLs[0].indexOf('data:image') !== -1 ? imageURLs[0] : `http://127.0.0.1:3000/images/${imageURLs[0]}`
+                return imageURLs[0].indexOf('data:image') !== -1 ? imageURLs[0] : `${baseUrl}/images/${imageURLs[0]}`
             }
             return ''
+        },
+        baseImageUrl: function () {
+            return baseUrl + '/images/'
         }
     },
     watch: {
