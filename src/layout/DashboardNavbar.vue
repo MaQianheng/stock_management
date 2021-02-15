@@ -4,16 +4,7 @@
               :show-toggle-button="false"
               expand>
         <ul class="navbar-nav align-items-center d-none d-md-flex" style="right: 20px; position: absolute;">
-            <base-button type="secondary" icon="ni ni-air-baloon" @click="handleReloadThisPageDataClick"
-                         :disabled="isDataLoading">
-                <b-spinner small type="grow" v-if="isDataLoading"/>
-                {{ reloadPageText }}
-            </base-button>
-            <base-button type="secondary" icon="ni ni-bulb-61" @click="handleReloadAllPageDataClick"
-                         :disabled="isDataLoading">
-                <b-spinner small type="grow" v-if="isDataLoading"/>
-                {{ reloadAllText }}
-            </base-button>
+            <LoadDataButtonGroup/>
             <li class="nav-item dropdown">
                 <base-dropdown class="nav-link pr-0">
                     <div class="media align-items-center" slot="title" style="cursor: pointer;">
@@ -42,9 +33,12 @@
 </template>
 <script>
 import {mapActions, mapState, mapMutations} from "vuex";
+import {handleLogOut} from "@/functions";
+import LoadDataButtonGroup from "@/components/MyComponents/LoadDataButtonGroup";
 // import {funcGetLikeIdKey} from "@/functions";
 
 export default {
+    components: {LoadDataButtonGroup},
     data() {
         return {
             activeNotifications: false,
@@ -64,43 +58,8 @@ export default {
         toggleMenu() {
             this.showMenu = !this.showMenu;
         },
-        handleReloadThisPageDataClick() {
-            if (this.isDataLoading) return
-            this.increaseRequestingTasksCount(this.arrSelect.length + this.arrView.length)
-            for (let i = 0; i < this.arrSelect.length; i++) {
-                this.updateViewComponent({view: 'commonView', component: this.arrSelect[i], objKV: {isLoading: true}})
-            }
-            for (let i = 0; i < this.arrView.length; i++) {
-                this.updateViewComponent({view: this.arrView[i], component: 'table', objKV: {isLoading: true}})
-            }
-        },
-        handleReloadAllPageDataClick() {
-            if (this.isDataLoading) return
-            const {arrSelect, arrView} = this.commonView.publicVariable
-            this.increaseRequestingTasksCount(arrSelect.length + arrView.length)
-            for (let i = 0; i < arrSelect.length; i++) {
-                this.updateViewComponent({view: 'commonView', component: arrSelect[i], objKV: {isLoading: true}})
-            }
-            for (let i = 0; i < arrView.length; i++) {
-                this.updateViewComponent({view: arrView[i], component: 'table', objKV: {isLoading: true}})
-            }
-        },
         handleClick() {
-            localStorage.removeItem('qianhengma_stock_management_token')
-            localStorage.removeItem('qianhengma_stock_management_name')
-            localStorage.removeItem('qianhengma_stock_management_level')
-            this.UPDATE_VIEW({
-                view: 'loginView',
-                objKV: {
-                    err_code: 0,
-                    message: '',
-                    token: '',
-                    form: {
-                        isLoading: false
-                    }
-                }
-            })
-            this.$router.replace('/login')
+            handleLogOut()
         }
     },
     computed: {
@@ -108,60 +67,6 @@ export default {
         name: function () {
             return this.loginView.name
         },
-        arrSelect: function () {
-            switch (this.$route.path) {
-                case '/color':
-                    return ['colorSelect']
-                case '/warehouse':
-                    return ['warehouseSelect', 'shelfSelect']
-                case '/product':
-                    return ['warehouseSelect', 'shelfSelect', 'colorSelect', 'cascadingWarehouseShelfSelect']
-                case '/sale':
-                    return ['colorSelect']
-                case '/sale_history':
-                    return ['colorSelect', 'cascadingWarehouseShelfSelect', 'warehouseSelect', 'shelfSelect']
-                default:
-                    return []
-            }
-        },
-        arrView: function () {
-            // 当给select重新赋值时会触发watch来reload table
-            switch (this.$route.path) {
-                case '/color':
-                    // if (String(this.colorView.table._id) === "0") arr.push('colorView')
-                    // break
-                    return ['colorView']
-                case '/warehouse':
-                    return ['warehouseView', 'shelfView']
-                case '/product':
-                    return ['productView']
-                case '/customer':
-                    return ['customerView']
-                case '/supplier':
-                    return ['supplierView']
-                case '/sale':
-                    return ['saleView']
-                case '/sale_history':
-                    return ['saleHistoryView']
-                case '/driver':
-                    return ['driverView']
-                case '/user':
-                    return ['userView']
-                default:
-                    return []
-            }
-        },
-        isDataLoading: function () {
-            return this.commonView.publicVariable.requestingTasksCount !== 0
-        },
-        reloadPageText: function () {
-            const {requestingTasksCount} = this.commonView.publicVariable
-            return requestingTasksCount === 0 ? '重载当前页面数据' : `正在加载数据。剩余：${requestingTasksCount}条数据`
-        },
-        reloadAllText: function () {
-            const {requestingTasksCount} = this.commonView.publicVariable
-            return requestingTasksCount === 0 ? '重载全部页面数据' : `正在加载数据。剩余：${requestingTasksCount}条数据`
-        }
     }
 };
 </script>

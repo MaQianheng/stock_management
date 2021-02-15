@@ -13,16 +13,7 @@
         </div>
         <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 0">
             <autocomplete
-                class="col-6"
-                :search="searchDriver"
-                placeholder="搜索并选择司机"
-                aria-label="搜索并选择司机"
-                :get-result-value="getDriverResultValue"
-                @submit="handleDriverSubmit"
-                :debounce-time="500"
-            />
-            <autocomplete
-                class="col-6"
+                class="col-12"
                 :search="searchSupplier"
                 placeholder="搜索并选择供应商"
                 aria-label="搜索并选择供应商"
@@ -33,7 +24,16 @@
         </div>
         <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 1">
             <autocomplete
-                class="col-12"
+                class="col-6"
+                :search="searchDriver"
+                placeholder="搜索并选择司机"
+                aria-label="搜索并选择司机"
+                :get-result-value="getDriverResultValue"
+                @submit="handleDriverSubmit"
+                :debounce-time="500"
+            />
+            <autocomplete
+                class="col-6"
                 :search="searchCustomer"
                 placeholder="搜索并选择客户"
                 aria-label="搜索并选择客户"
@@ -63,7 +63,10 @@ export default {
     methods: {
         ...mapActions(['updateFormSingleData', 'increaseRequestingTasksCount', 'updateViewComponent']),
         searchDriver(input) {
-            if (input.length === 0) return []
+            if (input.length === 0) {
+                this.updateFormSingleData({view: 'saleView', key: 'driverRef', value: ''})
+                return []
+            }
             return requestFuzzyQueryDriverName({name: input}).then((data) => {
                 return data.data.data
             }).catch(() => {
@@ -78,7 +81,10 @@ export default {
         },
 
         searchSupplier(input) {
-            if (input.length === 0) return []
+            if (input.length === 0) {
+                this.updateFormSingleData({view: 'saleView', key: 'supplierRef', value: ''})
+                return []
+            }
             return requestFuzzyQuerySupplierName({supplierName: input}).then((data) => {
                 return data.data.data
             }).catch(() => {
@@ -93,7 +99,10 @@ export default {
         },
 
         searchCustomer(input) {
-            if (input.length === 0) return []
+            if (input.length === 0) {
+                this.updateFormSingleData({view: 'saleView', key: 'customerRef', value: ''})
+                return []
+            }
             return requestFuzzyQueryCustomerName({name: input}).then((data) => {
                 return data.data.data
             }).catch(() => {

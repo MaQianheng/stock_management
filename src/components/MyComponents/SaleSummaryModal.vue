@@ -27,7 +27,7 @@
                             <td v-if="i===0" :rowspan="Object.keys(item.sub).length">
                                 <div class="align-items-center">
                                     <img alt="Image placeholder"
-                                         :src="item.imageURLs[0] ? baseUrl + item.imageURLs[0] : baseUrl + '/images/product_default.jpeg'"
+                                         :src="item.imageURLs[0] ? baseImageUrl + item.imageURLs[0] : baseImageUrl + '/product_default.jpeg'"
                                          style="height: 120px">
                                 </div>
                             </td>
@@ -40,7 +40,7 @@
                                     alternative=""
                                     placeholder="重量"
                                     input-classes="form-control-alternative"
-                                    :name="productId + '_' + shelfRef + '_price'"
+                                    :name="productId + '-' + shelfRef + '-price'"
                                     v-model="item.price"
                                     @input="getInput"
                                     :disabled="saleView.form.isLoading"
@@ -78,10 +78,10 @@
             </div>
             <hr>
             <div>
-                <b-list-group-item variant="light" v-if="this.saleView.form.action === 0">
+                <b-list-group-item variant="light" v-if="this.saleView.form.action === 1">
                     <p>司机：{{ driver }}</p>
                 </b-list-group-item>
-                <b-list-group-item variant="light" v-if="this.saleView.form.action === 0">
+                <b-list-group-item variant="light" v-if="this.saleView.form.action === 1">
                     <p style="display: inline-block">运费：</p>
                     <base-input
                         style="display: inline-block; margin-bottom: 0;"
@@ -183,7 +183,9 @@ export default {
                 }
                 case 'price': {
                     saleSummary[productId].price = value
-                    sub[shelfRef].totalPrice = sub[shelfRef].operateWeight * value
+                    for (const productIdShelfRef in sub) {
+                        sub[productIdShelfRef].totalPrice = sub[productIdShelfRef].operateWeight * value
+                    }
                     break
                 }
                 default:
@@ -241,10 +243,10 @@ export default {
             const {action} = this.saleView.form
             if (action === 0) {
                 saleFormKeys.supplierRef = {isRequired: true, str: '供应商信息'}
-                saleFormKeys.driverRef = {isRequired: true, str: '司机信息'}
-                saleFormKeys.deliveryFee = {isRequired: true, str: '运费'}
             } else {
                 saleFormKeys.customerRef = {isRequired: true, str: '客户信息'}
+                saleFormKeys.driverRef = {isRequired: true, str: '司机信息'}
+                saleFormKeys.deliveryFee = {isRequired: true, str: '运费'}
             }
             // product: {
             //     "productRef1": {
@@ -288,7 +290,7 @@ export default {
             return arr
         },
         driver: function () {
-            if (this.saleView.form.action === 0) return this.saleView.form.driverRef.name ? `${this.saleView.form.driverRef.name}` : '未选择'
+            if (this.saleView.form.action === 1) return this.saleView.form.driverRef.name ? `${this.saleView.form.driverRef.name}` : '未选择'
             return ''
         },
         supplierNameOrCustomer: function () {
@@ -308,7 +310,7 @@ export default {
             }
             return isNaN(totalPrice) ? 0 : totalPrice
         },
-        baseUrl: function () {
+        baseImageUrl: function () {
             return baseUrl + '/images/'
         }
     }

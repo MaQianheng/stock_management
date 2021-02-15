@@ -240,6 +240,7 @@ export default {
         {
             arrOperatingRow: [],
             modals: {
+                tmpRemark: '',
                 dataSource: {
                     row: 0,
                     imageURLs: [],
@@ -266,7 +267,7 @@ export default {
             // this.updateTableRowData({view: 'productView', index: this.arrOperatingRow[0], objKV})
         },
         updateRemark(v) {
-            this.modals.remark = v
+            this.modals.tmpRemark = v
         },
         searchCode(input) {
             if (input.length === 0) {
@@ -347,6 +348,7 @@ export default {
         handleEditClick(index) {
             this.arrOperatingRow[0] = index
             this.modals.dataSource = {...this.productView.table.data[index]}
+            this.modals.tmpRemark = this.modals.dataSource.remark
             // no ref
             this.modals.dataSource.imageURLs = [...this.productView.table.data[index].imageURLs]
             this.modals.primary.imgIsRemoved = false
@@ -366,7 +368,10 @@ export default {
             if (tmp.name !== dataSource.name) objUpdateData.name = dataSource.name
             if (dataSource.colorRef && tmp.colorRef.value !== dataSource.colorRef.value) objUpdateData.colorRef = dataSource.colorRef.value
             if (tmp.price !== dataSource.price) objUpdateData.price = dataSource.price
-            if (tmp.remark !== dataSource.remark) objUpdateData.remark = dataSource.remark
+            if (this.modals.tmpRemark !== dataSource.remark) {
+                objUpdateData.remark = this.modals.tmpRemark
+                this.modals.tmpRemark = ''
+            }
             // remove image
             if (dataSource.imageURLs.length === 0 && tmp.imageURLs.length !== 0) objUpdateData.imageURLs = []
             // change image

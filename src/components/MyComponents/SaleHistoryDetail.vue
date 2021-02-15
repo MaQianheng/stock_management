@@ -21,8 +21,8 @@
                     }}
                 </b-list-group-item>
                 <b-list-group-item>{{ supplierOrCustomer }}</b-list-group-item>
-                <b-list-group-item v-if="action === 0" variant="light">{{ driver }}</b-list-group-item>
-                <b-list-group-item v-if="action === 0">运费：{{ saleHistoryView.saleDetail.objData.deliveryFee }}
+                <b-list-group-item v-if="action === 1" variant="light">{{ driver }}</b-list-group-item>
+                <b-list-group-item v-if="action === 1">运费：{{ saleHistoryView.saleDetail.objData.deliveryFee }}
                 </b-list-group-item>
             </b-list-group>
         </div>
@@ -54,6 +54,7 @@
                         <td>{{ subItem.oriWeight }}</td>
                         <td>{{ subItem.operateWeight }}</td>
                         <td>{{ subItem.afterOperateWeight }}</td>
+                        <td>{{ subItem.remainingWeight }}</td>
                         <td>{{ subItem.price }}</td>
                     </tr>
                 </template>
@@ -96,7 +97,7 @@ export default {
             return objData.action
         },
         columns: function () {
-            const arr = ['货号', '商品名称', '颜色', '图片', '库房', '货架', '原剩余(kg)', '出数量(kg)', '变更后(kg)', '价格']
+            const arr = ['货号', '商品名称', '颜色', '图片', '库房', '货架', '原剩余(kg)', '出数量(kg)', '变更后(kg)', '现剩余(kg)', '价格']
             if (this.action === 0) arr[7] = '入数量(kg)'
             return arr
         },
@@ -106,7 +107,7 @@ export default {
         },
         driver: function () {
             const {objData} = this.saleHistoryView.saleDetail
-            if (this.action === 0) return `司机：${objData.driverRef.name}，车牌：${objData.driverRef.plate}`
+            if (objData) if (this.action === 1) return `司机：${objData.driverRef.name}，车牌：${objData.driverRef.plate}`
             return ''
         }
     }

@@ -487,3 +487,20 @@ export const watchHandleSelectedValue = (newVal, oldVal, that, view) => {
     )
 }
 
+export const handleLogOut = (that) => {
+    localStorage.removeItem('qianhengma_stock_management_token')
+    localStorage.removeItem('qianhengma_stock_management_name')
+    localStorage.removeItem('qianhengma_stock_management_level')
+    that.UPDATE_VIEW({
+        view: 'loginView',
+        objKV: {
+            err_code: 0,
+            message: '',
+            token: '',
+            form: {
+                isLoading: false
+            }
+        }
+    })
+    that.$router.replace('/login')
+}
