@@ -70,6 +70,10 @@ export default {
         onScroll() {
             // Get the current scroll position
             const currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop
+            if (currentScrollPosition < this.oriFilterOffsetTopFromBottom) {
+                this.showNavbar = true
+                return
+            }
             if ((currentScrollPosition < 0) || (this.$refs.filter.offsetTop < this.oriFilterOffsetTopFromBottom)) {
                 return
             }

@@ -53,10 +53,16 @@ export default {
                 // state.shelfView.table.select.data = [state.shelfView.table.select.data[0], ...data.data]
                 break
             }
-            case 'cascadingWarehouseShelfSelect': {
-                // state.productView.table.warehouseSelect.data = [state.productView.table.warehouseSelect.data[0], ...state.commonView.warehouseSelect.data]
-                // state.productView.table.warehouseSelect.selectedValue = state.productView.table.warehouseSelect.data[0]
-                // state.productView.table.shelfSelect.selectedValue = state.productView.table.shelfSelect.data[0]
+            case 'customerSelect': {
+                state.saleView.form.customerSelect = data.data[0]
+                break
+            }
+            case 'supplierSelect': {
+                state.saleView.form.supplierSelect = data.data[0]
+                break
+            }
+            case 'driverSelect': {
+                state.saleView.form.driverSelect = data.data[0]
                 break
             }
             default:

@@ -1,10 +1,8 @@
 <template>
-    <b-card
-        :title="item.code + '-' + item.name"
-        :img-src="item.imageURLs.length === 0 ? baseUrl + 'product_default.jpeg' : baseUrl + item.imageURLs[0]"
-        img-alt="Image"
-        img-top
-    >
+    <b-card>
+<!--        <img :src="" class="card-img-top">-->
+        <ImageZoomModal :image-src="imageSrc(item.imageURLs)" image-class="card-img-top" image-width="100%;"/>
+        <h4 class="card-title" style="margin-top: 1.25rem;">{{ item.code + '-' + item.name }}</h4>
         <hr>
         <div style="margin: 1rem 0;">
             <p>价格：{{ item.price }}/KG</p>
@@ -75,10 +73,12 @@ import {mapActions, mapState} from "vuex";
 import {gsap} from 'gsap'
 import {deepClone} from "@/functions/utils";
 import {baseUrl} from "@/api";
+import ImageZoomModal from "@/components/MyComponents/ImageZoomModal";
 
 export default {
     name: "SaleProductInfoCard",
     components: {
+        ImageZoomModal,
         VSelect,
         ZoomCenterTransition
     },
@@ -150,6 +150,12 @@ export default {
                 title: `${this.item.name}已添加`
             })
         },
+        imageSrc: function (imageURLs) {
+            if (imageURLs[0]) {
+                return `${baseUrl}/images/${imageURLs[0]}`
+            }
+            return `${baseUrl}/images/product_default.jpeg`
+        }
     },
     computed: {
         ...mapState(['commonView', 'productView', 'saleView']),
@@ -203,9 +209,6 @@ export default {
                 }
             }
             return {status: false, text: `添加至本次${this.inOrOut}库记录`}
-        },
-        baseUrl: function () {
-            return baseUrl + '/images/'
         }
     },
     watch: {

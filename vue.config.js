@@ -2,8 +2,8 @@ const webpack = require('webpack');
 const isProd = process.env.NODE_ENV === "production";
 
 module.exports = {
-    publicPath: "/stock_management/",
-    outputDir: "stock_management",
+    publicPath: "/kucun/",
+    outputDir: "kucun",
     configureWebpack: {
         // Set up all the aliases we use in our app.
         plugins: [

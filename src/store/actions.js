@@ -17,7 +17,7 @@ import {
     requestQueryColor,
     requestQueryColorOptions,
     requestQueryCustomer,
-    requestQueryCustomerOptions, requestQueryDriver,
+    requestQueryCustomerOptions, requestQueryDriver, requestQueryDriverOptions,
     requestQueryOperatorOptions,
     requestQueryProduct,
     requestQueryProductOptions,
@@ -146,6 +146,9 @@ export default {
                     break
                 case 'supplierSelect':
                     data = (await requestQuerySupplierOptions({_id: '0'})).data
+                    break
+                case 'driverSelect':
+                    data = (await requestQueryDriverOptions({_id: '0'})).data
                     break
                 case 'codeSelect':
                     data = (await requestQueryCodeOptions({_id: '0'})).data

@@ -88,9 +88,7 @@
                         </td>
                         <td v-if="i===0" :rowspan="item.sub.length">
                             <div class="align-items-center">
-                                <img alt="Image placeholder"
-                                     :src="item.imageURLs[0] ? baseImageUrl + item.imageURLs[0] : baseImageUrl + 'product_default.jpeg'"
-                                     style="height: 120px">
+                                <ImageZoomModal :image-src="imageSrc(item.imageURLs)" image-height="120px;"/>
                             </div>
                         </td>
                         <td v-if="i===0" :rowspan="item.sub.length">
@@ -106,7 +104,8 @@
                         <td>{{ sub.shelf }}</td>
                         <td>{{ sub.remainingWeight }}</td>
                         <td>{{ sub.soldWeight }}</td>
-                        <td v-if="i===0" :rowspan="item.sub.length" v-html="item.remark"></td>
+                        <td v-if="i===0" :rowspan="item.sub.length" v-html="item.remark"
+                            style="text-align: left !important;"></td>
                         <td v-if="i===0" :rowspan="item.sub.length">
                             <base-button type="primary" :outline="true" size="sm"
                                          :disabled="item.status === 2"
@@ -190,9 +189,9 @@
             <div class="col-12">
                 <yimo-vue-editor v-html="modals.dataSource.remark" @input="updateRemark"/>
             </div>
-            <div class="row">
+            <div class="row" style="margin-top: 15px;">
                 <div class="img-upload" @click="handleChangeImageClick">
-                    <img v-show="modals.dataSource.imageURLs[0]" :src="imageSrc"/>
+                    <img v-show="modals.dataSource.imageURLs[0]" :src="base64ImageSrc"/>
                     <i v-show="!modals.dataSource.imageURLs[0]" class="ni ni-cloud-upload-96"></i>
                     <i v-show="modals.dataSource.imageURLs[0]"
                        class="ni ni-fat-remove"
@@ -221,10 +220,12 @@ import Autocomplete from '@trevoreyre/autocomplete-vue'
 import {baseUrl} from '@/api'
 import {validateInputNumber} from "@/functions/utils";
 import YimoVueEditor from 'yimo-vue-editor'
+import ImageZoomModal from "@/components/MyComponents/ImageZoomModal";
 
 export default {
     name: 'inventory-table',
     components: {
+        ImageZoomModal,
         Autocomplete,
         VSelect,
         BSkeletonTable,
@@ -239,6 +240,7 @@ export default {
     data: () => (
         {
             arrOperatingRow: [],
+            arrDeleteRow: [],
             modals: {
                 tmpRemark: '',
                 dataSource: {
@@ -328,16 +330,14 @@ export default {
             }
             queryCondition.currentPageCount = 1
             this.increaseRequestingTasksCount(1)
-            this.updateViewComponent(
-                {
-                    view: 'productView',
-                    component: "table",
-                    objKV: {
-                        queryCondition,
-                        isLoading: true
-                    }
+            this.updateViewComponent({
+                view: 'productView',
+                component: "table",
+                objKV: {
+                    queryCondition,
+                    isLoading: true
                 }
-            )
+            })
         },
 
         handleRemoveImgClick() {
@@ -348,7 +348,9 @@ export default {
         handleEditClick(index) {
             this.arrOperatingRow[0] = index
             this.modals.dataSource = {...this.productView.table.data[index]}
+            this.$set(this.modals.dataSource, 'remark', this.modals.dataSource.remark)
             this.modals.tmpRemark = this.modals.dataSource.remark
+            console.log(this.modals.tmpRemark)
             // no ref
             this.modals.dataSource.imageURLs = [...this.productView.table.data[index].imageURLs]
             this.modals.primary.imgIsRemoved = false
@@ -408,7 +410,7 @@ export default {
         },
         handleDeleteClick(index) {
             this.modals.dataSource = {...this.productView.table.data[index]}
-            this.arrOperatingRow[0] = index
+            this.arrDeleteRow[0] = index
             this.modals.danger.isShow = true
         },
         handleConfirmDeleteClick() {
@@ -437,9 +439,15 @@ export default {
                 this.$set(this.modals.dataSource.imageURLs, 0, reader.result)
             }
         },
+        imageSrc: function (imageURLs) {
+            if (imageURLs[0]) {
+                return `${baseUrl}/images/${imageURLs[0]}`
+            }
+            return `${baseUrl}/images/product_default.jpeg`
+        }
     },
     computed: {
-        ...mapState(['productView', 'commonView']),
+        ...mapState(['productView', 'commonView', 'colorView']),
         colsWithValue() {
             return (row) => {
                 return this.columns.filter(column => this.hasValue(row, column))
@@ -467,15 +475,12 @@ export default {
         modalRow: function () {
             return this.modals.dataSource.row
         },
-        imageSrc: function () {
+        base64ImageSrc: function () {
             const {imageURLs} = this.modals.dataSource
             if (imageURLs[0]) {
                 return imageURLs[0].indexOf('data:image') !== -1 ? imageURLs[0] : `${baseUrl}/images/${imageURLs[0]}`
             }
             return ''
-        },
-        baseImageUrl: function () {
-            return baseUrl + '/images/'
         }
     },
     watch: {

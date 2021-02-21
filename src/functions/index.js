@@ -157,9 +157,11 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
             break
         case 'customerView':
             arrRequiredReloadViewTable = ['customerView']
+            arrRequiredReloadSelect = ['customerSelect']
             break
         case 'supplierView':
             arrRequiredReloadViewTable = ['supplierView']
+            arrRequiredReloadSelect = ['supplierSelect']
             break
         case 'productView':
             // reload colorView since related
@@ -176,6 +178,7 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
             break
         case 'driverView':
             arrRequiredReloadViewTable = ['driverView']
+            arrRequiredReloadSelect = ['driverSelect']
             break
         case 'userView':
             arrRequiredReloadViewTable = ['userView']
@@ -264,7 +267,6 @@ export const handleSubmitTableRow = (that, view, index, arrKeys) => {
         type: funcComputeAlertLevel(-1),
         title: "正在更新数据"
     })
-    console.log(view)
     that.updateTableRowData({view, index, objKV: {status: 2}})
     that.submitUpdateData({view, objUpdateData, index}).then(() => {
         const {err_code, message} = that[view].table
@@ -275,6 +277,7 @@ export const handleSubmitTableRow = (that, view, index, arrKeys) => {
         if (err_code === 0) {
             const select = `${view.substring(0, view.length - 4)}Select`
             if (that.commonView.publicVariable.arrSelect.indexOf(select) !== -1) {
+                that.increaseRequestingTasksCount(1)
                 that.updateCommonSelectSubValue({
                     key: `${view.substring(0, view.length - 4)}Select`,
                     subKey: 'isLoading',
@@ -317,7 +320,6 @@ export const handleSubmitTableSubRow = (that, view, strIndex, arrKeys) => {
     that.updateTableSubRowData({view, index, subIndex, objKV: {status: 2}})
     // that.submitUpdateSubData({view, objUpdateData, index, subIndex})
 
-    console.log(view)
     that.submitUpdateData({view, objUpdateData, index, subIndex}).then(() => {
         const {err_code, message} = that[view].table
         that.$notify({
@@ -326,6 +328,7 @@ export const handleSubmitTableSubRow = (that, view, strIndex, arrKeys) => {
         })
         console.log(view)
         if (err_code === 0) {
+            that.increaseRequestingTasksCount(1)
             that.updateCommonSelectSubValue({
                 key: `${view.substring(0, view.length - 4)}Select`,
                 subKey: 'isLoading',

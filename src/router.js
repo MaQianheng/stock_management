@@ -100,17 +100,18 @@ const router = new Router({
     ]
 })
 router.beforeEach((to, from, next) => {
+    const {token, level} = store.state.loginView
     if (to.path === '/login') {
-        next();
+        if (token) return next(from.path)
+        next()
     } else {
-        const {token, level} = store.state.loginView
         if (!token || token === '') {
-            next('/login');
+            next('/login')
         } else {
             if (level !== 0) {
-                if (to.path === '/customer' || to.path === '/supplier' || to.path === '/user' || to.path === '/driver') return next(from.path)
+                if (to.path === '/customer' || to.path === '/supplier' || to.path === '/user' || to.path === '/driver' || to.path === '/product') return next(from.path)
             }
-            next();
+            next()
         }
     }
 })

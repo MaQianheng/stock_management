@@ -6,7 +6,7 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-5 col-md-6">
                             <h1 class="text-white">欢迎!</h1>
-<!--                            <p class="text-lead text-white">Use these awesome forms to login or create new account in your project for free.</p>-->
+                            <!--                            <p class="text-lead text-white">Use these awesome forms to login or create new account in your project for free.</p>-->
                         </div>
                     </div>
                 </div>
@@ -24,13 +24,13 @@
                 <router-view></router-view>
             </slide-y-up-transition>
         </div>
-        <footer class="py-5" style="position: absolute; bottom: 0; width: 100%">
+        <footer class="py-5">
             <div class="container">
                 <div class="row align-items-center justify-content-xl-between">
                     <div class="col-xl-6">
                         <div class="copyright text-center text-xl-left text-muted">
-                            &copy; {{year}} <a href="https://www.creative-tim.com" class="font-weight-bold ml-1"
-                                               target="_blank">Creative Tim</a>
+                            &copy; {{ year }} <a href="https://www.creative-tim.com" class="font-weight-bold ml-1"
+                                                 target="_blank">Creative Tim</a>
                         </div>
                     </div>
                     <div class="col-xl-6">
@@ -57,20 +57,20 @@
     </div>
 </template>
 <script>
-  import { SlideYUpTransition } from 'vue2-transitions'
+import {SlideYUpTransition} from 'vue2-transitions'
 
-  export default {
+export default {
     name: 'auth-layout',
     components: {
-      SlideYUpTransition
+        SlideYUpTransition
     },
     data() {
-      return {
-        year: new Date().getFullYear(),
-        showMenu: false
-      }
+        return {
+            year: new Date().getFullYear(),
+            showMenu: false
+        }
     }
-  }
+}
 </script>
 <style>
 </style>

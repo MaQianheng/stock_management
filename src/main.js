@@ -40,7 +40,7 @@ import axios from "axios"
 // axios.defaults.baseURL = "http://127.0.0.1:3000"
 axios.interceptors.request.use(config => {
     // 在发送请求之前做些什么
-    const pathname = location.pathname;
+    const {pathname} = location;
     if (pathname !== '/login') {
         const {token} = store.state.loginView;
         token && (config.headers.Authorization = token);
@@ -82,22 +82,13 @@ axios.interceptors.response.use(response => {
                 break
             // 返回401，清除token信息并跳转到登录页面
             case 401:
-                if (location.pathname === '/login') break
-                localStorage.removeItem('token')
-                router.replace({
-                    path: '/login'
-                    //登录成功后跳入浏览的当前页面
-                    // query: {redirect: router.currentRoute.fullPath}
-                })
-                break
             case 403:
                 if (location.pathname === '/login') break
                 localStorage.removeItem('token')
                 router.replace({path: '/login'})
-                // store.commit('UPDATE_LOGIN_STATUS', false)
                 break
             case 404:
-                return Promise.reject("address not found")
+                return Promise.reject("路径不存在")
         }
         // 返回接口返回的错误信息
         return Promise.reject(error.response);
@@ -113,36 +104,7 @@ import YimoVueEditor from 'yimo-vue-editor'
 Vue.use(YimoVueEditor, {
     name: 'v-editor-app',//Custom name
     config: {
-        menus: [
-            'source',
-            '|',
-            'bold',
-            'underline',
-            'italic',
-            'strikethrough',
-            'eraser',
-            'forecolor',
-            'bgcolor',
-            '|',
-            'quote',
-            'fontfamily',
-            'fontsize',
-            'head',
-            'unorderlist',
-            'orderlist',
-            'alignleft',
-            'aligncenter',
-            'alignright',
-            '|',
-            'link',
-            'unlink',
-            'table',
-            'emotion',
-            '|',
-            'undo',
-            'redo',
-            'fullscreen'
-        ]
+        menus: ['source', '|', 'bold', 'underline', 'italic', 'strikethrough', 'eraser', 'forecolor', 'bgcolor', '|', 'quote', 'fontfamily', 'fontsize', 'head', 'unorderlist', 'orderlist', 'alignleft', 'aligncenter', 'alignright', '|', 'link', 'unlink', 'table', 'emotion', '|', 'undo', 'redo', 'fullscreen']
     }
 })
 

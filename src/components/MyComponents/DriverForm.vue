@@ -73,11 +73,11 @@ export default {
                     str: '司机'
                 },
                 phone: {
-                    isRequired: true,
+                    isRequired: false,
                     str: '电话'
                 },
                 plate: {
-                    isRequired: true,
+                    isRequired: false,
                     str: '车牌'
                 }
             }

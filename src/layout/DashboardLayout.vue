@@ -6,14 +6,14 @@
             title="Argon"
         >
             <template slot="links">
-                <sidebar-item :link="{name: '仪表盘', icon: 'ni ni-tv-2 text-primary', path: '/dashboard'}"/>
-                <sidebar-item :link="{name: '图标', icon: 'ni ni-atom text-purple', path: '/icon'}"/>
+<!--                <sidebar-item :link="{name: '仪表盘', icon: 'ni ni-tv-2 text-primary', path: '/dashboard'}"/>-->
+<!--                <sidebar-item :link="{name: '图标', icon: 'ni ni-atom text-purple', path: '/icon'}"/>-->
                 <sidebar-item :link="{name: '销售', icon: 'ni ni-money-coins sale-icon-gradient', path: '/sale'}"/>
                 <sidebar-item :link="{name: '销售记录', icon: 'ni ni-books text-teal', path: '/sale_history'}"/>
                 <sidebar-item :link="{name: '供应商信息', icon: 'ni ni-delivery-fast text-dark', path: '/supplier'}" v-if="userLevel === 0"/>
                 <sidebar-item :link="{name: '客户信息', icon: 'ni ni-single-02 text-yellow', path: '/customer'}" v-if="userLevel === 0"/>
                 <sidebar-item :link="{name: '司机信息', icon: 'ni ni-circle-08 text-gray-dark', path: '/driver'}" v-if="userLevel === 0"/>
-                <sidebar-item :link="{name: '商品信息', icon: 'ni ni-box-2 text-red', path: '/product'}"/>
+                <sidebar-item :link="{name: '商品信息', icon: 'ni ni-box-2 text-red', path: '/product'}" v-if="userLevel === 0"/>
                 <sidebar-item :link="{name: '库房信息', icon: 'ni ni-building text-gray', path: '/warehouse'}"/>
                 <sidebar-item :link="{name: '颜色信息', icon: 'ni ni-palette text-pink', path: '/color'}"/>
                 <sidebar-item :link="{name: '管理员信息', icon: 'ni ni-badge text-indigo', path: '/user'}" v-if="userLevel === 0"/>
@@ -50,7 +50,7 @@ export default {
     },
     created() {
         let {arrView} = this.commonView.publicVariable
-        arrView = this.loginView.level === 0 ? ['colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView', 'driverView', 'userView'] : ['colorView', 'warehouseView', 'shelfView', 'productView', 'saleView', 'saleHistoryView']
+        arrView = this.loginView.level === 0 ? ['colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView', 'driverView', 'userView'] : ['colorView', 'warehouseView', 'shelfView', 'saleView', 'saleHistoryView']
         this.updateViewComponent({view: 'commonView', component: 'publicVariable', objKV: {arrView}})
     },
     mounted() {
@@ -83,24 +83,16 @@ export default {
         getSelectCallBack(key) {
             this.decreaseRequestingTasksCount(1)
             this.updateCommonSelectSubValue({key, subKey: 'isLoading', value: false})
-            const {err_code, prefix, message} = this.commonView[key]
-            if (err_code !== 0) {
-                this.$notify({
-                    type: funcComputeAlertLevel(err_code),
-                    title: `请求${prefix}多选时，发生错误：${message}`
-                })
-            }
+            this.notify(this.commonView[key])
         },
         getTableCallBack(view) {
             this.decreaseRequestingTasksCount(1)
             this.updateViewComponent({view, component: 'table', objKV: {isLoading: false}})
-            const {err_code, message} = this[view].table
-            if (err_code !== 0) {
-                this.$notify({
-                    type: funcComputeAlertLevel(err_code),
-                    title: `请求${view}表单时，发生错误：${message}`
-                })
-            }
+            this.notify(this[view].table)
+        },
+        notify(obj) {
+            const {err_code, prefix, message} = obj
+            if (err_code !== 0) this.$notify({type: funcComputeAlertLevel(err_code), title: `请求${prefix}信息时，发生错误：${message}`})
         }
     },
     computed: {
@@ -110,24 +102,33 @@ export default {
         }
     },
     watch: {
-        // "commonView.customerSelect.isLoading": {
-        //     handler: function (newVal) {
-        //         const component = 'customerSelect'
-        //         // request customer option
-        //         if (newVal === true) this.getSelect({component}).then(() => {
-        //             this.getSelectCallBack(component)
-        //         })
-        //     }
-        // },
-        // "commonView.supplierSelect.isLoading": {
-        //     handler: function (newVal) {
-        //         const component = 'supplierSelect'
-        //         // request supplier option
-        //         if (newVal === true) this.getSelect({component}).then(() => {
-        //             this.getSelectCallBack(component)
-        //         })
-        //     }
-        // },
+        "commonView.customerSelect.isLoading": {
+            handler: function (newVal) {
+                const component = 'customerSelect'
+                // request customer option
+                if (newVal === true) this.getSelect({component}).then(() => {
+                    this.getSelectCallBack(component)
+                })
+            }
+        },
+        "commonView.supplierSelect.isLoading": {
+            handler: function (newVal) {
+                const component = 'supplierSelect'
+                // request supplier option
+                if (newVal === true) this.getSelect({component}).then(() => {
+                    this.getSelectCallBack(component)
+                })
+            }
+        },
+        "commonView.driverSelect.isLoading": {
+            handler: function (newVal) {
+                const component = 'driverSelect'
+                // request supplier option
+                if (newVal === true) this.getSelect({component}).then(() => {
+                    this.getSelectCallBack(component)
+                })
+            }
+        },
         // "commonView.codeSelect.isLoading": {
         //     handler: function (newVal) {
         //         const component = 'codeSelect'

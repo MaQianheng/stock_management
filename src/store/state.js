@@ -11,14 +11,14 @@ export default {
     },
     commonView: {
         publicVariable: {
-            arrSelect: ['colorSelect', 'warehouseSelect', 'shelfSelect', 'cascadingWarehouseShelfSelect'],
+            arrSelect: ['colorSelect', 'warehouseSelect', 'shelfSelect', 'cascadingWarehouseShelfSelect', 'customerSelect', 'supplierSelect', 'driverSelect'],
             arrView: [],
             requestingTasksCount: 0,
         },
         labelNotFound: "无可选项",
         labelSearchPlaceholder: "请输入搜索内容",
         levelSelect: {
-            data: [{value: 0, text: '根级管理员'}, {value: 1, text: '一级管理员'}]
+            data: [{value: 0, text: '一级管理员'}, {value: 1, text: '二级管理员'}]
         },
         cascadingWarehouseShelfSelect: {
             isLoading: false,
@@ -30,38 +30,10 @@ export default {
                 objShelfWarehouseKV: {}
             }
         },
-        customerSelect: {
-            isLoading: false,
-            err_code: 0,
-            prefix: '客户信息',
-            message: "请求成功",
-            data: []
-        },
-        supplierSelect: {
-            isLoading: false,
-            err_code: 0,
-            prefix: '供应商信息',
-            message: "请求成功",
-            data: []
-        },
-        codeSelect: {
-            isLoading: false,
-            err_code: 0,
-            prefix: '货号信息',
-            message: "请求成功",
-            data: []
-        },
-        productSelect: {
-            isLoading: false,
-            err_code: 0,
-            prefix: '商品信息',
-            message: "请求成功",
-            data: []
-        },
         colorSelect: {
             isLoading: false,
             err_code: 0,
-            prefix: '颜色信息',
+            prefix: '颜色多选',
             message: "请求成功",
             data: []
         },
@@ -71,7 +43,7 @@ export default {
         warehouseSelect: {
             isLoading: false,
             err_code: 0,
-            prefix: '库房信息',
+            prefix: '库房多选',
             message: "请求成功",
             data: []
         },
@@ -81,23 +53,38 @@ export default {
         shelfSelect: {
             isLoading: false,
             err_code: 0,
-            prefix: '货架信息',
+            prefix: '货架多选',
             message: "请求成功",
             data: []
         },
-        operatorSelect: {
+        customerSelect: {
             isLoading: false,
             err_code: 0,
-            prefix: '操作人信息',
+            prefix: '客户多选',
             message: "请求成功",
             data: []
-        }
+        },
+        supplierSelect: {
+            isLoading: false,
+            err_code: 0,
+            prefix: '供应商多选',
+            message: "请求成功",
+            data: []
+        },
+        driverSelect: {
+            isLoading: false,
+            err_code: 0,
+            prefix: '司机多选',
+            message: "请求成功",
+            data: []
+        },
     },
     colorView: {
         select: {
             selectedValue: {value: "0", text: '正在请求数据'}
         },
         table: {
+            prefix: '颜色表单',
             isLoading: false,
             perPage: 10,
             err_code: 0,
@@ -116,6 +103,7 @@ export default {
     },
     warehouseView: {
         table: {
+            prefix: '库房表单',
             isLoading: false,
             perPage: 5,
             err_code: 0,
@@ -137,6 +125,7 @@ export default {
     },
     shelfView: {
         table: {
+            prefix: '货架表单',
             isLoading: false,
             perPage: 5,
             err_code: 0,
@@ -162,6 +151,7 @@ export default {
     },
     customerView: {
         table: {
+            prefix: '客户表单',
             isLoading: false,
             perPage: 12,
             err_code: 0,
@@ -181,6 +171,7 @@ export default {
     },
     supplierView: {
         table: {
+            prefix: '供应商表单',
             isLoading: false,
             perPage: 12,
             err_code: 0,
@@ -202,6 +193,7 @@ export default {
     },
     productView: {
         table: {
+            prefix: '商品表单',
             colorSelect: {
                 selectedValue: {value: "0", text: '正在请求数据'}
             },
@@ -246,14 +238,18 @@ export default {
             isLoading: false,
             action: 0,
             // operatorRef: '6019fb8c2e2bb3dba3c87354',
-            supplierRef: {},
-            customerRef: {},
-            driverRef: {},
+            supplierRef: '',
+            customerRef: '',
+            driverRef: '',
+            supplierSelectedValue: {value: "0", text: '正在请求数据'},
+            customerSelectedValue: {value: "0", text: '正在请求数据'},
+            driverSelectedValue: {value: "0", text: '正在请求数据'},
             deliveryFee: 0,
             product: {}
         },
         saleSummary: {},
         table: {
+            prefix: '销售商品表单',
             isLoading: false,
             perPage: 18,
             queryCondition: {
@@ -274,6 +270,7 @@ export default {
     },
     saleHistoryView: {
         table: {
+            prefix: '销售记录表单',
             actionSelect: {
                 selectedValue: {value: -1, text: '出/入库'},
                 data: [{value: -1, text: '出/入库'}, {value: 0, text: '入库'}, {value: 1, text: '出库'}]
@@ -324,6 +321,7 @@ export default {
             plate: ''
         },
         table: {
+            prefix: '司机表单',
             isLoading: false,
             perPage: 10,
             queryCondition: {
@@ -341,10 +339,11 @@ export default {
             name: '',
             level: '',
             levelSelect: {
-                selectedValue: {value: 0, text: '根级管理员'}
+                selectedValue: {value: 0, text: '一级管理员'}
             }
         },
         table: {
+            prefix: '管理员表单',
             isLoading: false,
             perPage: 10,
             queryCondition: {

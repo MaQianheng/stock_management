@@ -59,7 +59,7 @@ export default {
             this.showMenu = !this.showMenu;
         },
         handleClick() {
-            handleLogOut()
+            handleLogOut(this)
         }
     },
     computed: {

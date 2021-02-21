@@ -147,7 +147,7 @@ export default {
         },
         handleCodeSubmit(result) {
             let {queryCondition} = this.saleHistoryView.table
-            queryCondition.productCode = result.productCode
+            queryCondition.productCode = result.code
             this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
         },
 
@@ -169,7 +169,7 @@ export default {
         },
         handleNameSubmit(result) {
             let {queryCondition} = this.saleHistoryView.table
-            queryCondition.productName = result.productName
+            queryCondition.productName = result.name
             this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
         },
 

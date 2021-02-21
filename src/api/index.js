@@ -1,10 +1,9 @@
 import httpRequest from "./http";
-// export const baseUrl = "https://d1c27f3537dc.ngrok.io"
-// export const baseUrl = "http://127.0.0.1:3000"
-export const baseUrl = "http://192.168.1.244:3000"
+export const baseUrl = "http://127.0.0.1:3000"
+
+// export const baseUrl = "http://192.168.1.20:3000"
 
 // export const requestQueryColor = (queryCondition) => httpRequest(baseUrl + '/test/test400', queryCondition, 'GET')
-
 
 export const requestLogin = (user) => httpRequest(baseUrl + '/users/login', user, 'POST')
 export const requestAddUser = (user) => httpRequest(baseUrl + '/users/add', user, 'POST')
@@ -16,6 +15,7 @@ export const requestQueryWarehouseOptions = (queryCondition) => httpRequest(base
 export const requestQueryShelfOptions = (queryCondition) => httpRequest(baseUrl + '/shelf/query_shelf_options', queryCondition, 'GET')
 export const requestQueryCustomerOptions = (queryCondition) => httpRequest(baseUrl + '/customer/query_customer_options', queryCondition, 'GET')
 export const requestQuerySupplierOptions = (queryCondition) => httpRequest(baseUrl + '/supplier/query_supplier_options', queryCondition, 'GET')
+export const requestQueryDriverOptions = (queryCondition) => httpRequest(baseUrl + '/driver/query_driver_options', queryCondition, 'GET')
 export const requestQueryCodeOptions = (queryCondition) => httpRequest(baseUrl + '/product/query_code_options', queryCondition, 'GET')
 export const requestQueryProductOptions = (queryCondition) => httpRequest(baseUrl + '/product/query_product_options', queryCondition, 'GET')
 export const requestQueryCascadingWarehouseShelfOptions = (queryCondition) => httpRequest(baseUrl + '/shelf/query_cascading_warehouse_shelf', queryCondition, 'GET')

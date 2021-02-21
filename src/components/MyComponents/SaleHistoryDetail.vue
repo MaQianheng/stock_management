@@ -5,7 +5,10 @@
         </div>
         <div class="card-body">
             <b-list-group>
-                <b-list-group-item>创建时间：{{ timeStampToDateTime(saleHistoryView.saleDetail.objData.createdTimeStamp) }}</b-list-group-item>
+                <b-list-group-item>创建时间：{{
+                        timeStampToDateTime(saleHistoryView.saleDetail.objData.createdTimeStamp)
+                    }}
+                </b-list-group-item>
                 <b-list-group-item variant="light">出/入库：{{
                         inOrOut(saleHistoryView.saleDetail.objData.action)
                     }}
@@ -44,9 +47,7 @@
                         <td v-if="subIndex===0" :rowspan="item.order.length">{{ item.color }}</td>
                         <td v-if="subIndex===0" :rowspan="item.order.length">
                             <div class="align-items-center">
-                                <img alt="Image placeholder"
-                                     :src="item.imageURLs[0] ? 'http://127.0.0.1:3000/images/' + item.imageURLs[0] : 'http://127.0.0.1:3000/images/product_default.jpeg'"
-                                     style="height: 120px">
+                                <ImageZoomModal :image-src="imageSrc(item.imageURLs)" image-height="120px;"/>
                             </div>
                         </td>
                         <td>{{ warehouse(subItem.shelfRef._id) }}</td>
@@ -67,9 +68,12 @@
 <script>
 import {mapActions, mapState} from "vuex";
 import {getDateTime} from "@/functions/utils";
+import {baseUrl} from "@/api";
+import ImageZoomModal from "@/components/MyComponents/ImageZoomModal";
 
 export default {
     name: "SaleHistoryDetail",
+    components: {ImageZoomModal},
     methods: {
         ...mapActions(['updateViewComponent']),
         inOrOut(num) {
@@ -88,6 +92,12 @@ export default {
         },
         timeStampToDateTime(timeStamp) {
             return getDateTime(timeStamp)
+        },
+        imageSrc: function (imageURLs) {
+            if (imageURLs[0]) {
+                return `${baseUrl}/images/${imageURLs[0]}`
+            }
+            return `${baseUrl}/images/product_default.jpeg`
         }
     },
     computed: {

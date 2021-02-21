@@ -245,7 +245,7 @@ export default {
                 saleFormKeys.supplierRef = {isRequired: true, str: '供应商信息'}
             } else {
                 saleFormKeys.customerRef = {isRequired: true, str: '客户信息'}
-                saleFormKeys.driverRef = {isRequired: true, str: '司机信息'}
+                saleFormKeys.driverRef = {isRequired: false, str: '司机信息'}
                 saleFormKeys.deliveryFee = {isRequired: true, str: '运费'}
             }
             // product: {
