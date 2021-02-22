@@ -30,39 +30,34 @@ export default {
             }
             case 'warehouseSelect': {
                 state.commonView.warehouseSelectAll.data = [state.commonView.warehouseSelectAll.data[0], ...state.commonView.warehouseSelect.data]
-                const textAll = state.commonView.warehouseSelectAll.data[0].text
-                state.warehouseView.table.select.selectedValue.text = textAll
-                state.shelfView.table.select.selectedValue.text = textAll
-                state.productView.table.warehouseSelect.selectedValue.text = textAll
-                state.productView.table.shelfSelect.selectedValue.text = "全部货架"
-                state.saleHistoryView.table.warehouseSelect.selectedValue.text = textAll
-                state.saleHistoryView.table.shelfSelect.selectedValue.text = "全部货架"
+                const warehouseTextAll = state.commonView.warehouseSelectAll.data[0].text
+                const shelfTextAll = "全部货架"
+                state.warehouseView.table.select.selectedValue.text = warehouseTextAll
+                state.shelfView.table.select.selectedValue.text = warehouseTextAll
+                state.productView.table.warehouseSelect.selectedValue.text = warehouseTextAll
+                state.saleHistoryView.table.warehouseSelect.selectedValue.text = warehouseTextAll
+                state.dashboardView.table.warehouseSelectedValue.text = warehouseTextAll
 
-
+                state.productView.table.shelfSelect.selectedValue.text = shelfTextAll
+                state.saleHistoryView.table.shelfSelect.selectedValue.text = shelfTextAll
 
                 if (state.shelfView.form.select.selectedValue.value === "0") state.shelfView.form.select.selectedValue = data.data[0]
-                // state.warehouseView.table.select.data = [state.warehouseView.table.select.data[0], ...data.data]
-                // state.warehouseView.table.select.selectedValue = state.warehouseView.table.select.data[0]
-
-                // state.shelfView.table.select.selectedValue = state.warehouseView.table.select.data[0]
                 break
             }
             case 'shelfSelect': {
                 state.shelfView.form.select.data = data.data
-                //
-                // state.shelfView.table.select.data = [state.shelfView.table.select.data[0], ...data.data]
                 break
             }
             case 'customerSelect': {
-                state.saleView.form.customerSelect = data.data[0]
+                state.saleView.form.customerSelectedValue = data.data[0]
                 break
             }
             case 'supplierSelect': {
-                state.saleView.form.supplierSelect = data.data[0]
+                state.saleView.form.supplierSelectedValue = data.data[0]
                 break
             }
             case 'driverSelect': {
-                state.saleView.form.driverSelect = data.data[0]
+                state.saleView.form.driverSelectedValue = data.data[0]
                 break
             }
             default:

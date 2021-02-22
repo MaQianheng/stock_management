@@ -550,8 +550,8 @@ export default {
 }
 
 .img-upload > img {
-    height: 250px;
-    width: 250px;
+    height: 600px;
+    width: 600px;
 }
 
 .img-upload:hover {

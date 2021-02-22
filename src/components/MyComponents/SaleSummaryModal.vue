@@ -1,8 +1,8 @@
 <template>
     <div>
-        <base-button class="icon-summary" :style="'color:' + iconColor" type="secondary" icon="ni ni-archive-2"
+        <base-button class="icon-summary" :style="'z-index: 9998; color:' + iconColor" type="secondary" icon="ni ni-archive-2"
                      @click="isShow = true"/>
-        <span class="badge badge-info" id="my-badge">{{ badgeNum }}</span>
+        <span class="badge badge-info" id="my-badge" style="z-index: 9999">{{ badgeNum }}</span>
         <modal :show.sync="isShow">
             <h6 slot="header" class="modal-title" id="modal-title-default">本次{{ this.inOrOut }}库总结</h6>
             <div class="table-responsive">
@@ -231,10 +231,10 @@ export default {
                     isRequired: true,
                     str: '操作类型'
                 },
-                operatorRef: {
-                    isRequired: true,
-                    str: '操作员信息'
-                },
+                // operatorRef: {
+                //     isRequired: true,
+                //     str: '操作员信息'
+                // },
                 product: {
                     isRequired: true,
                     str: '商品信息'
@@ -274,7 +274,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['saleView', 'productView', 'shelfView', 'saleHistoryView']),
+        ...mapState(['saleView', 'productView', 'shelfView', 'saleHistoryView', 'dashboardView']),
         iconColor: function () {
             return this.saleView.form.action === 0 ? '#fb6340 !important' : '#5e72e4 !important'
         },
@@ -290,14 +290,14 @@ export default {
             return arr
         },
         driver: function () {
-            if (this.saleView.form.action === 1) return this.saleView.form.driverRef.name ? `${this.saleView.form.driverRef.name}` : '未选择'
+            if (this.saleView.form.action === 1) return this.saleView.form.driverSelectedValue.text ? `${this.saleView.form.driverSelectedValue.text}` : '未选择'
             return ''
         },
         supplierNameOrCustomer: function () {
             if (this.saleView.form.action === 0) {
-                return this.saleView.form.supplierRef.supplierName ? `供应商：${this.saleView.form.supplierRef.supplierName}` : '供应商：未选择'
+                return this.saleView.form.supplierSelectedValue.text ? `供应商：${this.saleView.form.supplierSelectedValue.text}` : '供应商：未选择'
             } else {
-                return this.saleView.form.customerRef.name ? `客户：${this.saleView.form.customerRef.name}` : '客户：未选择'
+                return this.saleView.form.customerSelectedValue.text ? `客户：${this.saleView.form.customerSelectedValue.text}` : '客户：未选择'
             }
         },
         totalPrice: function () {

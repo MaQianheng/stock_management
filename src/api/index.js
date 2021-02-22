@@ -1,6 +1,6 @@
 import httpRequest from "./http";
 export const baseUrl = "http://127.0.0.1:3000"
-
+// export const baseUrl = "http://mjq1958.meibu.com:3000"
 // export const baseUrl = "http://192.168.1.20:3000"
 
 // export const requestQueryColor = (queryCondition) => httpRequest(baseUrl + '/test/test400', queryCondition, 'GET')
@@ -8,6 +8,8 @@ export const baseUrl = "http://127.0.0.1:3000"
 export const requestLogin = (user) => httpRequest(baseUrl + '/users/login', user, 'POST')
 export const requestAddUser = (user) => httpRequest(baseUrl + '/users/add', user, 'POST')
 
+
+export const requestQueryDashboardData = (queryCondition) => httpRequest(baseUrl + '/dashboard/query', queryCondition, 'GET')
 
 
 export const requestQueryColorOptions = (queryCondition) => httpRequest(baseUrl + '/color/query_color_options', queryCondition, 'GET')

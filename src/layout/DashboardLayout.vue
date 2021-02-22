@@ -6,18 +6,23 @@
             title="Argon"
         >
             <template slot="links">
-<!--                <sidebar-item :link="{name: '仪表盘', icon: 'ni ni-tv-2 text-primary', path: '/dashboard'}"/>-->
-<!--                <sidebar-item :link="{name: '图标', icon: 'ni ni-atom text-purple', path: '/icon'}"/>-->
+                <sidebar-item :link="{name: '仪表盘', icon: 'ni ni-tv-2 text-primary', path: '/dashboard'}"/>
+                <!--                <sidebar-item :link="{name: '图标', icon: 'ni ni-atom text-purple', path: '/icon'}"/>-->
                 <sidebar-item :link="{name: '销售', icon: 'ni ni-money-coins sale-icon-gradient', path: '/sale'}"/>
                 <sidebar-item :link="{name: '销售记录', icon: 'ni ni-books text-teal', path: '/sale_history'}"/>
-                <sidebar-item :link="{name: '供应商信息', icon: 'ni ni-delivery-fast text-dark', path: '/supplier'}" v-if="userLevel === 0"/>
-                <sidebar-item :link="{name: '客户信息', icon: 'ni ni-single-02 text-yellow', path: '/customer'}" v-if="userLevel === 0"/>
-                <sidebar-item :link="{name: '司机信息', icon: 'ni ni-circle-08 text-gray-dark', path: '/driver'}" v-if="userLevel === 0"/>
-                <sidebar-item :link="{name: '商品信息', icon: 'ni ni-box-2 text-red', path: '/product'}" v-if="userLevel === 0"/>
+                <sidebar-item :link="{name: '供应商信息', icon: 'ni ni-delivery-fast text-dark', path: '/supplier'}"
+                              v-if="userLevel === 0"/>
+                <sidebar-item :link="{name: '客户信息', icon: 'ni ni-single-02 text-yellow', path: '/customer'}"
+                              v-if="userLevel === 0"/>
+                <sidebar-item :link="{name: '司机信息', icon: 'ni ni-circle-08 text-gray-dark', path: '/driver'}"
+                              v-if="userLevel === 0"/>
+                <sidebar-item :link="{name: '商品信息', icon: 'ni ni-box-2 text-red', path: '/product'}"
+                              v-if="userLevel === 0"/>
                 <sidebar-item :link="{name: '库房信息', icon: 'ni ni-building text-gray', path: '/warehouse'}"/>
                 <sidebar-item :link="{name: '颜色信息', icon: 'ni ni-palette text-pink', path: '/color'}"/>
-                <sidebar-item :link="{name: '管理员信息', icon: 'ni ni-badge text-indigo', path: '/user'}" v-if="userLevel === 0"/>
-<!--                <sidebar-item :link="{name: '登陆', icon: 'ni ni-key-25 text-info', path: '/login'}"/>-->
+                <sidebar-item :link="{name: '管理员信息', icon: 'ni ni-badge text-indigo', path: '/user'}"
+                              v-if="userLevel === 0"/>
+                <!--                <sidebar-item :link="{name: '登陆', icon: 'ni ni-key-25 text-info', path: '/login'}"/>-->
                 <!--                <sidebar-item :link="{name: 'Register', icon: 'ni ni-circle-08 text-pink', path: '/register'}"/>-->
 
             </template>
@@ -50,7 +55,7 @@ export default {
     },
     created() {
         let {arrView} = this.commonView.publicVariable
-        arrView = this.loginView.level === 0 ? ['colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView', 'driverView', 'userView'] : ['colorView', 'warehouseView', 'shelfView', 'saleView', 'saleHistoryView']
+        arrView = this.loginView.level === 0 ? ['dashboardView', 'colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView', 'driverView', 'userView'] : ['dashboardView', 'colorView', 'warehouseView', 'shelfView', 'saleView', 'saleHistoryView']
         this.updateViewComponent({view: 'commonView', component: 'publicVariable', objKV: {arrView}})
     },
     mounted() {
@@ -92,11 +97,14 @@ export default {
         },
         notify(obj) {
             const {err_code, prefix, message} = obj
-            if (err_code !== 0) this.$notify({type: funcComputeAlertLevel(err_code), title: `请求${prefix}信息时，发生错误：${message}`})
+            if (err_code !== 0) this.$notify({
+                type: funcComputeAlertLevel(err_code),
+                title: `请求${prefix}信息时，发生错误：${message}`
+            })
         }
     },
     computed: {
-        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "customerView", "supplierView", "productView", "saleView", "saleHistoryView", 'driverView', 'userView', 'loginView']),
+        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "customerView", "supplierView", "productView", "saleView", "saleHistoryView", 'driverView', 'userView', 'loginView', 'dashboardView']),
         userLevel() {
             return this.loginView.level
         }
@@ -272,6 +280,14 @@ export default {
                     this.getTableCallBack(view)
                 })
             }
+        },
+        "dashboardView.table.isLoading": {
+            handler: function (newVal) {
+                const view = 'dashboardView'
+                if (newVal === true) this.getTable({view}).then(() => {
+                    this.getTableCallBack(view)
+                })
+            }
         }
     }
 };
@@ -280,7 +296,7 @@ export default {
 </style>
 <style>
 .sale-icon-gradient {
-    background: linear-gradient(to right, rgb(94, 114, 228)-25%, rgb(251, 99, 64)) 90%;
+    background: linear-gradient(to right, rgb(94, 114, 228) -25%, rgb(251, 99, 64)) 90%;
     -webkit-background-clip: text;
     color: transparent;
 }

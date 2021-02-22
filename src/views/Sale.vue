@@ -85,6 +85,6 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+/*#app > div.wrapper > div > div > div > div.container-fluid.mt--7 > div:nth-child(1) > div:nth-child(1) > div > div > ul {}*/
 </style>

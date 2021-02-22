@@ -168,3 +168,24 @@ tr:hover {
         column-count: 4 !important;
     }
 }
+
+.v-dropdown-container > ul {
+    height: 200px;
+    overflow: scroll;
+}
+
+#app > div.wrapper > div > div > div > div.container-fluid.mt--7 > div:nth-child(1) > div:nth-child(1) > div > div > ul {
+    height: auto;
+}
+
+#app > div.wrapper > div > div > div > div:nth-child(2) > div > div > div.card-header.border-0 > div:nth-child(2) > div:nth-child(10) > div > ul {
+    height: auto;
+}
+
+#app > div.wrapper > div > div > div > div.container-fluid.mt--7 > div > div > div > div.table-responsive > div.table.align-items-center.table-flush > table > tbody > tr:nth-child(1) > td:nth-child(4) > div > div > ul {
+    height: auto;
+}
+
+#app > div.wrapper > div > div > div > div.header.pb-6.pb-8.pt-5.pt-md-8.bg-gradient-success > div > div > div > div > div > div.card-body > div > div > div:nth-child(4) > div > div > ul {
+    height: auto;
+}

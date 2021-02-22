@@ -1,4 +1,17 @@
 export default {
+    dashboardView: {
+        table: {
+            warehouseSelectedValue: {value: "0", text: '正在请求数据'},
+            data: {
+                arrMonthlyInTotalWeight: Array.apply(null, Array(12)).map(() => 0),
+                arrMonthlyOutTotalWeight: Array.apply(null, Array(12)).map(() => 0),
+                objCustomerInWeight: {},
+                objProductInOutWeight: {},
+                objWarehouseShelfProductWeight: {}
+            },
+            isLoading: false
+        }
+    },
     loginView: {
         err_code: 0,
         message: '',

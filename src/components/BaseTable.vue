@@ -55,7 +55,7 @@ export default {
             description: 'Table columns'
         },
         data: {
-            type: Array,
+            type: [Array, Object],
             default: () => [],
             description: 'Table data'
         },

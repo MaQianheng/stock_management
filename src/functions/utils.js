@@ -71,3 +71,8 @@ export function validateInputNumber(value) {
 export function validateInputAlphaBetAndNumber(value) {
     return value.replace(/[\W]/g, '')
 }
+
+export function sortChinese(arr) { // 参数： 排序的数组
+    arr.sort((item1, item2) => (item1.localeCompare(item2, 'zh-CN')))
+    return arr
+}

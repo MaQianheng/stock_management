@@ -170,7 +170,7 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
             break
         case 'saleView':
             // reload productView, shelfView since related
-            arrRequiredReloadViewTable = ['saleView', 'productView', 'saleHistoryView']
+            arrRequiredReloadViewTable = ['saleView', 'productView', 'saleHistoryView', 'dashboardView']
             if (String(that.shelfView.table.queryCondition.warehouseRef) === "0") arrRequiredReloadViewTable.push('shelfView')
             break
         case 'saleHistoryView':
@@ -195,6 +195,14 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
         })
     }
     for (let i = 0; i < arrRequiredReloadViewTable.length; i++) {
+        if (arrRequiredReloadViewTable[i] === 'dashboardView') {
+            that.updateViewComponent({
+                view: arrRequiredReloadViewTable[i],
+                component: "table",
+                objKV: {isLoading: true,}
+            })
+            continue
+        }
         let {queryCondition, dataCount, perPage} = that[arrRequiredReloadViewTable[i]].table
         let ifLock = false
         if (view === 'warehouseView' && arrRequiredReloadViewTable[i] === 'shelfView') ifLock = true

@@ -1,6 +1,7 @@
 <template>
     <div class="card shadow" style="padding: 20px 30px">
         <div class="row">
+            <label class="form-control-label" style="padding-left: 15px;">操作类型</label>
             <v-select
                 class="col-12"
                 :searchable=true
@@ -12,6 +13,7 @@
             />
         </div>
         <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 0">
+            <label class="form-control-label" style="padding-left: 15px;">供应商</label>
             <v-select
                 class="col-12"
                 :searchable=true
@@ -32,6 +34,10 @@
 <!--            />-->
         </div>
         <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 1">
+            <label class="form-control-label col-6" style="padding-left: 15px;">司机</label>
+            <label class="form-control-label col-6" style="padding-left: 15px;">客户</label>
+        </div>
+        <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 1">
 <!--            <autocomplete-->
 <!--                class="col-6"-->
 <!--                :search="searchDriver"-->
@@ -50,6 +56,7 @@
 <!--                @submit="handleCustomerSubmit"-->
 <!--                :debounce-time="500"-->
 <!--            />-->
+
             <v-select
                 class="col-6"
                 :searchable=true
@@ -150,9 +157,9 @@ export default {
                 form = {
                     ...form,
                     action: newVal,
-                    supplierRef: {},
-                    customerRef: {},
-                    driverRef: {},
+                    // supplierRef: {},
+                    // customerRef: {},
+                    // driverRef: {},
                     deliveryFee: 0,
                     product: {}
                 }
@@ -171,17 +178,19 @@ export default {
                 })
             }
         },
-        "saleView.form.supplierSelectedValue": {
+        "saleView.form.supplierSelectedValue.value": {
             handler: function (newVal) {
+                console.log(newVal)
                 this.updateFormSingleData({view: 'saleView', key: 'supplierRef', value: newVal})
+                console.log(this.saleView.form.supplierRef)
             }
         },
-        "saleView.form.customerSelectedValue": {
+        "saleView.form.customerSelectedValue.value": {
             handler: function (newVal) {
                 this.updateFormSingleData({view: 'saleView', key: 'customerRef', value: newVal})
             }
         },
-        "saleView.form.driverSelectedValue": {
+        "saleView.form.driverSelectedValue.value": {
             handler: function (newVal) {
                 this.updateFormSingleData({view: 'saleView', key: 'driverRef', value: newVal})
             }
@@ -190,6 +199,3 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>

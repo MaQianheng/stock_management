@@ -3,63 +3,63 @@
         <base-header type="gradient-success" class="pb-6 pb-8 pt-5 pt-md-8">
             <!-- Card stats -->
             <div class="row">
-                <div class="col-xl-3 col-lg-6">
-                    <stats-card title="Total traffic"
-                                type="gradient-red"
-                                sub-title="350,897"
-                                icon="ni ni-active-40"
-                                class="mb-4 mb-xl-0"
-                    >
+                <div class="col-xl-6 col-lg-6">
+                    <stats-card
+                        title="本月入库总重"
+                        type="gradient-orange"
+                        :sub-title="inInfo.weight"
+                        icon="ni ni-bold-right"
+                        class="mb-4 mb-xl-0">
 
                         <template slot="footer">
-                            <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 3.48%</span>
-                            <span class="text-nowrap">Since last month</span>
+                            <span :class="inInfo.percentageTagClass + ' mr-2'"><i class="fa fa-arrow-up"></i>{{ inInfo.percentage }}%</span>
+                            <span class="text-nowrap">同比上月{{inInfo.status}}</span>
                         </template>
                     </stats-card>
                 </div>
-                <div class="col-xl-3 col-lg-6">
-                    <stats-card title="Total traffic"
-                                type="gradient-orange"
-                                sub-title="2,356"
-                                icon="ni ni-chart-pie-35"
-                                class="mb-4 mb-xl-0"
-                    >
+                <div class="col-xl-6 col-lg-6">
+                    <stats-card
+                        title="本月出库总重"
+                        type="gradient-red"
+                        :sub-title="outInfo.weight"
+                        icon="ni ni-bold-left"
+                        class="mb-4 mb-xl-0">
 
                         <template slot="footer">
-                            <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 12.18%</span>
-                            <span class="text-nowrap">Since last month</span>
+                            <span :class="outInfo.percentageTagClass +  ' mr-2'"><i class="fa fa-arrow-up"></i>{{ outInfo.percentage }}%</span>
+                            <span class="text-nowrap">同比上月{{outInfo.status}}</span>
                         </template>
                     </stats-card>
                 </div>
-                <div class="col-xl-3 col-lg-6">
-                    <stats-card title="Sales"
-                                type="gradient-green"
-                                sub-title="924"
-                                icon="ni ni-money-coins"
-                                class="mb-4 mb-xl-0"
-                    >
+                <!--                <div class="col-xl-3 col-lg-6">-->
+                <!--                    <stats-card-->
+                <!--                        title="Sales"-->
+                <!--                        type="gradient-green"-->
+                <!--                        sub-title="924"-->
+                <!--                        icon="ni ni-money-coins"-->
+                <!--                        class="mb-4 mb-xl-0">-->
 
-                        <template slot="footer">
-                            <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i> 5.72%</span>
-                            <span class="text-nowrap">Since last month</span>
-                        </template>
-                    </stats-card>
+                <!--                        <template slot="footer">-->
+                <!--                            <span class="text-danger mr-2"><i class="fa fa-arrow-down"></i> 5.72%</span>-->
+                <!--                            <span class="text-nowrap">同比上月</span>-->
+                <!--                        </template>-->
+                <!--                    </stats-card>-->
 
-                </div>
-                <div class="col-xl-3 col-lg-6">
-                    <stats-card title="Performance"
-                                type="gradient-info"
-                                sub-title="49,65%"
-                                icon="ni ni-chart-bar-32"
-                                class="mb-4 mb-xl-0"
-                    >
+                <!--                </div>-->
+                <!--                <div class="col-xl-3 col-lg-6">-->
+                <!--                    <stats-card-->
+                <!--                        title="Performance"-->
+                <!--                        type="gradient-info"-->
+                <!--                        sub-title="49,65%"-->
+                <!--                        icon="ni ni-chart-bar-32"-->
+                <!--                        class="mb-4 mb-xl-0">-->
 
-                        <template slot="footer">
-                            <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 54.8%</span>
-                            <span class="text-nowrap">Since last month</span>
-                        </template>
-                    </stats-card>
-                </div>
+                <!--                        <template slot="footer">-->
+                <!--                            <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 54.8%</span>-->
+                <!--                            <span class="text-nowrap">同比上月</span>-->
+                <!--                        </template>-->
+                <!--                    </stats-card>-->
+                <!--                </div>-->
             </div>
         </base-header>
 
@@ -70,8 +70,8 @@
                     <card type="default" header-classes="bg-transparent">
                         <div slot="header" class="row align-items-center">
                             <div class="col">
-                                <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
-                                <h5 class="h3 text-white mb-0">Sales value</h5>
+                                <h6 class="text-light text-uppercase ls-1 mb-1">概览</h6>
+                                <h5 class="h3 text-white mb-0">货物重量</h5>
                             </div>
                             <div class="col">
                                 <ul class="nav nav-pills justify-content-end">
@@ -79,8 +79,8 @@
                                         <a class="nav-link py-2 px-3"
                                            href="#"
                                            :class="{active: bigLineChart.activeIndex === 0}"
-                                           @click.prevent="initBigChart(0)">
-                                            <span class="d-none d-md-block">Month</span>
+                                           @click.prevent="initLineChart(0)">
+                                            <span class="d-none d-md-block">出库</span>
                                             <span class="d-md-none">M</span>
                                         </a>
                                     </li>
@@ -88,22 +88,21 @@
                                         <a class="nav-link py-2 px-3"
                                            href="#"
                                            :class="{active: bigLineChart.activeIndex === 1}"
-                                           @click.prevent="initBigChart(1)">
-                                            <span class="d-none d-md-block">Week</span>
-                                            <span class="d-md-none">W</span>
+                                           @click.prevent="initLineChart(1)">
+                                            <span class="d-none d-md-block">入库</span>
+                                            <span class="d-md-none">M</span>
                                         </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                         <line-chart
-                                :height="350"
-                                ref="bigChart"
-                                :chart-data="bigLineChart.chartData"
-                                :extra-options="bigLineChart.extraOptions"
+                            :height="350"
+                            ref="bigChart"
+                            :chart-data="bigLineChart.chartData"
+                            :extra-options="bigLineChart.extraOptions"
                         >
                         </line-chart>
-
                     </card>
                 </div>
 
@@ -111,15 +110,24 @@
                     <card header-classes="bg-transparent">
                         <div slot="header" class="row align-items-center">
                             <div class="col">
-                                <h6 class="text-uppercase text-muted ls-1 mb-1">Performance</h6>
-                                <h5 class="h3 mb-0">Total orders</h5>
+                                <h6 class="text-uppercase text-muted ls-1 mb-1">概览</h6>
+                                <h5 class="h3 mb-0">库房/货架总商品重量</h5>
+                            </div>
+                            <div class="col">
+                                <v-select
+                                    :searchable=true
+                                    :options="commonView.warehouseSelectAll.data"
+                                    v-model="dashboardView.table.warehouseSelectedValue"
+                                    :labelSearchPlaceholder="commonView.labelSearchPlaceholder"
+                                    :disabled="commonView.warehouseSelect.isLoading"
+                                />
                             </div>
                         </div>
 
                         <bar-chart
-                                :height="350"
-                                ref="barChart"
-                                :chart-data="redBarChart.chartData"
+                            :height="350"
+                            ref="barChart"
+                            :chart-data="redBarChart.chartData"
                         >
                         </bar-chart>
                     </card>
@@ -129,11 +137,12 @@
 
             <!--Tables-->
             <div class="row mt-5">
-                <div class="col-xl-8 mb-5 mb-xl-0">
-                    <page-visits-table></page-visits-table>
-                </div>
                 <div class="col-xl-4">
-                    <social-traffic-table></social-traffic-table>
+                    <CustomerPurchaseProductTopFiveTable/>
+
+                </div>
+                <div class="col-xl-8 mb-5 mb-xl-0">
+                    <ProductInOutWeightPercentageTopFiveTable/>
                 </div>
             </div>
             <!--End tables-->
@@ -142,65 +151,167 @@
     </div>
 </template>
 <script>
-  // Charts
-  import * as chartConfigs from '@/components/Charts/config';
-  import LineChart from '@/components/Charts/LineChart';
-  import BarChart from '@/components/Charts/BarChart';
+// Charts
+import * as chartConfigs from '@/components/Charts/config';
+import LineChart from '@/components/Charts/LineChart';
+import BarChart from '@/components/Charts/BarChart';
 
-  // Tables
-  import SocialTrafficTable from './Dashboard/SocialTrafficTable';
-  import PageVisitsTable from './Dashboard/PageVisitsTable';
+// Tables
+import ProductInOutWeightPercentageTopFiveTable from './Dashboard/ProductInOutWeightPercentageTopFiveTable';
+import CustomerPurchaseProductTopFiveTable from './Dashboard/CustomerPurchaseProductTopFiveTable';
+import {mapState} from "vuex";
 
-  export default {
+import VSelect from '@alfsnd/vue-bootstrap-select'
+import {sortChinese} from "@/functions/utils";
+
+export default {
     components: {
-      LineChart,
-      BarChart,
-      PageVisitsTable,
-      SocialTrafficTable,
+        LineChart,
+        BarChart,
+        ProductInOutWeightPercentageTopFiveTable,
+        CustomerPurchaseProductTopFiveTable,
+        VSelect
     },
     data() {
-      return {
-        bigLineChart: {
-          allData: [
-            [0, 20, 10, 30, 15, 40, 20, 60, 60],
-            [0, 20, 5, 25, 10, 30, 15, 40, 40]
-          ],
-          activeIndex: 0,
-          chartData: {
-            datasets: [],
-            labels: [],
-          },
-          extraOptions: chartConfigs.blueChartOptions,
-        },
-        redBarChart: {
-          chartData: {
-            labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-              label: 'Sales',
-              data: [25, 20, 30, 22, 17, 29]
-            }]
-          }
-        }
-      };
+        return {
+            thisMonthIndex: new Date().getMonth(),
+            monthLabels: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            bigLineChart: {
+                activeIndex: 0,
+                chartData: {
+                    datasets: [],
+                    label: '重量',
+                },
+                extraOptions: chartConfigs.blueChartOptions,
+            },
+
+            redBarChart: {
+                activeIndex: 0,
+                chartData: {
+                    labels: [],
+                    datasets: []
+                }
+            }
+        };
     },
     methods: {
-      initBigChart(index) {
-        let chartData = {
-          datasets: [
-            {
-              label: 'Performance',
-              data: this.bigLineChart.allData[index]
+        initLineChart(index) {
+            this.bigLineChart.activeIndex = index;
+            // 0: in, 1: out
+            this.bigLineChart.chartData = {
+                datasets: [
+                    {
+                        label: '重量',
+                        data: index === 0 ? this.dashboardView.table.data.arrMonthlyInTotalWeight : this.dashboardView.table.data.arrMonthlyOutTotalWeight
+                    }
+                ],
+                labels: this.monthLabels
             }
-          ],
-          labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        };
-        this.bigLineChart.chartData = chartData;
-        this.bigLineChart.activeIndex = index;
-      }
+        },
+        initBarChart(id) {
+            // if id === 0 show all warehouse
+            const {objWarehouseShelfProductWeight} = this.dashboardView.table.data
+            const arrData = []
+            const arrLabels = []
+            if (id === "0") {
+                sortChinese(Object.keys(objWarehouseShelfProductWeight)).forEach((key) => {
+                    arrData.push(objWarehouseShelfProductWeight[key].warehouseProductWeight)
+                    arrLabels.push(objWarehouseShelfProductWeight[key].warehouseName)
+                })
+            } else {
+                if (id in objWarehouseShelfProductWeight) {
+                    const objWarehouseInfo = objWarehouseShelfProductWeight[id]
+                    const arrKeys = Object.keys(objWarehouseInfo).filter((item) => (item !== 'warehouseProductWeight' && item !== 'warehouseName'))
+                    arrKeys.sort((item1, item2) => (objWarehouseShelfProductWeight[id][item1].shelfName.localeCompare(objWarehouseShelfProductWeight[id][item2].shelfName, 'zh-CN'))).forEach((key) => {
+                        arrData.push(objWarehouseShelfProductWeight[id][key].shelfProductWeight)
+                        arrLabels.push(objWarehouseShelfProductWeight[id][key].shelfName)
+                    })
+                }
+            }
+            this.redBarChart.activeIndex = id;
+            this.redBarChart.chartData = {
+                datasets: [
+                    {
+                        label: '商品总重量',
+                        data: arrData
+                    }
+                ],
+                labels: arrLabels
+            }
+        }
+    },
+    computed: {
+        ...mapState(["dashboardView", "commonView"]),
+        prevMonthIndex() {
+            if (this.thisMonthIndex === 0) return -1
+            return this.thisMonthIndex-1
+        },
+        inInfo() {
+            const obj = {
+                'status': '持平',
+                // text-success
+                'percentageTagClass': 'text-primary',
+                'percentage': '0'
+            }
+            if (this.prevMonthIndex === -1) return obj
+            const thisMonthInWeight = this.dashboardView.table.data.arrMonthlyInTotalWeight[this.thisMonthIndex]
+            const prevMonthInWeight = this.dashboardView.table.data.arrMonthlyInTotalWeight[this.prevMonthIndex]
+            obj.weight = thisMonthInWeight + 'KG'
+            if (thisMonthInWeight === prevMonthInWeight) return obj
+            if (thisMonthInWeight > prevMonthInWeight) {
+                obj.status = '增长'
+                obj.percentageTagClass = 'text-success'
+            } else {
+                obj.status = '下降'
+                obj.percentageTagClass = 'text-danger'
+            }
+            obj.percentage = (thisMonthInWeight - prevMonthInWeight) / (prevMonthInWeight === 0 ? 1 : prevMonthInWeight) * 100
+            return obj
+        },
+        outInfo() {
+            const obj = {
+                'status': '持平',
+                // text-success
+                'percentageTagClass': 'text-primary',
+                'percentage': '0'
+            }
+            if (this.prevMonthIndex === -1) return obj
+            const thisMonthInWeight = this.dashboardView.table.data.arrMonthlyOutTotalWeight[this.thisMonthIndex]
+            const prevMonthInWeight = this.dashboardView.table.data.arrMonthlyOutTotalWeight[this.prevMonthIndex]
+            obj.weight = thisMonthInWeight + 'KG'
+            if (thisMonthInWeight === prevMonthInWeight) return obj
+            if (thisMonthInWeight > prevMonthInWeight) {
+                obj.status = '增长'
+                obj.percentageTagClass = 'text-success'
+            } else {
+                obj.status = '下降'
+                obj.percentageTagClass = 'text-danger'
+            }
+            obj.percentage = (thisMonthInWeight - prevMonthInWeight) / (prevMonthInWeight === 0 ? 1 : prevMonthInWeight) * 100
+            return obj
+        }
+    },
+    watch: {
+        "dashboardView.table.isLoading": {
+            handler: function (newVal) {
+                if (newVal === false) {
+                    this.initLineChart(0)
+                    this.initBarChart("0")
+                }
+            }
+        },
+        "dashboardView.table.warehouseSelectedValue.value": {
+            handler: function (newVal) {
+                this.initBarChart(newVal)
+            }
+        }
     },
     mounted() {
-      this.initBigChart(0);
+        this.bigLineChart.chartData.labels = this.monthLabels
+        this.initLineChart(0)
+        // this.redBarChart.chartData.labels = this.monthLabels
+        // this.initBarChart(0)
     }
-  };
+};
 </script>
 <style></style>

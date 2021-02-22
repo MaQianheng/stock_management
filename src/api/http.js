@@ -9,17 +9,8 @@ export default function httpRequest(url, data, type) {
                 let val
                 if (key === 'product') {
                     val = JSON.stringify(data[key])
-                } else if (key === 'operatorRef') {
-                    val = data[key]
                 } else {
-                    switch (key.substring(key.length - 3)) {
-                        case 'Ref':
-                            val = data[key]._id
-                            break
-                        default:
-                            val = data[key]
-                            break
-                    }
+                    val = data[key]
                 }
                 paramStr += key + '=' + val + '&'
             })

@@ -90,6 +90,8 @@ export default {
                     return ['driverView']
                 case '/user':
                     return ['userView']
+                case '/dashboard':
+                    return ['dashboardView']
                 default:
                     return []
             }

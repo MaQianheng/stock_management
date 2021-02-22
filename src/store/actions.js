@@ -17,7 +17,7 @@ import {
     requestQueryColor,
     requestQueryColorOptions,
     requestQueryCustomer,
-    requestQueryCustomerOptions, requestQueryDriver, requestQueryDriverOptions,
+    requestQueryCustomerOptions, requestQueryDashboardData, requestQueryDriver, requestQueryDriverOptions,
     requestQueryOperatorOptions,
     requestQueryProduct,
     requestQueryProductOptions,
@@ -92,6 +92,9 @@ export default {
         console.log(`requesting ${view}`)
         try {
             switch (view) {
+                case 'dashboardView':
+                    data = (await requestQueryDashboardData({})).data
+                    break
                 case 'colorView':
                     data = (await requestQueryColor(this.state.colorView.table.queryCondition)).data
                     break
@@ -192,6 +195,7 @@ export default {
             let key = arrKeys[i]
             objSubmitData[key] = form[key]
         }
+        console.log(objSubmitData)
         let data
         try {
             switch (view) {
