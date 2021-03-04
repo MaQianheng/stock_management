@@ -138,7 +138,7 @@
         <modal :show.sync="modals.isShow">
             <h6 slot="header" class="modal-title" id="modal-title-default">{{ files[0] ? files[0].name : '' }}</h6>
             <div class="row">
-                <img :src="files[0] ? files[0].thumb : ''" style="box-shadow: 3px 3px 10px;">
+                <img :src="files[0] ? files[0].thumb : ''" style="box-shadow: 3px 3px 10px; width: 100%;">
             </div>
             <template slot="footer">
                 <base-button type="secondary" @click="handleCloseModalClick">关闭</base-button>

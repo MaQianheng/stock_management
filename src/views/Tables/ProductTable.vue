@@ -214,7 +214,7 @@
 import VSelect from '@alfsnd/vue-bootstrap-select'
 import {mapActions, mapState} from "vuex";
 import {BSkeletonTable} from 'bootstrap-vue'
-import {funcComputeAlertLevel, handleChangePage, handleConfirmDeleteTableRow} from "@/functions";
+import {funcComputeAlertLevel, handleChangePage, handleConfirmSoftDeleteTableRow} from "@/functions";
 import {requestFuzzyQueryProductCode, requestFuzzyQueryProductName} from "@/api";
 import Autocomplete from '@trevoreyre/autocomplete-vue'
 import {baseUrl} from '@/api'
@@ -415,7 +415,7 @@ export default {
         },
         handleConfirmDeleteClick() {
             this.modals.danger.isShow = false
-            handleConfirmDeleteTableRow(this, 'productView')
+            handleConfirmSoftDeleteTableRow(this, 'productView')
         },
         changePage(value) {
             handleChangePage(this, 'productView', value)

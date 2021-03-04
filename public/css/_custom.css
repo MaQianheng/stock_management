@@ -1,3 +1,7 @@
+td p {
+    margin-bottom: 0;
+}
+
 .v-dropdown-container {
     width: 100% !important;
 }
@@ -170,15 +174,19 @@ tr:hover {
 }
 
 .v-dropdown-container > ul {
-    height: 200px;
+    height: 150px;
     overflow: scroll;
 }
 
-#app > div.wrapper > div > div > div > div.container-fluid.mt--7 > div:nth-child(1) > div:nth-child(1) > div > div > ul {
+#app > div.wrapper > div > div > div > div:nth-child(2) > div > div > div.card-header.border-0 > div:nth-child(2) > div:nth-child(12) > div > ul {
     height: auto;
 }
 
-#app > div.wrapper > div > div > div > div:nth-child(2) > div > div > div.card-header.border-0 > div:nth-child(2) > div:nth-child(10) > div > ul {
+#app > div.wrapper > div > div > div > div:nth-child(2) > div > div > div.card-header.border-0 > div:nth-child(2) > div:nth-child(14) > div > ul {
+    height: auto;
+}
+
+#app > div.wrapper > div > div > div > div.container-fluid.mt--7 > div:nth-child(1) > div:nth-child(1) > div > div > ul {
     height: auto;
 }
 

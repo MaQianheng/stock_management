@@ -25,7 +25,9 @@
                 </template>
                 <template slot-scope="{row}">
                     <td>
+                        <del v-if="row.isDeleted">{{ row.color }}</del>
                         <base-input
+                            v-else
                             alternative=""
                             style="margin-bottom: 0"
                             placeholder="颜色"
@@ -38,42 +40,39 @@
                         />
                     </td>
                     <td>
-                        {{ row.relatedProductCount }}
+                        <del v-if="row.isDeleted">{{ row.relatedProductCount }}</del>
+                        <p v-else>{{ row.relatedProductCount }}</p>
                     </td>
                     <td class="text-center">
-                        <base-button :type="row.status === 0 ? 'primary' : 'warning'" :outline="true"
-                                     :row-id="row.row" size="sm"
-                                     :disabled="row.status !== 1"
-                                     @click="handleEditClick">
-                            <b-spinner small type="grow" v-if="row.status === 2"/>
-                            更新
-                        </base-button>
-                        <base-button type="danger" :outline="true"
-                                     :row-id="row.row" size="sm"
-                                     :disabled="row.status === 2"
-                                     @click="handleDeleteClick">
-                            <b-spinner small type="grow" v-if="row.status === 2"/>
-                            删除
-                        </base-button>
+                        <div v-if="row.isDeleted">
+                            <base-button type="success" :outline="true"
+                                         :row-id="row.row" size="sm"
+                                         :disabled="row.status === 2"
+                                         @click="showModalSingle('restore', row.row)">
+                                <b-spinner small type="grow" v-if="row.status === 2"/>
+                                恢复
+                            </base-button>
+                        </div>
+                        <div v-else>
+                            <base-button type="primary" :outline="true"
+                                         :row-id="row.row" size="sm"
+                                         :disabled="row.status !== 1"
+                                         @click="handleEditClick">
+                                <b-spinner small type="grow" v-if="row.status === 2"/>
+                                更新
+                            </base-button>
+                            <base-button type="warning" :outline="true"
+                                         :row-id="row.row" size="sm"
+                                         :disabled="row.status === 2"
+                                         @click="showModalSingle('softDelete', row.row)">
+                                <b-spinner small type="grow" v-if="row.status === 2"/>
+                                删除
+                            </base-button>
+                        </div>
                     </td>
                 </template>
             </base-table>
-            <modal :show.sync="modals.isShow"
-                   gradient="danger"
-                   modal-classes="modal-danger modal-dialog-centered">
-                <h6 slot="header" class="modal-title" id="modal-title-notification">{{ modalHeader }}</h6>
-
-                <div class="py-3 text-center">
-                    <i class="ni ni-bell-55 ni-3x"></i>
-                    <h4 class="heading mt-4">确定是否删除该条信息？</h4>
-                    <p>{{ modalContent }}</p>
-                </div>
-
-                <template slot="footer">
-                    <base-button type="danger" @click="handleConfirmClick">确定</base-button>
-                    <base-button type="secondary" @click="modals.isShow = false">取消</base-button>
-                </template>
-            </modal>
+            <common-modal :modals="modals" :handle-modal-confirm-click="handleModalConfirmClick"/>
         </div>
         <div class="card-footer d-flex justify-content-end"
              :class="type === 'dark' ? 'bg-transparent': ''">
@@ -89,10 +88,9 @@ import {BSpinner} from 'bootstrap-vue'
 import {mapState, mapActions} from 'vuex'
 import {
     handleChangePage,
-    handleConfirmDeleteTableRow,
-    handleDeleteTableRow, handleGetTableData,
+    handleGetTableData,
     handleUpdateTableRow,
-    handleSubmitTableRow, watchHandleSelectedValue,
+    handleSubmitTableRow, handleSelectedValueChange, handleShowConfirmModal, handleModalConfirmClick,
 } from "@/functions"
 
 // import {FadeTransition} from 'vue2-transitions'
@@ -105,9 +103,10 @@ export default {
     },
     data: () => (
         {
-            arrDeleteRow: [],
+            view: 'colorView',
+            arrOperatingRows: [],
             modals: {
-                dataSource: {},
+                objConfig: {},
                 isShow: false
             }
         }
@@ -122,24 +121,40 @@ export default {
         title: String
     },
     methods: {
-        ...mapActions(['getTable', 'updateViewComponent', 'updateTableRowData', 'submitUpdateData', 'submitDeleteId', "updateCommonSelectSubValue", "increaseRequestingTasksCount"]),
+        ...mapActions(['getTable', 'updateViewComponent', 'updateTableRowData', 'submitUpdateData', 'submitDeleteId', 'submitUpdateDeleteMarker', "updateCommonSelectSubValue", "increaseRequestingTasksCount", "decreaseRequestingTasksCount"]),
+        showModalSingle(mode, index) {
+            this.arrOperatingRows = [index]
+            const objTmp = {
+                restore: {
+                    header: '确定是否恢复该条信息？',
+                    heading: '正在恢复一条颜色信息',
+                },
+                softDelete: {
+                    header: '确定是否删除该条信息？',
+                    heading: '正在删除一条颜色信息'
+                }
+            }
+            const {data} = this.colorView.table
+            objTmp.body = `颜色名称：${data[index].color}。相关商品数量：${data[index].relatedProductCount}`
+            handleShowConfirmModal(this, mode, objTmp)
+        },
         requestTableData() {
-            handleGetTableData(this, 'colorView')
+            handleGetTableData(this)
         },
         getInput(index, value) {
-            handleUpdateTableRow(this, 'colorView', index, 'color', value)
+            handleUpdateTableRow(this, index, 'color', value)
         },
         handleEditClick(e, index) {
-            handleSubmitTableRow(this, 'colorView', index, ['color'])
+            handleSubmitTableRow(this, index, ['color'])
         },
-        handleDeleteClick(e, index) {
-            handleDeleteTableRow(this, 'colorView', index)
-        },
-        handleConfirmClick() {
-            handleConfirmDeleteTableRow(this, 'colorView')
+        // handleDeleteClick(e, index) {
+        //     handleDeleteTableRow(this, 'colorView', index)
+        // },
+        handleModalConfirmClick() {
+            handleModalConfirmClick(this)
         },
         changePage(value) {
-            handleChangePage(this, 'colorView', value)
+            handleChangePage(this, value)
         },
     },
     computed: {
@@ -155,25 +170,12 @@ export default {
         },
         perPage: function () {
             return this.colorView.table.perPage
-        },
-        modalHeader: function () {
-            return `正在删除一条颜色信息`
-        },
-        modalContent: function () {
-            const {dataSource} = this.modals
-            return `颜色名称：${dataSource.color}。相关商品数量（不会删除相关商品信息）：${dataSource.relatedProductCount}`
         }
-        // pokerHistory() {
-        //     return this.bet.pokerHistory
-        // }
-        // watch: {
-        //      pokerHistory: function() {}
-        // }
     },
     watch: {
         "colorView.select.selectedValue.value": {
             handler: function (newVal, oldVal) {
-                watchHandleSelectedValue(newVal, oldVal, this, 'colorView')
+                handleSelectedValueChange(newVal, oldVal, this, 'colorView')
             }
         }
     }

@@ -68,7 +68,7 @@ axios.interceptors.response.use(response => {
     //     title: "请求成功"
     // })
     return response;
-}, error => {
+}, async error => {
     // const {SET_COLOR_OPTION_DATA} = mapMutations(["SET_COLOR_OPTION_DATA"])
     // SET_COLOR_OPTION_DATA()
     console.log(error.response.status)
@@ -83,9 +83,10 @@ axios.interceptors.response.use(response => {
             // 返回401，清除token信息并跳转到登录页面
             case 401:
             case 403:
-                if (location.pathname === '/login') break
-                localStorage.removeItem('token')
-                router.replace({path: '/login'})
+                await handleLogOut(this)
+                // if (location.pathname === '/login') break
+                // localStorage.removeItem('token')
+                // await router.replace({path: '/login'})
                 break
             case 404:
                 return Promise.reject("路径不存在")
@@ -100,6 +101,8 @@ Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
 import YimoVueEditor from 'yimo-vue-editor'
+import {handleLogOut} from "@/functions";
+import {getDateTime} from "@/functions/utils";
 
 Vue.use(YimoVueEditor, {
     name: 'v-editor-app',//Custom name
@@ -119,6 +122,34 @@ Vue.filter('formatSize', function (size) {
         return (size / 1024).toFixed(2) + ' KB'
     }
     return size.toString() + ' B'
+})
+
+Vue.filter('actionText', function (numAction) {
+    switch (numAction) {
+        case 1:
+            return '入库'
+        case 2:
+            return '出库'
+        case 3:
+            return '调货'
+        default:
+            return ''
+    }
+})
+
+Vue.filter('actionColor', function (numAction) {
+    switch (numAction) {
+        case 1:
+            return 'color: #fb6340 !important'
+        case 2:
+            return 'color: #5e72e4 !important'
+        default:
+            return 'color: '
+    }
+})
+
+Vue.filter('timeStampToDateTime', function (timeStamp) {
+    return getDateTime(timeStamp)
 })
 
 Vue.config.productionTip = false

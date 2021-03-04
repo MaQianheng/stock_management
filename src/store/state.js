@@ -2,6 +2,7 @@ export default {
     dashboardView: {
         table: {
             warehouseSelectedValue: {value: "0", text: '正在请求数据'},
+            prefix: '仪表盘',
             data: {
                 arrMonthlyInTotalWeight: Array.apply(null, Array(12)).map(() => 0),
                 arrMonthlyOutTotalWeight: Array.apply(null, Array(12)).map(() => 0),
@@ -24,7 +25,7 @@ export default {
     },
     commonView: {
         publicVariable: {
-            arrSelect: ['colorSelect', 'warehouseSelect', 'shelfSelect', 'cascadingWarehouseShelfSelect', 'customerSelect', 'supplierSelect', 'driverSelect'],
+            arrSelect: ['colorSelect', 'warehouseSelect', 'shelfSelect', 'cascadingWarehouseShelfSelect', 'customerSelect', 'supplierSelect', 'driverSelect', 'operatorSelect'],
             arrView: [],
             requestingTasksCount: 0,
         },
@@ -51,7 +52,7 @@ export default {
             data: []
         },
         colorSelectAll: {
-            data: [{value: "0", text: "全部颜色"}]
+            data: [{value: 0, text: "全部颜色"}]
         },
         warehouseSelect: {
             isLoading: false,
@@ -61,7 +62,7 @@ export default {
             data: []
         },
         warehouseSelectAll: {
-            data: [{value: "0", text: "全部库房"}]
+            data: [{value: 0, text: "全部库房"}]
         },
         shelfSelect: {
             isLoading: false,
@@ -90,6 +91,25 @@ export default {
             prefix: '司机多选',
             message: "请求成功",
             data: []
+        },
+        operatorSelect: {
+            isLoading: false,
+            err_code: 0,
+            prefix: '管理员多选',
+            message: "请求成功",
+            data: []
+        },
+        operatorSelectAll: {
+            data: [{value: 0, text: "全部管理员"}]
+        },
+        driverSelectAll: {
+            data: [{value: 0, text: "全部司机"}]
+        },
+        supplierSelectAll: {
+            data: [{value: 0, text: "全部供应商"}]
+        },
+        customerSelectAll: {
+            data: [{value: 0, text: "全部客户"}]
         },
     },
     colorView: {
@@ -249,7 +269,7 @@ export default {
     saleView: {
         form: {
             isLoading: false,
-            action: 0,
+            action: 1,
             // operatorRef: '6019fb8c2e2bb3dba3c87354',
             supplierRef: '',
             customerRef: '',
@@ -266,7 +286,7 @@ export default {
             isLoading: false,
             perPage: 18,
             queryCondition: {
-                action: 0,
+                action: 1,
                 code: '',
                 name: '',
                 colorRef: '',
@@ -274,8 +294,8 @@ export default {
             },
             actionCard: {
                 actionSelect: {
-                    selectedValue: {value: 0, text: '入库'},
-                    data: [{value: 0, text: '入库'}, {value: 1, text: '出库'}]
+                    selectedValue: {value: 1, text: '入库'},
+                    data: [{value: 1, text: '入库'}, {value: 2, text: '出库'}]
                 },
             },
             data: []
@@ -298,14 +318,26 @@ export default {
                 selectedValue: {value: "0", text: '正在请求数据'},
                 data: [{value: "0", text: '全部货架'}]
             },
+            customerSelect: {
+                selectedValue: {value: "0", text: '正在请求数据'}
+            },
+            supplierSelect: {
+                selectedValue: {value: "0", text: '正在请求数据'}
+            },
+            operatorSelect: {
+                selectedValue: {value: "0", text: '正在请求数据'}
+            },
+            driverSelect: {
+                selectedValue: {value: "0", text: '正在请求数据'}
+            },
             isLoading: false,
             perPage: 10,
             queryCondition: {
                 action: '',
                 startedTimeStamp: 1609459200000,
                 endedTimeStamp: Date.now() + 24 * 60 * 60 * 1000,
-                productCode: '',
-                productName: '',
+                code: '',
+                name: '',
                 colorRef: '',
                 warehouseRef: '',
                 shelfRef: '',

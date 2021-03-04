@@ -5,10 +5,11 @@
             <autocomplete
                 class="col-lg-6 col-sm-1"
                 :search="searchCode"
-                placeholder="搜索并选择货号"
-                aria-label="搜索并选择货号"
+                placeholder="搜索并选择商品货号"
+                aria-label="搜索并选择商品货号"
                 :get-result-value="getCodeResultValue"
                 @submit="handleCodeSubmit"
+                :default-value="this.saleView.table.queryCondition.code"
                 :debounce-time="500"
                 style="margin-bottom: 10px;"
             />
@@ -19,6 +20,7 @@
                 aria-label="搜索并选择商品名称"
                 :get-result-value="getNameResultValue"
                 @submit="handleNameSubmit"
+                :default-value="this.saleView.table.queryCondition.name"
                 :debounce-time="500"
                 style="margin-bottom: 10px;"
             />
@@ -60,6 +62,7 @@ export default {
     ),
     mounted() {
         window.addEventListener('scroll', this.onScroll)
+        window.scrollTo(0, 0)
         this.oriFilterOffsetTopFromBottom = this.$refs.filter.offsetTop + this.$refs.filter.offsetHeight
     },
     beforeDestroy() {
@@ -74,14 +77,10 @@ export default {
                 this.showNavbar = true
                 return
             }
-            if ((currentScrollPosition < 0) || (this.$refs.filter.offsetTop < this.oriFilterOffsetTopFromBottom)) {
-                return
-            }
+            if ((currentScrollPosition < 0) || (this.$refs.filter.offsetTop < this.oriFilterOffsetTopFromBottom)) return
             // Stop executing this function if the difference between
             // current scroll position and last scroll position is less than some offset
-            if (Math.abs(currentScrollPosition - this.lastScrollPosition) < 30) {
-                return
-            }
+            if (Math.abs(currentScrollPosition - this.lastScrollPosition) < 30) return
             this.showNavbar = currentScrollPosition < this.lastScrollPosition
             this.lastScrollPosition = currentScrollPosition
         },

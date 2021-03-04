@@ -102,7 +102,7 @@
 import {mapActions, mapState} from "vuex";
 import {
     handleChangePage,
-    handleConfirmDeleteTableRow,
+    handleConfirmSoftDeleteTableRow,
     handleDeleteTableRow,
     handleGetTableData,
     handleSubmitTableRow,
@@ -143,7 +143,7 @@ export default {
             handleDeleteTableRow(this, 'driverView', index)
         },
         handleConfirmDeleteClick() {
-            handleConfirmDeleteTableRow(this, 'driverView')
+            handleConfirmSoftDeleteTableRow(this, 'driverView')
         },
         changePage(value) {
             handleChangePage(this, 'driverView', value)

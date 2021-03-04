@@ -6,11 +6,11 @@
         <div class="card-body">
             <b-list-group>
                 <b-list-group-item>创建时间：{{
-                        timeStampToDateTime(saleHistoryView.saleDetail.objData.createdTimeStamp)
+                        saleHistoryView.saleDetail.objData.createdTimeStamp | timeStampToDateTime
                     }}
                 </b-list-group-item>
                 <b-list-group-item variant="light">出/入库：{{
-                        inOrOut(saleHistoryView.saleDetail.objData.action)
+                        saleHistoryView.saleDetail.objData.action | actionText
                     }}
                 </b-list-group-item>
                 <b-list-group-item>总商品数目：{{ saleHistoryView.saleDetail.objData.totalCount }}</b-list-group-item>
@@ -24,8 +24,8 @@
                     }}
                 </b-list-group-item>
                 <b-list-group-item>{{ supplierOrCustomer }}</b-list-group-item>
-                <b-list-group-item v-if="action === 1" variant="light">{{ driver }}</b-list-group-item>
-                <b-list-group-item v-if="action === 1">运费：{{ saleHistoryView.saleDetail.objData.deliveryFee }}
+                <b-list-group-item v-if="action === 2" variant="light">{{ driver }}</b-list-group-item>
+                <b-list-group-item v-if="action === 2">运费：{{ saleHistoryView.saleDetail.objData.deliveryFee }}
                 </b-list-group-item>
             </b-list-group>
         </div>
@@ -67,7 +67,6 @@
 
 <script>
 import {mapActions, mapState} from "vuex";
-import {getDateTime} from "@/functions/utils";
 import {baseUrl} from "@/api";
 import ImageZoomModal from "@/components/MyComponents/ImageZoomModal";
 
@@ -76,9 +75,6 @@ export default {
     components: {ImageZoomModal},
     methods: {
         ...mapActions(['updateViewComponent']),
-        inOrOut(num) {
-            return num === 0 ? '入库' : '出库'
-        },
         handleClick() {
             const {saleDetail} = this.saleHistoryView
             saleDetail.isShow = false
@@ -89,9 +85,6 @@ export default {
         },
         shelf(shelfId) {
             return this.commonView.cascadingWarehouseShelfSelect.data.objShelfWarehouseKV[shelfId].shelfRef.text
-        },
-        timeStampToDateTime(timeStamp) {
-            return getDateTime(timeStamp)
         },
         imageSrc: function (imageURLs) {
             if (imageURLs[0]) {
@@ -107,17 +100,17 @@ export default {
             return objData.action
         },
         columns: function () {
-            const arr = ['货号', '商品名称', '颜色', '图片', '库房', '货架', '原剩余(kg)', '出数量(kg)', '变更后(kg)', '现剩余(kg)', '价格']
-            if (this.action === 0) arr[7] = '入数量(kg)'
+            const arr = ['货号', '商品名称', '颜色', '图片', '库房', '货架', '原剩余(kg)', '出库重量(kg)', '变更后(kg)', '现剩余(kg)', '价格']
+            if (this.action === 1) arr[7] = '入库重量(kg)'
             return arr
         },
         supplierOrCustomer: function () {
             const {objData} = this.saleHistoryView.saleDetail
-            return this.action === 0 ? `供应商：${objData.supplierName}` : `客户：${objData.customerName}`
+            return this.action === 1 ? `供应商：${objData.supplierName}` : `客户：${objData.customerName}`
         },
         driver: function () {
             const {objData} = this.saleHistoryView.saleDetail
-            if (objData) if (this.action === 1) return `司机：${objData.driverRef.name}，车牌：${objData.driverRef.plate}`
+            if (objData) if (this.action === 2) return `司机：${objData.driverRef.name}，车牌：${objData.driverRef.plate}`
             return ''
         }
     }

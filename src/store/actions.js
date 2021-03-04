@@ -1,23 +1,31 @@
 import {
     requestAddColor,
-    requestAddCustomer, requestAddDriver,
+    requestAddCustomer,
+    requestAddDriver,
     requestAddProduct,
     requestAddSale,
     requestAddShelf,
-    requestAddSupplier, requestAddUser,
+    requestAddSupplier,
+    requestAddUser,
     requestAddWarehouse,
     requestDeleteColor,
-    requestDeleteCustomer, requestDeleteDriver,
+    requestDeleteCustomer,
+    requestDeleteDriver,
     requestDeleteProduct,
     requestDeleteShelf,
-    requestDeleteSupplier, requestDeleteUser,
-    requestDeleteWarehouse, requestLogin,
+    requestDeleteSupplier,
+    requestDeleteUser,
+    requestDeleteWarehouse,
+    requestLogin,
     requestQueryCascadingWarehouseShelfOptions,
     requestQueryCodeOptions,
     requestQueryColor,
     requestQueryColorOptions,
     requestQueryCustomer,
-    requestQueryCustomerOptions, requestQueryDashboardData, requestQueryDriver, requestQueryDriverOptions,
+    requestQueryCustomerOptions,
+    requestQueryDashboardData,
+    requestQueryDriver,
+    requestQueryDriverOptions,
     requestQueryOperatorOptions,
     requestQueryProduct,
     requestQueryProductOptions,
@@ -26,14 +34,20 @@ import {
     requestQueryShelf,
     requestQueryShelfOptions,
     requestQuerySupplier,
-    requestQuerySupplierOptions, requestQueryUser,
+    requestQuerySupplierOptions,
+    requestQueryUser,
     requestQueryWarehouse,
     requestQueryWarehouseOptions,
     requestUpdateColor,
-    requestUpdateCustomer, requestUpdateDriver,
+    requestUpdateCustomer,
+    requestUpdateDeleteMarkerColor,
+    requestUpdateDeleteMarkerShelf,
+    requestUpdateDeleteMarkerWarehouse,
+    requestUpdateDriver,
     requestUpdateProduct,
     requestUpdateShelf,
-    requestUpdateSupplier, requestUpdateUser,
+    requestUpdateSupplier,
+    requestUpdateUser,
     requestUpdateWarehouse
 } from "@/api";
 
@@ -73,6 +87,9 @@ export default {
     },
     updateTableRowData({commit}, objData) {
         commit('UPDATE_TABLE_ROW_DATA', objData)
+    },
+    updateBatchTableRowData({commit}, objData) {
+        commit('UPDATE__BATCH_TABLE_ROW_DATA', objData)
     },
     updateTableRowSubData({commit}, objData) {
         commit('UPDATE_TABLE_ROW_SUB_DATA', objData)
@@ -128,12 +145,12 @@ export default {
                 default:
                     return
             }
-            commit('UPDATE_TABLE_DATA_AFTER_REQUEST', {view, data})
+            commit('UPDATE_TABLE_DATA', {view, data})
         } catch (err) {
             if (err.data) {
-                commit('UPDATE_TABLE_DATA_AFTER_REQUEST', {view, data: err.data})
+                commit('UPDATE_TABLE_DATA', {view, data: err.data})
             } else {
-                commit('UPDATE_TABLE_DATA_AFTER_REQUEST', {view, data: objServerErrorFeedBack})
+                commit('UPDATE_TABLE_DATA', {view, data: objServerErrorFeedBack})
             }
         }
     },
@@ -177,12 +194,12 @@ export default {
                 default:
                     return
             }
-            commit('UPDATE_SELECT_DATA_AFTER_REQUEST', {component, data})
+            commit('UPDATE_SELECT_DATA', {component, data})
         } catch (err) {
             if (err.data) {
-                commit('UPDATE_SELECT_DATA_AFTER_REQUEST', {component, data: err.data})
+                commit('UPDATE_SELECT_DATA', {component, data: err.data})
             } else {
-                commit('UPDATE_SELECT_DATA_AFTER_REQUEST', {component, data: objServerErrorFeedBack})
+                commit('UPDATE_SELECT_DATA', {component, data: objServerErrorFeedBack})
             }
         }
     },
@@ -274,14 +291,14 @@ export default {
             }
             // if succ, remove related fields, RESET_FORM_DATA
             // {view: "colorView", index, arrKeys, arrData}
-            commit('UPDATE_TABLE_DATA_AFTER_REQUEST', {view, data})
+            commit('UPDATE_TABLE_DATA', {view, data})
             subIndex ? commit('UPDATE_TABLE_SUB_ROW_DATA', {view, index, subIndex, objKV: {status: 0}}) : commit('UPDATE_TABLE_ROW_DATA', {view, index, objKV: {status: 0}})
         } catch (err) {
             console.log(view)
             if (err.data) {
-                commit('UPDATE_TABLE_DATA_AFTER_REQUEST', {view, data: err.data})
+                commit('UPDATE_TABLE_DATA', {view, data: err.data})
             } else {
-                commit('UPDATE_TABLE_DATA_AFTER_REQUEST', {view, data: {...objServerErrorFeedBack, data: []}})
+                commit('UPDATE_TABLE_DATA', {view, data: {...objServerErrorFeedBack, data: []}})
             }
         }
     },
@@ -318,12 +335,55 @@ export default {
                 default:
                     return
             }
-            commit('UPDATE_TABLE_DATA_AFTER_REQUEST', {view, data: data})
+            commit('UPDATE_TABLE_DATA', {view, data: data})
         } catch (err) {
             if (err.data) {
-                commit('UPDATE_TABLE_DATA_AFTER_REQUEST', {view, data: err.data})
+                commit('UPDATE_TABLE_DATA', {view, data: err.data})
             } else {
-                commit('UPDATE_TABLE_DATA_AFTER_REQUEST', {view, data: {err_code: 1, message: "服务器连接失败"}})
+                commit('UPDATE_TABLE_DATA', {view, data: {err_code: 1, message: "服务器连接失败"}})
+            }
+        }
+    },
+
+    async submitUpdateDeleteMarker({commit}, objData) {
+        const {view} = objData
+        delete objData.view
+        let data
+        try {
+            switch (view) {
+                case "colorView":
+                    data = (await requestUpdateDeleteMarkerColor(objData)).data
+                    break
+                case "warehouseView":
+                    data = (await requestUpdateDeleteMarkerWarehouse(objData)).data
+                    break
+                case "shelfView":
+                    data = (await requestUpdateDeleteMarkerShelf(objData)).data
+                    break
+                // case "customerView":
+                //     data = (await requestDeleteCustomer({_id})).data
+                //     break
+                // case "supplierView":
+                //     data = (await requestDeleteSupplier({_id})).data
+                //     break
+                // case "productView":
+                //     data = (await requestDeleteProduct({_id})).data
+                //     break
+                // case "driverView":
+                //     data = (await requestDeleteDriver({_id})).data
+                //     break
+                // case "userView":
+                //     data = (await requestDeleteUser({_id})).data
+                //     break
+                default:
+                    return
+            }
+            commit('UPDATE_TABLE_DATA', {view, data: data})
+        } catch (err) {
+            if (err.data) {
+                commit('UPDATE_TABLE_DATA', {view, data: err.data})
+            } else {
+                commit('UPDATE_TABLE_DATA', {view, data: {err_code: 1, message: "服务器连接失败"}})
             }
         }
     }

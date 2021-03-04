@@ -13,22 +13,24 @@
         </div>
 
         <div class="table-responsive">
-            <base-table class="table align-items-center table-flush"
-                        :class="type === 'dark' ? 'table-dark': ''"
-                        :thead-classes="type === 'dark' ? 'thead-dark': 'thead-light'"
-                        tbody-classes="list"
-                        :data="warehouseView.table.data"
-                        :is-loading="warehouseView.table.isLoading"
-                        :column-length="3"
-                        :rows-length="rowsLength"
+            <base-table
+                class="table align-items-center table-flush"
+                :class="type === 'dark' ? 'table-dark': ''"
+                :thead-classes="type === 'dark' ? 'thead-dark': 'thead-light'"
+                tbody-classes="list"
+                :data="warehouseView.table.data"
+                :is-loading="warehouseView.table.isLoading"
+                :column-length="3"
+                :rows-length="rowsLength"
             >
                 <template slot="columns">
                     <th>
-                        <v-select :searchable=true
-                                  :options="commonView.warehouseSelectAll.data"
-                                  v-model="warehouseView.table.select.selectedValue"
-                                  :labelSearchPlaceholder="commonView.labelSearchPlaceholder"
-                                  :disabled="commonView.warehouseSelect.isLoading"
+                        <v-select
+                            :searchable=true
+                            :options="commonView.warehouseSelectAll.data"
+                            v-model="warehouseView.table.select.selectedValue"
+                            :labelSearchPlaceholder="commonView.labelSearchPlaceholder"
+                            :disabled="commonView.warehouseSelect.isLoading"
                         />
                     </th>
                     <th>相关货架数量</th>
@@ -36,7 +38,9 @@
                 </template>
                 <template slot-scope="{row}">
                     <td class="budget">
+                        <del v-if="row.isDeleted">{{ row.warehouse }}</del>
                         <base-input
+                            v-else
                             alternative=""
                             style="margin-bottom: 0"
                             placeholder="库房"
@@ -49,42 +53,42 @@
                         />
                     </td>
                     <td>
-                        {{ row.relatedShelfCount }}
+                        <del v-if="row.isDeleted">{{ row.relatedShelfCount }}</del>
+                        <p v-else>{{ row.relatedShelfCount }}</p>
                     </td>
                     <td class="text-center">
-                        <base-button :type="row.status === 0 ? 'primary' : 'warning'" :outline="true"
-                                     :row-id="row.row" size="sm"
-                                     :disabled="row.status !== 1"
-                                     @click="handleEditClick">
-                            <b-spinner small type="grow" v-if="row.status === 2"/>
-                            更新
-                        </base-button>
-                        <base-button type="danger" :outline="true"
-                                     :row-id="row.row" size="sm"
-                                     :disabled="row.status === 2"
-                                     @click="handleDeleteClick">
-                            <b-spinner small type="grow" v-if="row.status === 2"/>
-                            删除
-                        </base-button>
+                        <div v-if="row.isDeleted">
+                            <base-button
+                                type="success" :outline="true"
+                                :row-id="row.row" size="sm"
+                                :disabled="row.status === 2"
+                                @click="showModalSingle('restore', row.row)">
+                                <b-spinner small type="grow" v-if="row.status === 2"/>
+                                恢复
+                            </base-button>
+                        </div>
+                        <div v-else>
+                            <base-button
+                                type="primary" :outline="true"
+                                :row-id="row.row" size="sm"
+                                :disabled="row.status !== 1"
+                                @click="handleEditClick">
+                                <b-spinner small type="grow" v-if="row.status === 2"/>
+                                更新
+                            </base-button>
+                            <base-button
+                                type="warning" :outline="true"
+                                :row-id="row.row" size="sm"
+                                :disabled="row.status === 2"
+                                @click="showModalSingle('softDelete', row.row)">
+                                <b-spinner small type="grow" v-if="row.status === 2"/>
+                                删除
+                            </base-button>
+                        </div>
                     </td>
                 </template>
             </base-table>
-            <modal :show.sync="modals.isShow"
-                   gradient="danger"
-                   modal-classes="modal-danger modal-dialog-centered">
-                <h6 slot="header" class="modal-title" id="modal-title-notification">{{ modalHeader }}</h6>
-
-                <div class="py-3 text-center">
-                    <i class="ni ni-bell-55 ni-3x"></i>
-                    <h4 class="heading mt-4">确定是否删除该条信息？</h4>
-                    <p>{{ modalContent }}</p>
-                </div>
-
-                <template slot="footer">
-                    <base-button type="danger" @click="handleConfirmClick">确定</base-button>
-                    <base-button type="secondary" @click="modals.isShow = false">取消</base-button>
-                </template>
-            </modal>
+            <common-modal :modals="modals" :handle-modal-confirm-click="handleModalConfirmClick"/>
         </div>
 
         <div class="card-footer d-flex justify-content-end"
@@ -99,10 +103,10 @@ import VSelect from '@alfsnd/vue-bootstrap-select'
 import {mapActions, mapState} from 'vuex'
 import {
     handleChangePage,
-    handleDeleteTableRow, handleGetTableData,
+    handleGetTableData,
     handleUpdateTableRow,
     handleSubmitTableRow,
-    handleConfirmDeleteTableRow, watchHandleSelectedValue
+    handleSelectedValueChange, handleShowConfirmModal, handleModalConfirmClick
 } from "@/functions";
 
 export default {
@@ -115,9 +119,10 @@ export default {
     },
     data: () => (
         {
-            arrDeleteRow: [],
+            view: 'warehouseView',
+            arrOperatingRows: [],
             modals: {
-                dataSource: {},
+                objConfig: {},
                 isShow: false
             }
         }
@@ -129,24 +134,37 @@ export default {
         title: String
     },
     methods: {
-        ...mapActions(['getTable', 'updateViewComponent', 'updateTableRowData', 'submitUpdateData', 'submitDeleteId', "updateCommonSelectSubValue", "increaseRequestingTasksCount"]),
+        ...mapActions(['getTable', 'updateViewComponent', 'updateTableRowData', 'submitUpdateData', 'submitDeleteId', 'submitUpdateDeleteMarker', "updateCommonSelectSubValue", "increaseRequestingTasksCount", "decreaseRequestingTasksCount"]),
+        showModalSingle(mode, index) {
+            this.arrOperatingRows = [index]
+            const objTmp = {
+                restore: {
+                    header: '确定是否恢复该条信息？',
+                    heading: '正在恢复一条库房信息',
+                },
+                softDelete: {
+                    header: '确定是否删除该条信息？',
+                    heading: '正在删除一条库房信息'
+                }
+            }
+            const {data} = this.warehouseView.table
+            objTmp.body = `库房名称：${data[index].warehouse}。相关货架数量：${data[index].relatedShelfCount}`
+            handleShowConfirmModal(this, mode, objTmp)
+        },
         requestTableData() {
-            handleGetTableData(this, 'warehouseView')
+            handleGetTableData(this)
         },
         getInput(index, value) {
-            handleUpdateTableRow(this, 'warehouseView', index, 'warehouse', value)
+            handleUpdateTableRow(this, index, 'warehouse', value)
         },
         handleEditClick(e, index) {
-            handleSubmitTableRow(this, 'warehouseView', index, ['warehouse'])
+            handleSubmitTableRow(this, index, ['warehouse'])
         },
-        handleDeleteClick(e, index) {
-            handleDeleteTableRow(this, 'warehouseView', index)
-        },
-        handleConfirmClick() {
-            handleConfirmDeleteTableRow(this, 'warehouseView')
+        handleModalConfirmClick() {
+            handleModalConfirmClick(this)
         },
         changePage(value) {
-            handleChangePage(this, 'warehouseView', value)
+            handleChangePage(this, value)
         }
     },
     computed: {
@@ -162,19 +180,12 @@ export default {
         },
         perPage: function () {
             return this.warehouseView.table.perPage
-        },
-        modalHeader: function () {
-            return `正在删除一条库房信息`
-        },
-        modalContent: function () {
-            const {dataSource} = this.modals
-            return `库房名称：${dataSource.warehouse}。相关货架数量：${dataSource.relatedShelfCount}`
         }
     },
     watch: {
         'warehouseView.table.select.selectedValue.value': {
             handler: function (newVal, oldVal) {
-                watchHandleSelectedValue(newVal, oldVal, this, 'warehouseView')
+                handleSelectedValueChange(newVal, oldVal, this, 'warehouseView')
             }
         }
     }

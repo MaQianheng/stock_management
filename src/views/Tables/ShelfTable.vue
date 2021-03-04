@@ -40,61 +40,66 @@
                 <template v-for="(item, index) in shelfView.table.data">
                     <tr v-for="(sub, i) in item.sub" :key="index + '_' + i">
                         <td v-if="i===0" :rowspan="item.sub.length">
-                            {{ item.warehouseName }}
+                            <del v-if="item.isDeleted">{{ item.warehouse }}</del>
+                            <p v-else>{{ item.warehouse }}</p>
                         </td>
                         <td v-if="i===0" :rowspan="item.sub.length">
-                            {{ item.relatedShelfCount }}
+                            <del v-if="item.isDeleted">{{ item.relatedShelfCount }}</del>
+                            <p v-else>{{ item.relatedShelfCount }}</p>
                         </td>
                         <td>
+                            <del v-if="sub.isDeleted">{{ sub.shelf }}</del>
                             <base-input
-                                alternative=""
+                                v-else
                                 style="margin-bottom: 0"
                                 placeholder="货架"
                                 input-classes="form-control-alternative"
                                 :name="index + '_' + i"
-                                v-model="sub.shelfName"
+                                v-model="sub.shelf"
                                 @input="getInput"
                                 :disabled="item.status === 2"
                                 @keyup.enter="handleEditClick('', index + '_' + i)"
                             />
                         </td>
-                        <td>{{ sub.relatedProductCount }}</td>
                         <td>
-                            <base-button :type="sub.status === 0 ? 'primary' : 'warning'" :outline="true"
-                                         :row-id="index + '_' + i" size="sm"
-                                         :disabled="sub.status !== 1"
-                                         @click="handleEditClick">
-                                <b-spinner small type="grow" v-if="sub.status === 2"/>
-                                更新
-                            </base-button>
-                            <base-button type="danger" :outline="true"
-                                         :row-id="index + '_' + i" size="sm"
-                                         :disabled="sub.status === 2"
-                                         @click="handleDeleteClick">
-                                <b-spinner small type="grow" v-if="sub.status === 2"/>
-                                删除
-                            </base-button>
+                            <del v-if="sub.isDeleted">{{ sub.relatedProductCount }}</del>
+                            <p v-else>{{ sub.relatedProductCount }}</p>
+                        </td>
+                        <td class="text-center">
+                            <div v-if="sub.isDeleted">
+                                <base-button
+                                    type="success" :outline="true"
+                                    :row-id="index + '_' + i" size="sm"
+                                    :disabled="sub.status === 2"
+                                    @click="showModalSingle('restore', index + '_' + i)">
+                                    <b-spinner small type="grow" v-if="sub.status === 2"/>
+                                    恢复
+                                </base-button>
+                            </div>
+                            <div v-else>
+                                <base-button
+                                    type="primary" :outline="true"
+                                    :row-id="index + '_' + i" size="sm"
+                                    :disabled="sub.status !== 1"
+                                    @click="handleEditClick">
+                                    <b-spinner small type="grow" v-if="sub.status === 2"/>
+                                    更新
+                                </base-button>
+                                <base-button
+                                    type="warning" :outline="true"
+                                    :row-id="index + '_' + i" size="sm"
+                                    :disabled="sub.status === 2"
+                                    @click="showModalSingle('softDelete', index + '_' + i)">
+                                    <b-spinner small type="grow" v-if="sub.status === 2"/>
+                                    删除
+                                </base-button>
+                            </div>
                         </td>
                     </tr>
                 </template>
                 </tbody>
             </table>
-            <modal :show.sync="modals.isShow"
-                   gradient="danger"
-                   modal-classes="modal-danger modal-dialog-centered">
-                <h6 slot="header" class="modal-title" id="modal-title-notification">{{ modalHeader }}</h6>
-
-                <div class="py-3 text-center">
-                    <i class="ni ni-bell-55 ni-3x"></i>
-                    <h4 class="heading mt-4">确定是否删除该条信息？</h4>
-                    <p>{{ modalContent }}</p>
-                </div>
-
-                <template slot="footer">
-                    <base-button type="danger" @click="handleConfirmClick">确定</base-button>
-                    <base-button type="secondary" @click="modals.isShow = false">取消</base-button>
-                </template>
-            </modal>
+            <common-modal :modals="modals" :handle-modal-confirm-click="handleModalConfirmClick"/>
         </div>
         <div class="card-footer d-flex justify-content-end"
              :class="type === 'dark' ? 'bg-transparent': ''">
@@ -107,12 +112,12 @@
 import VSelect from '@alfsnd/vue-bootstrap-select'
 import {
     handleChangePage,
-    handleConfirmDeleteTableSubRow,
-    handleDeleteTableSubRow,
     handleGetTableData,
-    handleSubmitTableSubRow,
-    handleUpdateTableSubRow,
-    watchHandleSelectedValue,
+    handleSelectedValueChange,
+    handleShowConfirmModal,
+    handleModalConfirmClick,
+    handleUpdateTableRow,
+    handleSubmitTableRow,
 } from "@/functions"
 import {mapState, mapActions} from 'vuex'
 import {BSkeletonTable} from 'bootstrap-vue'
@@ -125,9 +130,10 @@ export default {
     },
     data: () => (
         {
-            arrDeleteRow: [],
+            view: 'shelfView',
+            arrOperatingRows: [],
             modals: {
-                dataSource: {},
+                objConfig: {},
                 isShow: false
             }
         }
@@ -142,25 +148,57 @@ export default {
         title: String
     },
     methods: {
-        ...mapActions(['getTable', 'updateViewComponent', 'updateTableSubRowData', 'submitUpdateData', 'submitDeleteId', "updateCommonSelectSubValue", "increaseRequestingTasksCount"]),
+        ...mapActions(['getTable', 'updateViewComponent', 'updateTableSubRowData', 'submitUpdateData', 'submitUpdateDeleteMarker', 'submitDeleteId', "updateCommonSelectSubValue", "increaseRequestingTasksCount", "decreaseRequestingTasksCount"]),
+        showModalSingle(mode, index) {
+            this.arrOperatingRows = [index]
+            const objTmp = {
+                restore: {
+                    header: '确定是否恢复该条信息？',
+                    heading: '正在恢复一条货架信息',
+                },
+                softDelete: {
+                    header: '确定是否删除该条信息？',
+                    heading: '正在删除一条货架信息'
+                }
+            }
+            let subIndex
+            [index, subIndex] = index.split('_')
+            const {sub} = this.shelfView.table.data[index]
+            objTmp.body = `货架名称：${sub[subIndex].shelf}。相关商品数量：${sub[subIndex].relatedShelfCount}`
+            handleShowConfirmModal(this, mode, objTmp)
+        },
         requestTableData() {
-            handleGetTableData(this, 'shelfView')
+            handleGetTableData(this)
         },
         getInput(index, value) {
-            handleUpdateTableSubRow(this, 'shelfView', index, 'shelfName', value)
+            if (this.arrOperatingRows.length !== 1 || this.arrOperatingRows[0] !== index) this.arrOperatingRows = [index]
+            handleUpdateTableRow(this, index, {status: 1, shelf: value})
         },
         handleEditClick(e, index) {
-            handleSubmitTableSubRow(this, 'shelfView', index, ['shelfName'])
+            handleSubmitTableRow(this, index, ['shelf'])
         },
-        handleDeleteClick(e, index) {
-            handleDeleteTableSubRow(this, 'shelfView', index)
-        },
-        handleConfirmClick() {
-            handleConfirmDeleteTableSubRow(this, 'shelfView')
+        handleModalConfirmClick() {
+            handleModalConfirmClick(this)
         },
         changePage(value) {
-            handleChangePage(this, 'shelfView', value)
-        },
+            handleChangePage(this, value)
+        }
+
+        // requestTableData() {
+        //     handleGetTableData(this, 'shelfView')
+        // },
+        // getInput(index, value) {
+        //     handleUpdateTableSubRow(this, 'shelfView', index, 'shelfName', value)
+        // },
+        // handleEditClick(e, index) {
+        //     handleSubmitTableSubRow(this, 'shelfView', index, ['shelfName'])
+        // },
+        // handleConfirmClick() {
+        //     handleConfirmDeleteTableSubRow(this, 'shelfView')
+        // },
+        // changePage(value) {
+        //     handleChangePage(this, 'shelfView', value)
+        // },
     },
     computed: {
         ...mapState(["warehouseView", "shelfView", "commonView"]),
@@ -175,19 +213,12 @@ export default {
         },
         perPage: function () {
             return this.shelfView.table.perPage
-        },
-        modalHeader: function () {
-            return `正在删除一条货架信息`
-        },
-        modalContent: function () {
-            const {dataSource} = this.modals
-            return `货架名称：${dataSource.shelfName}。相关商品数量：${dataSource.relatedProductCount}`
         }
     },
     watch: {
         'shelfView.table.select.selectedValue.value': {
             handler: function (newVal, oldVal) {
-                watchHandleSelectedValue(newVal, oldVal, this, 'shelfView')
+                handleSelectedValueChange(newVal, oldVal, this, 'shelfView')
             }
         }
     }

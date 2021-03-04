@@ -76,3 +76,15 @@ export function sortChinese(arr) { // 参数： 排序的数组
     arr.sort((item1, item2) => (item1.localeCompare(item2, 'zh-CN')))
     return arr
 }
+
+export function handleDebounce(func, numDelay) {
+    let timeOut = null
+    return () => {
+        if (timeOut !== null) clearTimeout(timeOut)
+        timeOut = setTimeout(() => {
+            timeOut = null
+            clearTimeout(timeOut)
+            func()
+        }, numDelay)
+    }
+}

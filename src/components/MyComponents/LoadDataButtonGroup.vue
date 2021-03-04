@@ -62,7 +62,7 @@ export default {
                 case '/sale':
                     return ['colorSelect']
                 case '/sale_history':
-                    return ['colorSelect', 'cascadingWarehouseShelfSelect', 'warehouseSelect', 'shelfSelect']
+                    return ['colorSelect', 'cascadingWarehouseShelfSelect', 'warehouseSelect', 'shelfSelect', 'operatorSelect', 'driverSelect']
                 default:
                     return []
             }

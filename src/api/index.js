@@ -1,6 +1,5 @@
 import httpRequest from "./http";
 export const baseUrl = "http://127.0.0.1:3000"
-// export const baseUrl = "http://mjq1958.meibu.com:3000"
 // export const baseUrl = "http://192.168.1.20:3000"
 
 // export const requestQueryColor = (queryCondition) => httpRequest(baseUrl + '/test/test400', queryCondition, 'GET')
@@ -77,3 +76,9 @@ export const requestFuzzyQueryDriverName = (queryCondition) => httpRequest(baseU
 export const requestFuzzyQueryOperatorName = (queryCondition) => httpRequest(baseUrl + '/users/fuzzy_query_operator_name', queryCondition, 'GET')
 export const requestFuzzyQueryProductCode = (queryCondition) => httpRequest(baseUrl + '/product/fuzzy_query_product_code', queryCondition, 'GET')
 export const requestFuzzyQueryProductName = (queryCondition) => httpRequest(baseUrl + '/product/fuzzy_query_product_name', queryCondition, 'GET')
+
+
+
+export const requestUpdateDeleteMarkerColor = (objParameters) => httpRequest(baseUrl + '/color/update_delete_marker', objParameters, 'GET')
+export const requestUpdateDeleteMarkerWarehouse = (objParameters) => httpRequest(baseUrl + '/warehouse/update_delete_marker', objParameters, 'GET')
+export const requestUpdateDeleteMarkerShelf = (objParameters) => httpRequest(baseUrl + '/shelf/update_delete_marker', objParameters, 'GET')

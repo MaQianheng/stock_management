@@ -1,16 +1,17 @@
 <template>
     <div>
         <SaleHistoryHeader/>
-        <slide-x-left-transition :duration="50">
-            <div v-show="!saleHistoryView.saleDetail.isShow">
-                <div class="container-fluid mt--7">
-                    <HistoryTable title="出入库记录"/>
+        <keep-alive>
+            <slide-x-left-transition :duration="50">
+                <div v-show="!saleHistoryView.saleDetail.isShow">
+                    <div class="container-fluid mt--7">
+                        <HistoryTable title="出入库记录"/>
+                    </div>
                 </div>
-            </div>
-        </slide-x-left-transition>
+            </slide-x-left-transition>
+        </keep-alive>
         <slide-x-right-transition :duration="500">
             <div v-show="saleHistoryView.saleDetail.isShow">
-<!--                <SaleHistoryHeader/>-->
                 <div class="container-fluid mt--7">
                     <SaleHistoryDetail/>
                 </div>

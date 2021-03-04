@@ -1,18 +1,17 @@
 <template>
     <div>
-        <base-button class="icon-summary" :style="'z-index: 9998; color:' + iconColor" type="secondary" icon="ni ni-archive-2"
-                     @click="isShow = true"/>
-        <span class="badge badge-info" id="my-badge" style="z-index: 9999">{{ badgeNum }}</span>
+        <base-button class="icon-summary" :style="this.saleView.form.action | actionColor"
+                     type="secondary" icon="ni ni-archive-2"
+                     @click="isShow = true">{{ this.saleView.form.action | actionText }}确认(已选择{{ badgeNum }}件)
+        </base-button>
+        <!--        <span class="badge badge-info" id="my-badge" style="z-index: 9999"></span>-->
         <modal :show.sync="isShow">
-            <h6 slot="header" class="modal-title" id="modal-title-default">本次{{ this.inOrOut }}库总结</h6>
+            <h6 slot="header" class="modal-title" id="modal-title-default">本次{{ this.saleView.form.action | actionText }}确认</h6>
             <div class="table-responsive">
                 <table class="table b-table tablesorter table align-items-center table-flush">
                     <thead class="thead-light">
                     <tr>
-                        <th style="z-index: 999;" class="sticky-top" v-for="column in columns" :key="column">{{
-                                column
-                            }}
-                        </th>
+                        <th style="z-index: 999;" class="sticky-top" v-for="column in columns" :key="column">{{ column }}</th>
                     </tr>
                     </thead>
                     <tbody class="list">
@@ -78,10 +77,10 @@
             </div>
             <hr>
             <div>
-                <b-list-group-item variant="light" v-if="this.saleView.form.action === 1">
+                <b-list-group-item variant="light" v-if="this.saleView.form.action === 2">
                     <p>司机：{{ driver }}</p>
                 </b-list-group-item>
-                <b-list-group-item variant="light" v-if="this.saleView.form.action === 1">
+                <b-list-group-item variant="light" v-if="this.saleView.form.action === 2">
                     <p style="display: inline-block">运费：</p>
                     <base-input
                         style="display: inline-block; margin-bottom: 0;"
@@ -166,15 +165,13 @@ export default {
             }
             switch (key) {
                 case 'operateWeight': {
-                    if (this.saleView.table.queryCondition.action === 0) {
+                    if (this.saleView.table.queryCondition.action === 1) {
                         sub[shelfRef].afterOperateWeight = sub[shelfRef].oriWeight + value
-                        // sub[shelfRef].afterOperateWeight = sub[shelfRef].oriWeight + value
                     } else {
                         if (sub[shelfRef].oriWeight - value < 0) {
                             value = sub[shelfRef].oriWeight
                         }
                         sub[shelfRef].afterOperateWeight = sub[shelfRef].oriWeight - value
-                        // sub[shelfRef].afterOperateWeight = sub[shelfRef].oriWeight - value
                     }
                     // sub[shelfRef][key] = value
                     sub[shelfRef].operateWeight = value
@@ -231,35 +228,19 @@ export default {
                     isRequired: true,
                     str: '操作类型'
                 },
-                // operatorRef: {
-                //     isRequired: true,
-                //     str: '操作员信息'
-                // },
                 product: {
                     isRequired: true,
                     str: '商品信息'
                 }
             }
             const {action} = this.saleView.form
-            if (action === 0) {
+            if (action === 1) {
                 saleFormKeys.supplierRef = {isRequired: true, str: '供应商信息'}
             } else {
                 saleFormKeys.customerRef = {isRequired: true, str: '客户信息'}
                 saleFormKeys.driverRef = {isRequired: false, str: '司机信息'}
-                saleFormKeys.deliveryFee = {isRequired: true, str: '运费'}
+                saleFormKeys.deliveryFee = {isRequired: false, str: '运费'}
             }
-            // product: {
-            //     "productRef1": {
-            //         "shelfRef1": {
-            //              weight: 200,
-            //              price: 2000
-            //         },
-            //         "shelfRef2": {
-            //              weight: 500,
-            //              price: 1500
-            //         }
-            //     }
-            // }
             const {saleSummary} = this.saleView
             let product = {}
             for (const productId in saleSummary) {
@@ -275,26 +256,20 @@ export default {
     },
     computed: {
         ...mapState(['saleView', 'productView', 'shelfView', 'saleHistoryView', 'dashboardView']),
-        iconColor: function () {
-            return this.saleView.form.action === 0 ? '#fb6340 !important' : '#5e72e4 !important'
-        },
         badgeNum: function () {
             return Object.keys(this.saleView.saleSummary).length
         },
-        inOrOut: function () {
-            return this.saleView.form.action === 0 ? '入' : '出'
-        },
         columns: function () {
             const arr = ['货号', '颜色', '图片', '名称', '价格', '库房', '货架', '原剩余(kg)', '出数量(kg)', '总价格', '变更后(kg)', '操作']
-            if (this.saleView.form.action === 0) arr[8] = '入数量(kg)'
+            if (this.saleView.form.action === 1) arr[8] = '入数量(kg)'
             return arr
         },
         driver: function () {
-            if (this.saleView.form.action === 1) return this.saleView.form.driverSelectedValue.text ? `${this.saleView.form.driverSelectedValue.text}` : '未选择'
+            if (this.saleView.form.action === 2) return this.saleView.form.driverSelectedValue.text ? `${this.saleView.form.driverSelectedValue.text}` : '未选择'
             return ''
         },
         supplierNameOrCustomer: function () {
-            if (this.saleView.form.action === 0) {
+            if (this.saleView.form.action === 1) {
                 return this.saleView.form.supplierSelectedValue.text ? `供应商：${this.saleView.form.supplierSelectedValue.text}` : '供应商：未选择'
             } else {
                 return this.saleView.form.customerSelectedValue.text ? `客户：${this.saleView.form.customerSelectedValue.text}` : '客户：未选择'
@@ -319,15 +294,31 @@ export default {
 
 <style scoped>
 .icon-summary {
-    font-size: 2rem;
+    font-size: 1.5rem;
     position: fixed;
-    right: 2%;
     bottom: 5%;
     box-shadow: 5px 5px 15px;
     border-radius: 50px;
     opacity: 0.5;
     transition: .5s all;
     cursor: pointer;
+    left: 50%;
+    width: 450px;
+    z-index: 1000;
+}
+
+@media (min-width: 768px) {
+    .icon-summary {
+        margin-left: -100px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .icon-summary {
+        margin-left: 0;
+        left: 0;
+        width: 100%;
+    }
 }
 
 .icon-summary:hover {
@@ -341,11 +332,12 @@ export default {
 
 #my-badge {
     position: fixed;
-    right: 2%;
-    bottom: 9%;
-    font-size: 20px;
-    border-radius: 20px;
-    width: 30px;
+    right: 1%;
+    bottom: 11%;
+    font-size: 40px;
+    border-radius: 25px;
+    width: 50px;
+    -webkit-transition: .5s all;
     transition: .5s all;
     opacity: .5;
 }

@@ -7,7 +7,7 @@ export default {
     DECREASE_REQUESTING_TASKS_COUNT(state, count) {
         state.commonView.publicVariable.requestingTasksCount -= count
     },
-    UPDATE_SELECT_DATA_AFTER_REQUEST(state, objData) {
+    UPDATE_SELECT_DATA(state, objData) {
         const {component, data} = objData
         if (component === 'cascadingWarehouseShelfSelect') {
             state.commonView.cascadingWarehouseShelfSelect.data.objShelfWarehouseKV = data.objShelfWarehouseKV
@@ -41,30 +41,38 @@ export default {
                 state.productView.table.shelfSelect.selectedValue.text = shelfTextAll
                 state.saleHistoryView.table.shelfSelect.selectedValue.text = shelfTextAll
 
-                if (state.shelfView.form.select.selectedValue.value === "0") state.shelfView.form.select.selectedValue = data.data[0]
+                // if (state.shelfView.form.select.selectedValue.value === "0")
+                console.log(data)
+                state.shelfView.form.select.selectedValue = data.data[0]
                 break
             }
             case 'shelfSelect': {
                 state.shelfView.form.select.data = data.data
                 break
             }
-            case 'customerSelect': {
-                state.saleView.form.customerSelectedValue = data.data[0]
-                break
-            }
-            case 'supplierSelect': {
-                state.saleView.form.supplierSelectedValue = data.data[0]
-                break
-            }
+            case 'customerSelect':
+            case 'supplierSelect':
             case 'driverSelect': {
-                state.saleView.form.driverSelectedValue = data.data[0]
+                const selectedValue = `${component}edValue`
+                const selectAll = `${component}All`
+                // state.saleView.form[selectedValue] = data.data[0]
+
+                state.commonView[selectAll].data = [state.commonView[selectAll].data[0], ...state.commonView[component].data]
+                state.saleHistoryView.table[component].selectedValue = state.commonView[selectAll].data[0]
+
+                state.saleView.form[selectedValue] = state.commonView[component].data[0]
+                break
+            }
+            case 'operatorSelect': {
+                state.commonView.operatorSelectAll.data = [state.commonView.operatorSelectAll.data[0], ...state.commonView.operatorSelect.data]
+                state.saleHistoryView.table.operatorSelect.selectedValue.text = state.commonView.operatorSelectAll.data[0].text
                 break
             }
             default:
                 break
         }
     },
-    UPDATE_TABLE_DATA_AFTER_REQUEST(state, objData) {
+    UPDATE_TABLE_DATA(state, objData) {
         const {view, data} = objData
         state[view]["table"] = {...state[view]["table"], ...data}
     },
@@ -93,6 +101,12 @@ export default {
         const {view, index, objKV} = objData
         let tmp = {...state[view]["table"]["data"][index], ...objKV}
         Vue.set(state[view]["table"]["data"], index, tmp)
+    },
+    UPDATE__BATCH_TABLE_ROW_DATA(state, objData) {
+        console.log(state, objData)
+        // const {view, index, objKV} = objData
+        // let tmp = {...state[view]["table"]["data"][index], ...objKV}
+        // Vue.set(state[view]["table"]["data"], index, tmp)
     },
     UPDATE_TABLE_ROW_SUB_DATA(state, objData) {
         const {view, index, objKV} = objData

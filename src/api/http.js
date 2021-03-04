@@ -1,39 +1,27 @@
 import axios from 'axios'
 import {baseUrl} from "@/api/index";
 //data: {k: v}
-export default function httpRequest(url, data, type) {
+export default function httpRequest(url, objQueryCondition, type) {
     if (type === 'GET') {
-        let paramStr = ''
-        if (url === baseUrl + '/sale/add') {
-            Object.keys(data).forEach(key => {
-                let val
-                if (key === 'product') {
-                    val = JSON.stringify(data[key])
-                } else {
-                    val = data[key]
-                }
-                paramStr += key + '=' + val + '&'
-            })
-        } else {
-            Object.keys(data).forEach(key => {
-                paramStr += key + '=' + data[key] + '&'
-            })
+        let strParam = ''
+        const arrKeys = Object.keys(objQueryCondition)
+        for (let i = 0; i < arrKeys.length; i++) {
+            let strKey = arrKeys[i]
+            let anyVal = objQueryCondition[strKey]
+            if (!anyVal) continue
+            if (url === `${baseUrl}/sale/add` && strKey === 'product') anyVal = JSON.stringify(objQueryCondition[strKey])
+            strParam += strKey + '=' + anyVal + '&'
         }
-        if (paramStr) {
-            paramStr = paramStr.substring(0, paramStr.length - 1)
-        }
-        // 使用axios发get请求
-        return axios.get(url + '?' + paramStr)
-        // return axios.get(`${url}?username=${data.username}&password=${data.password}`)
+        if (strParam) strParam = strParam.substring(0, strParam.length - 1)
+        return axios.get(url + '?' + strParam)
     } else {
-        if ("productImages" in data) {
+        if ("productImages" in objQueryCondition) {
             const fd = new FormData()
-            Object.keys(data).forEach(key => {
-                console.log(key, data[key])
-                fd.append(key, data[key])
+            Object.keys(objQueryCondition).forEach(key => {
+                fd.append(key, objQueryCondition[key])
                 if (key === "productImages") {
-                    for (let i = 0; i < data[key].length; i++) {
-                        fd.append(key, data[key][i].file)
+                    for (let i = 0; i < objQueryCondition[key].length; i++) {
+                        fd.append(key, objQueryCondition[key][i].file)
                     }
                 }
 
@@ -44,6 +32,6 @@ export default function httpRequest(url, data, type) {
                 }
             })
         }
-        return axios.post(url, data)
+        return axios.post(url, objQueryCondition)
     }
 }

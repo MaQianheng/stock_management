@@ -1,17 +1,17 @@
 <template>
     <div>
-        <b-card-group columns style="margin-top: 20px;">
-            <div v-show="saleView.table.isLoading">
-                <IsLoadingProductInfoCard v-for="(index) in tableSize" :key="'loadingCard' + index"/>
-            </div>
-            <div v-show="!saleView.table.isLoading">
-                <SaleProductInfoCard v-for="(item, index) in saleView.table.data" :item="item" :index="index" :key="index"/>
-            </div>
-        </b-card-group>
-        <SaleSummaryModal/>
+        <div class="card-columns" style="margin-top: 20px;" v-show="saleView.table.isLoading">
+            <IsLoadingProductInfoCard v-for="(index) in tableSize" :key="'loadingCard' + index"/>
+        </div>
+        <div class="card-columns" style="margin-top: 20px;" v-show="!saleView.table.isLoading">
+            <SaleProductInfoCard v-for="(item, index) in saleView.table.data" :item="item" :index="index"
+                                 :key="index"/>
+            <div style="clear: both; height: 0;"></div>
+        </div>
         <div class="card-footer d-flex justify-content-end">
             <base-pagination :per-page="perPage" :total=tableDataCount :value=currentPage @input="changePage"/>
         </div>
+        <SaleSummaryModal/>
     </div>
 </template>
 
@@ -53,7 +53,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-
-</style>

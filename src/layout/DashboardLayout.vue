@@ -8,8 +8,8 @@
             <template slot="links">
                 <sidebar-item :link="{name: '仪表盘', icon: 'ni ni-tv-2 text-primary', path: '/dashboard'}"/>
                 <!--                <sidebar-item :link="{name: '图标', icon: 'ni ni-atom text-purple', path: '/icon'}"/>-->
-                <sidebar-item :link="{name: '销售', icon: 'ni ni-money-coins sale-icon-gradient', path: '/sale'}"/>
-                <sidebar-item :link="{name: '销售记录', icon: 'ni ni-books text-teal', path: '/sale_history'}"/>
+                <sidebar-item :link="{name: '出入库操作', icon: 'ni ni-money-coins sale-icon-gradient', path: '/sale'}"/>
+                <sidebar-item :link="{name: '出入库记录', icon: 'ni ni-books text-teal', path: '/sale_history'}"/>
                 <sidebar-item :link="{name: '供应商信息', icon: 'ni ni-delivery-fast text-dark', path: '/supplier'}"
                               v-if="userLevel === 0"/>
                 <sidebar-item :link="{name: '客户信息', icon: 'ni ni-single-02 text-yellow', path: '/customer'}"
@@ -110,6 +110,15 @@ export default {
         }
     },
     watch: {
+        "commonView.operatorSelect.isLoading": {
+            handler: function (newVal) {
+                const component = 'operatorSelect'
+                // request customer option
+                if (newVal === true) this.getSelect({component}).then(() => {
+                    this.getSelectCallBack(component)
+                })
+            }
+        },
         "commonView.customerSelect.isLoading": {
             handler: function (newVal) {
                 const component = 'customerSelect'

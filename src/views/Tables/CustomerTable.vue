@@ -73,7 +73,7 @@ import IsLoadingCard from "@/components/MyComponents/IsLoadingPersonInfoCard";
 import {mapActions, mapState} from "vuex";
 import {
     handleChangePage,
-    handleConfirmDeleteTableRow,
+    handleConfirmSoftDeleteTableRow,
     handleGetTableData,
     handleSubmitTableRow,
     handleUpdateTableRow,
@@ -138,7 +138,7 @@ export default {
         },
         handleConfirmDeleteClick() {
             this.modals.danger.isShow = false
-            handleConfirmDeleteTableRow(this, 'customerView')
+            handleConfirmSoftDeleteTableRow(this, 'customerView')
         },
         changePage(value) {
             handleChangePage(this, 'customerView', value)

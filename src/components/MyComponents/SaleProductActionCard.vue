@@ -12,7 +12,7 @@
                 :labelNotFound="commonView.labelNotFound"
             />
         </div>
-        <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 0">
+        <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 1">
             <label class="form-control-label" style="padding-left: 15px;">供应商</label>
             <v-select
                 class="col-12"
@@ -23,40 +23,12 @@
                 :disabled="commonView.supplierSelect.isLoading"
                 :labelNotFound="commonView.labelNotFound"
             />
-<!--            <autocomplete-->
-<!--                class="col-12"-->
-<!--                :search="searchSupplier"-->
-<!--                placeholder="搜索并选择供应商"-->
-<!--                aria-label="搜索并选择供应商"-->
-<!--                :get-result-value="getSupplierResultValue"-->
-<!--                @submit="handleSupplierSubmit"-->
-<!--                :debounce-time="500"-->
-<!--            />-->
         </div>
-        <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 1">
+        <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 2">
             <label class="form-control-label col-6" style="padding-left: 15px;">司机</label>
             <label class="form-control-label col-6" style="padding-left: 15px;">客户</label>
         </div>
-        <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 1">
-<!--            <autocomplete-->
-<!--                class="col-6"-->
-<!--                :search="searchDriver"-->
-<!--                placeholder="搜索并选择司机"-->
-<!--                aria-label="搜索并选择司机"-->
-<!--                :get-result-value="getDriverResultValue"-->
-<!--                @submit="handleDriverSubmit"-->
-<!--                :debounce-time="500"-->
-<!--            />-->
-<!--            <autocomplete-->
-<!--                class="col-6"-->
-<!--                :search="searchCustomer"-->
-<!--                placeholder="搜索并选择客户"-->
-<!--                aria-label="搜索并选择客户"-->
-<!--                :get-result-value="getCustomerResultValue"-->
-<!--                @submit="handleCustomerSubmit"-->
-<!--                :debounce-time="500"-->
-<!--            />-->
-
+        <div class="row" v-show="saleView.table.actionCard.actionSelect.selectedValue.value === 2">
             <v-select
                 class="col-6"
                 :searchable=true

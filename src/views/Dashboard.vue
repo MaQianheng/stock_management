@@ -12,8 +12,9 @@
                         class="mb-4 mb-xl-0">
 
                         <template slot="footer">
-                            <span :class="inInfo.percentageTagClass + ' mr-2'"><i class="fa fa-arrow-up"></i>{{ inInfo.percentage }}%</span>
-                            <span class="text-nowrap">同比上月{{inInfo.status}}</span>
+                            <span :class="inInfo.percentageTagClass + ' mr-2'"><i
+                                class="fa fa-arrow-up"></i>{{ inInfo.percentage }}%</span>
+                            <span class="text-nowrap">同比上月{{ inInfo.status }}</span>
                         </template>
                     </stats-card>
                 </div>
@@ -26,8 +27,9 @@
                         class="mb-4 mb-xl-0">
 
                         <template slot="footer">
-                            <span :class="outInfo.percentageTagClass +  ' mr-2'"><i class="fa fa-arrow-up"></i>{{ outInfo.percentage }}%</span>
-                            <span class="text-nowrap">同比上月{{outInfo.status}}</span>
+                            <span :class="outInfo.percentageTagClass +  ' mr-2'"><i
+                                class="fa fa-arrow-up"></i>{{ outInfo.percentage }}%</span>
+                            <span class="text-nowrap">同比上月{{ outInfo.status }}</span>
                         </template>
                     </stats-card>
                 </div>
@@ -67,7 +69,7 @@
         <div class="container-fluid mt--7">
             <div class="row">
                 <div class="col-xl-8 mb-5 mb-xl-0">
-                    <card type="default" header-classes="bg-transparent">
+                    <card type="default" header-classes="bg-transparent" style="height: 100%;">
                         <div slot="header" class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-light text-uppercase ls-1 mb-1">概览</h6>
@@ -78,18 +80,18 @@
                                     <li class="nav-item mr-2 mr-md-0">
                                         <a class="nav-link py-2 px-3"
                                            href="#"
-                                           :class="{active: bigLineChart.activeIndex === 0}"
-                                           @click.prevent="initLineChart(0)">
-                                            <span class="d-none d-md-block">出库</span>
+                                           :class="{active: bigLineChart.activeIndex === 1}"
+                                           @click.prevent="initLineChart(1)">
+                                            <span class="d-none d-md-block">入库</span>
                                             <span class="d-md-none">M</span>
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link py-2 px-3"
                                            href="#"
-                                           :class="{active: bigLineChart.activeIndex === 1}"
-                                           @click.prevent="initLineChart(1)">
-                                            <span class="d-none d-md-block">入库</span>
+                                           :class="{active: bigLineChart.activeIndex === 2}"
+                                           @click.prevent="initLineChart(2)">
+                                            <span class="d-none d-md-block">出库</span>
                                             <span class="d-md-none">M</span>
                                         </a>
                                     </li>
@@ -177,7 +179,7 @@ export default {
             thisMonthIndex: new Date().getMonth(),
             monthLabels: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
             bigLineChart: {
-                activeIndex: 0,
+                activeIndex: 1,
                 chartData: {
                     datasets: [],
                     label: '重量',
@@ -198,11 +200,22 @@ export default {
         initLineChart(index) {
             this.bigLineChart.activeIndex = index;
             // 0: in, 1: out
+            let data
+            switch (index) {
+                case 1:
+                    data = this.dashboardView.table.data.arrMonthlyInTotalWeight
+                    break
+                case 2:
+                    data = this.dashboardView.table.data.arrMonthlyOutTotalWeight
+                    break
+                default:
+                    data = []
+            }
             this.bigLineChart.chartData = {
                 datasets: [
                     {
                         label: '重量',
-                        data: index === 0 ? this.dashboardView.table.data.arrMonthlyInTotalWeight : this.dashboardView.table.data.arrMonthlyOutTotalWeight
+                        data
                     }
                 ],
                 labels: this.monthLabels
@@ -213,20 +226,18 @@ export default {
             const {objWarehouseShelfProductWeight} = this.dashboardView.table.data
             const arrData = []
             const arrLabels = []
-            if (id === "0") {
+            if (id in objWarehouseShelfProductWeight) {
+                const objWarehouseInfo = objWarehouseShelfProductWeight[id]
+                const arrKeys = Object.keys(objWarehouseInfo).filter((item) => (item !== 'warehouseProductWeight' && item !== 'warehouseName'))
+                arrKeys.sort((item1, item2) => (objWarehouseShelfProductWeight[id][item1].shelfName.localeCompare(objWarehouseShelfProductWeight[id][item2].shelfName, 'zh-CN'))).forEach((key) => {
+                    arrData.push(objWarehouseShelfProductWeight[id][key].shelfProductWeight)
+                    arrLabels.push(objWarehouseShelfProductWeight[id][key].shelfName)
+                })
+            } else {
                 sortChinese(Object.keys(objWarehouseShelfProductWeight)).forEach((key) => {
                     arrData.push(objWarehouseShelfProductWeight[key].warehouseProductWeight)
                     arrLabels.push(objWarehouseShelfProductWeight[key].warehouseName)
                 })
-            } else {
-                if (id in objWarehouseShelfProductWeight) {
-                    const objWarehouseInfo = objWarehouseShelfProductWeight[id]
-                    const arrKeys = Object.keys(objWarehouseInfo).filter((item) => (item !== 'warehouseProductWeight' && item !== 'warehouseName'))
-                    arrKeys.sort((item1, item2) => (objWarehouseShelfProductWeight[id][item1].shelfName.localeCompare(objWarehouseShelfProductWeight[id][item2].shelfName, 'zh-CN'))).forEach((key) => {
-                        arrData.push(objWarehouseShelfProductWeight[id][key].shelfProductWeight)
-                        arrLabels.push(objWarehouseShelfProductWeight[id][key].shelfName)
-                    })
-                }
             }
             this.redBarChart.activeIndex = id;
             this.redBarChart.chartData = {
@@ -238,64 +249,47 @@ export default {
                 ],
                 labels: arrLabels
             }
+        },
+        funcComputeSaleDiff(arr) {
+            const obj = {
+                'status': '持平',
+                'percentageTagClass': 'text-primary',
+                'percentage': '0'
+            }
+            if (this.prevMonthIndex === -1) return obj
+            const thisMonthInWeight = arr[this.thisMonthIndex]
+            const prevMonthInWeight = arr[this.prevMonthIndex]
+            obj.weight = thisMonthInWeight + 'KG'
+            if (thisMonthInWeight === prevMonthInWeight) return obj
+            if (thisMonthInWeight > prevMonthInWeight) {
+                obj.status = '增长'
+                obj.percentageTagClass = 'text-success'
+            } else {
+                obj.status = '下降'
+                obj.percentageTagClass = 'text-danger'
+            }
+            obj.percentage = (thisMonthInWeight - prevMonthInWeight) / (prevMonthInWeight === 0 ? 1 : prevMonthInWeight) * 100
+            return obj
         }
     },
     computed: {
         ...mapState(["dashboardView", "commonView"]),
         prevMonthIndex() {
             if (this.thisMonthIndex === 0) return -1
-            return this.thisMonthIndex-1
+            return this.thisMonthIndex - 1
         },
         inInfo() {
-            const obj = {
-                'status': '持平',
-                // text-success
-                'percentageTagClass': 'text-primary',
-                'percentage': '0'
-            }
-            if (this.prevMonthIndex === -1) return obj
-            const thisMonthInWeight = this.dashboardView.table.data.arrMonthlyInTotalWeight[this.thisMonthIndex]
-            const prevMonthInWeight = this.dashboardView.table.data.arrMonthlyInTotalWeight[this.prevMonthIndex]
-            obj.weight = thisMonthInWeight + 'KG'
-            if (thisMonthInWeight === prevMonthInWeight) return obj
-            if (thisMonthInWeight > prevMonthInWeight) {
-                obj.status = '增长'
-                obj.percentageTagClass = 'text-success'
-            } else {
-                obj.status = '下降'
-                obj.percentageTagClass = 'text-danger'
-            }
-            obj.percentage = (thisMonthInWeight - prevMonthInWeight) / (prevMonthInWeight === 0 ? 1 : prevMonthInWeight) * 100
-            return obj
+            return this.funcComputeSaleDiff(this.dashboardView.table.data.arrMonthlyInTotalWeight)
         },
         outInfo() {
-            const obj = {
-                'status': '持平',
-                // text-success
-                'percentageTagClass': 'text-primary',
-                'percentage': '0'
-            }
-            if (this.prevMonthIndex === -1) return obj
-            const thisMonthInWeight = this.dashboardView.table.data.arrMonthlyOutTotalWeight[this.thisMonthIndex]
-            const prevMonthInWeight = this.dashboardView.table.data.arrMonthlyOutTotalWeight[this.prevMonthIndex]
-            obj.weight = thisMonthInWeight + 'KG'
-            if (thisMonthInWeight === prevMonthInWeight) return obj
-            if (thisMonthInWeight > prevMonthInWeight) {
-                obj.status = '增长'
-                obj.percentageTagClass = 'text-success'
-            } else {
-                obj.status = '下降'
-                obj.percentageTagClass = 'text-danger'
-            }
-            obj.percentage = (thisMonthInWeight - prevMonthInWeight) / (prevMonthInWeight === 0 ? 1 : prevMonthInWeight) * 100
-            return obj
+            return this.funcComputeSaleDiff(this.dashboardView.table.data.arrMonthlyOutTotalWeight)
         }
     },
     watch: {
         "dashboardView.table.isLoading": {
             handler: function (newVal) {
                 if (newVal === false) {
-                    this.initLineChart(0)
+                    this.initLineChart(1)
                     this.initBarChart("0")
                 }
             }
@@ -308,9 +302,8 @@ export default {
     },
     mounted() {
         this.bigLineChart.chartData.labels = this.monthLabels
-        this.initLineChart(0)
-        // this.redBarChart.chartData.labels = this.monthLabels
-        // this.initBarChart(0)
+        this.initLineChart(1)
+        this.initBarChart("0")
     }
 };
 </script>

@@ -119,7 +119,7 @@ export default {
     props: {
         logo: {
             type: String,
-            default: 'img/brand/green.png',
+            default: 'img/brand/WechatIMG59.png',
             description: 'Sidebar app logo'
         },
         autoClose: {

@@ -9,7 +9,7 @@
             <p>颜色：{{ item.colorRef.color }}</p>
         </div>
         <hr style="margin: 1rem 0;">
-        <div class="row" style="margin: 10px -20px;">
+        <div class="row" style="margin: 20px 0;">
             <!--            <base-checkbox class="col-12" v-model="isOnlyShowAvailable" style="margin-bottom: 20px; left: 20px;">-->
             <!--                仅看有货-->
             <!--            </base-checkbox>-->
@@ -31,12 +31,12 @@
                 :disabled="commonView.cascadingWarehouseShelfSelect.isLoading"
                 :labelNotFound="commonView.labelNotFound"
             />
-            <div class="row">
+            <div class="row" style="margin: 30px -10px;">
                 <div class="col-4" style="text-align: center;">
                     <span>原剩余</span>
                 </div>
                 <div class="col-4" style="text-align: center;">
-                    <span>{{ inOrOut }}数量</span>
+                    <span>{{ this.saleView.table.queryCondition.action | actionText }}数量</span>
                 </div>
                 <div class="col-4" style="text-align: center;">
                     <span>变更后</span>
@@ -180,9 +180,6 @@ export default {
             }
             return []
         },
-        inOrOut: function () {
-            return this.saleView.table.queryCondition.action === 0 ? '入' : '出'
-        },
         animatedOriWeight: function () {
             return this.tweendNumber.oriWeight.toFixed(0);
         },
@@ -208,7 +205,7 @@ export default {
                     if (shelfRef in objTmp) return {status: true, text: '已添加至订单'}
                 }
             }
-            return {status: false, text: `添加至本次${this.inOrOut}库记录`}
+            return {status: false, text: `添加至本次订单`}
         }
     },
     watch: {

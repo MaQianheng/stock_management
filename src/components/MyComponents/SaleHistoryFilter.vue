@@ -21,6 +21,7 @@
             aria-label="搜索并选择商品货号"
             :get-result-value="getCodeResultValue"
             @submit="handleCodeSubmit"
+            :default-value="this.saleHistoryView.table.queryCondition.code"
             :debounce-time="500"
             style="margin-bottom: 10px;"
         />
@@ -31,29 +32,30 @@
             aria-label="搜索并选择商品名称"
             :get-result-value="getNameResultValue"
             @submit="handleNameSubmit"
+            :default-value="this.saleHistoryView.table.queryCondition.name"
             :debounce-time="500"
             style="margin-bottom: 10px;"
         />
-        <autocomplete
-            class="col-lg-6 col-sm-1"
-            :search="searchOperator"
-            placeholder="搜索并选择管理员"
-            aria-label="搜索并选择管理员"
-            :get-result-value="getOperatorResultValue"
-            @submit="handleOperatorSubmit"
-            :debounce-time="500"
-            style="margin-bottom: 10px;"
-        />
-        <autocomplete
-            class="col-lg-6 col-sm-1"
-            :search="searchDriver"
-            placeholder="搜索并选择司机"
-            aria-label="搜索并选择司机"
-            :get-result-value="getDriverResultValue"
-            @submit="handleDriverSubmit"
-            :debounce-time="500"
-            style="margin-bottom: 10px;"
-        />
+        <v-select :searchable=true
+                  class="col-6"
+                  :options="commonView.driverSelectAll.data"
+                  v-model="saleHistoryView.table.driverSelect.selectedValue"
+                  :labelSearchPlaceholder="commonView.labelNotFound"/>
+        <v-select :searchable=true
+                  class="col-6"
+                  :options="commonView.operatorSelectAll.data"
+                  v-model="saleHistoryView.table.operatorSelect.selectedValue"
+                  :labelSearchPlaceholder="commonView.labelNotFound"/>
+        <v-select :searchable=true
+                  class="col-6"
+                  :options="commonView.customerSelectAll.data"
+                  v-model="saleHistoryView.table.customerSelect.selectedValue"
+                  :labelSearchPlaceholder="commonView.labelNotFound"/>
+        <v-select :searchable=true
+                  class="col-6"
+                  :options="commonView.supplierSelectAll.data"
+                  v-model="saleHistoryView.table.supplierSelect.selectedValue"
+                  :labelSearchPlaceholder="commonView.labelNotFound"/>
         <v-select :searchable=true
                   class="col-6"
                   :options="commonView.colorSelectAll.data"
@@ -86,8 +88,6 @@
 import VSelect from '@alfsnd/vue-bootstrap-select'
 import MyDatePicker from "@/components/MyComponents/MyDatePicker";
 import {
-    requestFuzzyQueryDriverName,
-    requestFuzzyQueryOperatorName,
     requestFuzzyQueryProductCode,
     requestFuzzyQueryProductName
 } from "@/api";
@@ -131,7 +131,7 @@ export default {
         searchCode(input) {
             if (input.length === 0) {
                 let {queryCondition} = this.saleHistoryView.table
-                queryCondition.productCode = ''
+                queryCondition.code = ''
                 this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
                 return []
             }
@@ -147,14 +147,14 @@ export default {
         },
         handleCodeSubmit(result) {
             let {queryCondition} = this.saleHistoryView.table
-            queryCondition.productCode = result.code
+            queryCondition.code = result.code
             this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
         },
 
         searchName(input) {
             if (input.length === 0) {
                 let {queryCondition} = this.saleHistoryView.table
-                queryCondition.productName = ''
+                queryCondition.name = ''
                 this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
                 return []
             }
@@ -169,53 +169,22 @@ export default {
         },
         handleNameSubmit(result) {
             let {queryCondition} = this.saleHistoryView.table
-            queryCondition.productName = result.name
+            queryCondition.name = result.name
             this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
         },
 
-        searchOperator(input) {
-            if (input.length === 0) {
-                let {queryCondition} = this.saleHistoryView.table
-                queryCondition.operatorRef = ''
-                this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
-                return []
-            }
-            return requestFuzzyQueryOperatorName({name: input}).then((data) => {
-                return data.data.data
-            }).catch(() => {
-                return ['请求出错']
-            })
-        },
-        getOperatorResultValue(result) {
-            return result.name
-        },
-        handleOperatorSubmit(result) {
+        handleUpdateSelectedValue(newVal, oldVal, strKey) {
+            if (newVal === oldVal) return
             let {queryCondition} = this.saleHistoryView.table
-            queryCondition.operatorRef = result._id
-            this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
-        },
-
-        searchDriver(input) {
-            if (input.length === 0) {
-                let {queryCondition} = this.saleHistoryView.table
-                queryCondition.driverRef = ''
-                this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
-                return []
-            }
-            return requestFuzzyQueryDriverName({name: input}).then((data) => {
-                return data.data.data
-            }).catch(() => {
-                return ['请求出错']
+            queryCondition[strKey] = newVal
+            this.updateViewComponent({
+                view: 'saleHistoryView',
+                component: "table",
+                objKV: {
+                    queryCondition
+                }
             })
-        },
-        getDriverResultValue(result) {
-            return result.name
-        },
-        handleDriverSubmit(result) {
-            let {queryCondition} = this.saleHistoryView.table
-            queryCondition.driverRef = result._id
-            this.updateViewComponent({view: 'saleHistoryView', component: 'table', objKV: queryCondition})
-        },
+        }
     },
     computed: {
         ...mapState(['saleHistoryView', 'commonView']),
@@ -227,37 +196,34 @@ export default {
         }
     },
     watch: {
+        "saleHistoryView.table.driverSelect.selectedValue.value": {
+            handler: function (newVal, oldVal) {
+                this.handleUpdateSelectedValue(newVal, oldVal, 'driverRef')
+            }
+        },
+        "saleHistoryView.table.operatorSelect.selectedValue.value": {
+            handler: function (newVal, oldVal) {
+                this.handleUpdateSelectedValue(newVal, oldVal, 'operatorRef')
+            }
+        },
+        "saleHistoryView.table.customerSelect.selectedValue.value": {
+            handler: function (newVal, oldVal) {
+                this.handleUpdateSelectedValue(newVal, oldVal, 'customerRef')
+            }
+        },
+        "saleHistoryView.table.supplierSelect.selectedValue.value": {
+            handler: function (newVal, oldVal) {
+                this.handleUpdateSelectedValue(newVal, oldVal, 'supplierRef')
+            }
+        },
         "saleHistoryView.table.actionSelect.selectedValue.value": {
             handler: function (newVal, oldVal) {
-                if (newVal === oldVal) return
-                let {queryCondition} = this.saleHistoryView.table
-                queryCondition.action = newVal
-                console.log(queryCondition.action, newVal)
-                this.updateViewComponent(
-                    {
-                        view: 'saleHistoryView',
-                        component: "table",
-                        objKV: {
-                            queryCondition
-                        }
-                    }
-                )
+                this.handleUpdateSelectedValue(newVal, oldVal, 'action')
             }
         },
         "saleHistoryView.table.colorSelect.selectedValue.value": {
             handler: function (newVal, oldVal) {
-                if (newVal === oldVal) return
-                let {queryCondition} = this.saleHistoryView.table
-                queryCondition.colorRef = newVal
-                this.updateViewComponent(
-                    {
-                        view: 'saleHistoryView',
-                        component: "table",
-                        objKV: {
-                            queryCondition
-                        }
-                    }
-                )
+                this.handleUpdateSelectedValue(newVal, oldVal, 'colorRef')
             }
         },
         "saleHistoryView.table.warehouseSelect.selectedValue.value": {
@@ -265,32 +231,19 @@ export default {
                 let {queryCondition} = this.saleHistoryView.table
                 queryCondition.warehouseRef = newVal
                 queryCondition.shelfRef = "0"
-                this.updateViewComponent(
-                    {
-                        view: 'saleHistoryView',
-                        component: "table",
-                        objKV: {
-                            queryCondition
-                        }
+                this.updateViewComponent({
+                    view: 'saleHistoryView',
+                    component: "table",
+                    objKV: {
+                        queryCondition
                     }
-                )
+                })
                 this.updateCascadingShelf({key: newVal, view: 'saleHistoryView'})
             }
         },
         "saleHistoryView.table.shelfSelect.selectedValue.value": {
             handler: function (newVal, oldVal) {
-                if (newVal === oldVal) return
-                let {queryCondition} = this.saleHistoryView.table
-                queryCondition.shelfRef = newVal
-                this.updateViewComponent(
-                    {
-                        view: 'saleHistoryView',
-                        component: "table",
-                        objKV: {
-                            queryCondition
-                        }
-                    }
-                )
+                this.handleUpdateSelectedValue(newVal, oldVal, 'shelfRef')
             }
         }
     }

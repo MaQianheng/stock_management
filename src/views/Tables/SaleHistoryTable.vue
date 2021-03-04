@@ -1,6 +1,7 @@
 <template>
-    <div class="card shadow"
-         :class="type === 'dark' ? 'bg-default': ''">
+    <div
+        class="card shadow"
+        :class="type === 'dark' ? 'bg-default': ''">
         <div class="card-header border-0"
              :class="type === 'dark' ? 'bg-transparent': ''">
             <div class="row align-items-center">
@@ -30,23 +31,23 @@
                 <tbody class="list" style="max-height: 100vh;">
                 <template v-for="(item, index) in saleHistoryView.table.arrData">
                     <tr :key="index">
-                        <td>{{ timeStampToDateTime(item.createdTimeStamp) }}</td>
-                        <td :style="fromActionNumberToActionStyle(item.action)">
-                            {{ inOrOut(item.action) }}
+                        <td>{{ item.createdTimeStamp | timeStampToDateTime }}</td>
+                        <td :style="item.action | actionColor">
+                            {{ item.action | actionText }}
                         </td>
                         <td>{{ item.totalCount }}</td>
                         <td>{{ item.totalWeight }}</td>
                         <td>{{ item.totalPrice }}</td>
                         <td>{{ item.operatorName }}</td>
                         <td>
-                            <p>车牌：{{ item.driverRef ? item.driverRef.plate : '/'}}</p>
-                            <p>司机：{{ item.driverRef ? item.driverRef.name : '/'}}</p>
+                            <p>车牌：{{ item.driverRef ? item.driverRef.plate : '/' }}</p>
+                            <p>司机：{{ item.driverRef ? item.driverRef.name : '/' }}</p>
                         </td>
                         <td>{{ item.deliveryFee ? item.deliveryFee : '/' }}</td>
                         <td>{{ item.supplierName ? item.supplierName : '/' }}</td>
                         <td>{{ item.customerName ? item.customerName : '/' }}</td>
                         <td>
-                        <!-- index是index -->
+                            <!-- index是index -->
                             <base-button type="info" :outline="true" size="sm"
                                          @click="handleShowDetailClick(index)">
                                 详情
@@ -70,7 +71,7 @@
 import SaleHistoryFilter from "@/components/MyComponents/SaleHistoryFilter";
 import {mapActions, mapState} from "vuex";
 import {handleChangePage} from "@/functions";
-import {getDateTime} from "@/functions/utils";
+import {handleDebounce} from "@/functions/utils";
 
 export default {
     name: "HistoryTable",
@@ -80,9 +81,16 @@ export default {
     },
     data: () => (
         {
-            columns: ['时间', '出/入库', '总商品数目', '总商品重量(KG)', '总商品价格', '操作人', '司机', '运费', '供应商', '客户', '操作']
+            columns: ['时间', '出/入库', '总商品数目', '总商品重量(KG)', '总商品价格', '操作人', '司机', '运费', '出货方', '收货方', '操作'],
+            scrollHeight: document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset
         }
     ),
+    mounted() {
+        window.addEventListener('scroll', handleDebounce(this.onScroll, 50))
+    },
+    beforeDestroy() {
+        window.removeEventListener('scroll', handleDebounce(this.onScroll, 50))
+    },
     props: {
         type: {
             type: String
@@ -91,11 +99,8 @@ export default {
     },
     methods: {
         ...mapActions(['increaseRequestingTasksCount', 'updateViewComponent']),
-        inOrOut(num) {
-            return num === 0 ? '入库' : '出库'
-        },
-        fromActionNumberToActionStyle(num) {
-            return num === 0 ? 'color: #fb6340;' : 'color: #5e72e4;'
+        onScroll() {
+            if (!this.saleHistoryView.saleDetail.isShow) this.scrollHeight = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset
         },
         handleShowDetailClick(index) {
             const {saleDetail} = this.saleHistoryView
@@ -105,9 +110,6 @@ export default {
         },
         changePage(value) {
             handleChangePage(this, 'saleHistoryView', value)
-        },
-        timeStampToDateTime(timeStamp) {
-            return getDateTime(timeStamp)
         }
     },
     computed: {
@@ -124,14 +126,15 @@ export default {
         },
         perPage: function () {
             return this.saleHistoryView.table.perPage
-        },
-        modalHeader: function () {
-            return `正在删除一条颜色信息`
         }
-        // modalContent: function () {
-        //     const {dataSource} = this.modals
-        //     return `颜色名称：${dataSource.color}。相关商品数量（不会删除相关商品信息）：${dataSource.relatedProductCount}`
-        // }
+    },
+    watch: {
+        "saleHistoryView.saleDetail.isShow": {
+            handler: function (newVal) {
+                if (newVal === false) document.documentElement.scrollTop = this.scrollHeight
+                if (newVal === true) document.documentElement.scrollTop = 0
+            }
+        }
     }
 }
 </script>

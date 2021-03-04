@@ -1,3 +1,6 @@
+import mutations from "../store/mutations"
+import state from "@/store/state"
+
 export const funcComputeAlertLevel = (err_code) => {
     let type
     switch (err_code) {
@@ -20,12 +23,25 @@ export const funcComputeAlertLevel = (err_code) => {
     return type
 }
 
-export const funcArrIdIndexToStrId = (arrIdIndex, dataSource) => {
+export const funcArrIndexToStrId = (that, objKV) => {
+    const {arrOperatingRows, view} = that
     let str = ""
-    for (let i = 0; i < arrIdIndex.length; i++) {
-        let index = arrIdIndex[i]
-        const {_id} = dataSource[index]
-        i === (arrIdIndex.length - 1) ? str += _id : str += `${_id},`
+    let isSub = typeof arrOperatingRows[0] === 'string'
+    // if (typeof arrOperatingRows[0] === 'string') isSub = true
+    for (let i = 0; i < arrOperatingRows.length; i++) {
+        let index
+        let _id
+        if (isSub) {
+            let subIndex
+            [index, subIndex] = arrOperatingRows[i].split('_').map(Number)
+            _id = that[view].table.data[index].sub[subIndex]._id
+            if (objKV) that.updateTableSubRowData({view, index, subIndex, objKV})
+        } else {
+            index = arrOperatingRows[i]
+            _id = that[view].table.data[index]._id
+            if (objKV) that.updateTableRowData({view, index, objKV})
+        }
+        i === (arrOperatingRows.length - 1) ? str += _id : str += `${_id},`
     }
     return str
 }
@@ -94,8 +110,9 @@ export const funcGetTableSelectedValue = (that, view) => {
     }
 }
 
-export const handleGetTableData = (that, view, ifNotify = false) => {
+export const handleGetTableData = (that, ifNotify = false) => {
     // view: colorView
+    const {view} = that
     if (ifNotify) that.$notify({
         type: funcComputeAlertLevel(-1),
         title: "正在请求表格数据"
@@ -138,6 +155,22 @@ export const funcGetResetQueryCondition = (queryCondition, value) => {
     const idKey = funcGetLikeIdKey(queryCondition)
     obj[idKey] = value ? value : "0"
     return obj
+}
+
+export const handleBatchUpdateRow = (that, arrOperatingRows, objUpdateData) => {
+    const {view} = that
+    let isSub = typeof that.arrOperatingRows[0] === 'string'
+    for (let i = 0; i < arrOperatingRows.length; i++) {
+        let index
+        if (isSub) {
+            let subIndex
+            [index, subIndex] = arrOperatingRows[i].split('_').map(Number)
+            that.updateTableSubRowData({view, index, subIndex, objKV: objUpdateData})
+        } else {
+            index = arrOperatingRows[i]
+            that.updateTableRowData({view, index, objKV: objUpdateData})
+        }
+    }
 }
 
 export const handleReloadTableAndOptionData = (that, view, directive) => {
@@ -205,6 +238,7 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
         }
         let {queryCondition, dataCount, perPage} = that[arrRequiredReloadViewTable[i]].table
         let ifLock = false
+        let currentPageCount
         if (view === 'warehouseView' && arrRequiredReloadViewTable[i] === 'shelfView') ifLock = true
         if (view === 'shelfView' && arrRequiredReloadViewTable[i] === 'warehouseView') ifLock = true
         if (!ifLock) {
@@ -214,17 +248,15 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
                     break
                 case 'afterSubmit':
                     dataCount += 1
+                    // 这时候dataCount为上一次过滤的dataCount
+                    currentPageCount = Math.ceil(dataCount / perPage)
                     break
                 default:
                     break
             }
         }
-        // 这时候dataCount为上一次过滤的dataCount
-        let currentPageCount
         if (view === 'saleView') {
             currentPageCount = queryCondition.currentPageCount
-        } else {
-            currentPageCount = Math.ceil(dataCount / perPage)
         }
         that.updateViewComponent({
             view: arrRequiredReloadViewTable[i],
@@ -237,13 +269,98 @@ export const handleReloadTableAndOptionData = (that, view, directive) => {
     }
 }
 
-export const handleUpdateTableRow = (that, view, index, key, value) => {
-    if (value === that[view].table.data[index][key]) return
-    const objKV = {
-        status: 1
+export const handleFindSelectAndUpdate = (arrOriSelectData, objId) => {
+    arrOriSelectData = arrOriSelectData.filter((item) => !(item.value in objId))
+    return arrOriSelectData
+}
+
+const funcGetNewSelectData = (that, view, componentSelect, action) => {
+    const {currentPageCount} = state[view].table.queryCondition
+    const {perPage} = state[view].table
+    const obj = {}
+    let arrOriSelectData = state.commonView[componentSelect].data
+    let ifFindToUpdate = false
+    let strKeyWord = ""
+    if (action === 1) {
+        switch (view) {
+            case 'colorView':
+                strKeyWord = 'color'
+                break
+            case 'customerView':
+            case 'driverView':
+            case 'supplierView':
+                strKeyWord = 'name'
+                break
+            case 'warehouseView':
+                strKeyWord = 'warehouse'
+                break
+            case 'shelfView':
+                strKeyWord = 'shelf'
+                break
+        }
     }
-    objKV[key] = value
-    that.updateTableRowData({view, index, objKV})
+    for (let i = 0; i < that.arrOperatingRows.length; i++) {
+        const numIndex = that.arrOperatingRows[i]
+        const anyTableData = that[view].table.data[numIndex]
+        const {_id} = anyTableData
+        // restore
+        if (action === 1) {
+            let objData
+            objData = that[view].table.data[numIndex]
+            const {_id} = objData
+            const text = objData[strKeyWord]
+            arrOriSelectData.splice((currentPageCount - 1) * perPage + numIndex, 0, {value: _id, text})
+        } else {
+        // delete
+            if (!ifFindToUpdate) {
+                let numSelectIndex = (currentPageCount - 1) * perPage + numIndex
+                const value = arrOriSelectData[numSelectIndex] ? arrOriSelectData[numSelectIndex].value : ""
+                if (_id !== value) {
+                    ifFindToUpdate = true
+                    obj[_id] = ""
+                    continue
+                }
+                arrOriSelectData.splice(numSelectIndex, 1)
+            } else {
+                obj[_id] = ""
+            }
+        }
+    }
+    if (ifFindToUpdate) arrOriSelectData = handleFindSelectAndUpdate(arrOriSelectData, obj)
+    return arrOriSelectData
+}
+
+// 1: +, 2: -
+export const handleAfterSoftAction = (that, action) => {
+    handleBatchUpdateRow(that, that.arrOperatingRows, {isDeleted: action !== 1, status: 0})
+    const {view} = that
+    const componentSelect = `${view.substring(0, view.length - 4)}Select`
+    const arrOriSelectData = funcGetNewSelectData(that, view, componentSelect, action)
+    mutations.UPDATE_SELECT_DATA(state, {component: componentSelect, data: {data: arrOriSelectData}})
+}
+
+export const handleAfterRestore = (that) => {
+    console.log(that.arrOperatingRows)
+    handleBatchUpdateRow(that, that.arrOperatingRows, {isDeleted: false, status: 0})
+}
+
+export const handleAfterRowUpdate = () => {
+}
+
+export const handleUpdateTableRow = (that, index, objKV) => {
+    const {view} = that
+    let isSub = typeof index === "string"
+    // const objKV = {
+    //     status: 1,
+    //     [key]: value
+    // }
+    if (isSub) {
+        let subIndex
+        [index, subIndex] = index.split('_')
+        that.updateTableSubRowData({view, index, subIndex, objKV})
+    } else {
+        that.updateTableRowData({view, index, objKV})
+    }
 }
 
 export const handleUpdateTableSubRow = (that, view, strIndex, key, value) => {
@@ -258,7 +375,8 @@ export const handleUpdateTableSubRow = (that, view, strIndex, key, value) => {
     that.updateTableSubRowData({view, index, subIndex, objKV})
 }
 
-export const handleSubmitTableRow = (that, view, index, arrKeys) => {
+export const handleSubmitTableRow = (that, index, arrKeys) => {
+    const {view} = that
     const objData = that[view].table.data[index]
     if (objData.status !== 1) return
 
@@ -334,7 +452,6 @@ export const handleSubmitTableSubRow = (that, view, strIndex, arrKeys) => {
             type: funcComputeAlertLevel(err_code),
             title: message
         })
-        console.log(view)
         if (err_code === 0) {
             that.increaseRequestingTasksCount(1)
             that.updateCommonSelectSubValue({
@@ -349,6 +466,74 @@ export const handleSubmitTableSubRow = (that, view, strIndex, arrKeys) => {
     })
 }
 
+export const handleShowConfirmModal = (that, mode, objModalConfig) => {
+    switch (mode) {
+        case 'restore':
+            that.modals.objConfig = {
+                mode: 'restore',
+                gradient: 'success',
+                body: objModalConfig.body,
+                ...objModalConfig[mode]
+            }
+            break
+        case 'softDelete':
+            that.modals.objConfig = {
+                mode: 'softDelete',
+                gradient: 'warning',
+                body: objModalConfig.body,
+                ...objModalConfig[mode]
+            }
+            break
+        default:
+            return
+    }
+    that.modals.isShow = true
+}
+
+export const handleModalConfirmClick = (that) => {
+    that.modals.isShow = false
+    // get strId and update row status
+    const strId = funcArrIndexToStrId(that, {status: 2})
+    const {view} = that
+    let title, action
+    switch (that.modals.objConfig.mode) {
+        case "restore": {
+            title = "正在恢复数据"
+            action = 1
+            break
+        }
+        case "softDelete": {
+            title = "正在删除数据"
+            action = 2
+            break
+        }
+        default:
+            return
+    }
+    that.$notify({
+        type: funcComputeAlertLevel(-1),
+        title
+    })
+    that.increaseRequestingTasksCount(1)
+    that.submitUpdateDeleteMarker({view, _id: strId, action}).then(() => {
+        that.decreaseRequestingTasksCount(1)
+        const {err_code, message} = that[view].table
+        that.$notify({
+            type: funcComputeAlertLevel(err_code),
+            title: message
+        })
+        if (err_code === 0) {
+            // handleReloadTableAndOptionData(that, view, 'afterRestore')
+            // handleBatchUpdateRow(that, that.arrOperatingRows, {isDeleted: action !== 0, status: 0})
+            (view === 'warehouseView' || view === 'shelfView') ? handleReloadTableAndOptionData(that, view, 'afterRestore') : handleAfterSoftAction(that, action)
+        } else {
+            // delete fail, the row should be still here
+            handleBatchUpdateRow(that, that.arrOperatingRows, {status: 0})
+        }
+    })
+}
+
+
 export const handleDeleteTableRow = (that, view, index) => {
     // todo: <-- multi delete
     that.arrDeleteRow[0] = index
@@ -357,8 +542,8 @@ export const handleDeleteTableRow = (that, view, index) => {
     that.modals.isShow = true
 }
 
-export const handleConfirmDeleteTableRow = (that, view) => {
-    const _id = funcArrIdIndexToStrId(that.arrDeleteRow, that[view].table.data)
+export const handleConfirmSoftDeleteTableRow = (that, view) => {
+    const _id = funcArrIndexToStrId(that.arrDeleteRow, that[view].table.data)
     that.modals.isShow = false
     that.$notify({
         type: funcComputeAlertLevel(-1),
@@ -428,7 +613,8 @@ export const handleConfirmDeleteTableSubRow = (that, view) => {
     })
 }
 
-export const handleChangePage = (that, view, currentPageCount) => {
+export const handleChangePage = (that, currentPageCount) => {
+    const {view} = that
     let {queryCondition} = that[view].table
     queryCondition.currentPageCount = currentPageCount
     that.increaseRequestingTasksCount(1)
@@ -480,7 +666,7 @@ export const handleSubmitForm = (that, view, objFormKeys) => {
     })
 }
 
-export const watchHandleSelectedValue = (newVal, oldVal, that, view) => {
+export const handleSelectedValueChange = (newVal, oldVal, that, view) => {
     if (newVal === oldVal) return
     const value = funcGetTableSelectedValue(that, view)
     const queryCondition = funcGetResetQueryCondition(that[view].table.queryCondition, value)
@@ -498,7 +684,7 @@ export const watchHandleSelectedValue = (newVal, oldVal, that, view) => {
     )
 }
 
-export const handleLogOut = (that) => {
+export const handleLogOut = async (that) => {
     localStorage.removeItem('qianhengma_stock_management_token')
     localStorage.removeItem('qianhengma_stock_management_name')
     localStorage.removeItem('qianhengma_stock_management_level')
@@ -513,5 +699,5 @@ export const handleLogOut = (that) => {
             }
         }
     })
-    that.$router.replace('/login')
+    await that.$router.replace('/login')
 }

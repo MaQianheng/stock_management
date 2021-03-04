@@ -115,7 +115,7 @@ import {mapActions, mapState} from "vuex";
 import VSelect from '@alfsnd/vue-bootstrap-select'
 import {
     handleChangePage,
-    handleConfirmDeleteTableRow,
+    handleConfirmSoftDeleteTableRow,
     handleDeleteTableRow,
     handleGetTableData,
     handleSubmitTableRow,
@@ -165,7 +165,7 @@ export default {
             handleDeleteTableRow(this, 'userView', index)
         },
         handleConfirmClick() {
-            handleConfirmDeleteTableRow(this, 'userView')
+            handleConfirmSoftDeleteTableRow(this, 'userView')
         },
         changePage(value) {
             handleChangePage(this, 'userView', value)
