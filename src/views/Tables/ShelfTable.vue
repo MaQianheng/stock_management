@@ -57,7 +57,7 @@
                                 :name="index + '_' + i"
                                 v-model="sub.shelf"
                                 @input="getInput"
-                                :disabled="item.status === 2"
+                                :disabled="sub.status === 2"
                                 @keyup.enter="handleEditClick('', index + '_' + i)"
                             />
                         </td>
@@ -164,7 +164,7 @@ export default {
             let subIndex
             [index, subIndex] = index.split('_')
             const {sub} = this.shelfView.table.data[index]
-            objTmp.body = `货架名称：${sub[subIndex].shelf}。相关商品数量：${sub[subIndex].relatedShelfCount}`
+            objTmp.body = `货架名称：${sub[subIndex].shelf}。相关商品数量：${sub[subIndex].relatedProductCount}`
             handleShowConfirmModal(this, mode, objTmp)
         },
         requestTableData() {

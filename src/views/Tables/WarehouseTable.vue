@@ -155,7 +155,7 @@ export default {
             handleGetTableData(this)
         },
         getInput(index, value) {
-            handleUpdateTableRow(this, index, 'warehouse', value)
+            handleUpdateTableRow(this, index, {'warehouse': value, status: 1})
         },
         handleEditClick(e, index) {
             handleSubmitTableRow(this, index, ['warehouse'])

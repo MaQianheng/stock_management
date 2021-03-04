@@ -59,7 +59,7 @@
         </b-card-text>
         <div class="col-12" style="text-align: right; padding: 0;">
             <base-button type="dark" :outline="true" size="sm" @click="handleMutateClick(index)"
-                         :disabled="buttonStatusText.status || this.shelfSelect.selectedValue.value === '-1' || (this.model.oriWeight === 0 && this.saleView.table.queryCondition.action === 1)">
+                         :disabled="buttonStatusText.status || this.shelfSelect.selectedValue.value === '-1' || (this.model.oriWeight === 0 && this.saleView.table.queryCondition.action === 2)">
                 {{ buttonStatusText.text }}
             </base-button>
         </div>
@@ -161,9 +161,9 @@ export default {
         ...mapState(['commonView', 'productView', 'saleView']),
         warehouseOptions: function () {
             switch (this.saleView.table.queryCondition.action) {
-                case 0:
+                case 1:
                     return this.commonView.warehouseSelect.data
-                case 1: {
+                case 2: {
                     const arrProductIdShelfId = Object.keys(this.item.sub)
                     const result = []
                     const objAddedWarehouse = {}
@@ -190,7 +190,7 @@ export default {
             return this.tweendNumber.afterOperateWeight.toFixed(0);
         },
         ifShowHint: function () {
-            if (this.saleView.table.queryCondition.action === 1) return false
+            if (this.saleView.table.queryCondition.action === 2) return false
             if (this.shelfSelect.selectedValue.value === '-1') return false
             if (this.item.sub[`${this.item._id}_${this.shelfSelect.selectedValue.value}`]) {
                 return !("isAlreadyExisted" in this.item.sub[`${this.item._id}_${this.shelfSelect.selectedValue.value}`]);
@@ -221,10 +221,10 @@ export default {
             handler: function (newVal) {
                 if (newVal === '-1') return
                 switch (this.saleView.table.queryCondition.action) {
-                    case 0:
+                    case 1:
                         this.shelfSelect.options = this.commonView.cascadingWarehouseShelfSelect.data.objCascading[newVal].sub
                         break
-                    case 1: {
+                    case 2: {
                         const arrProductIdShelfId = Object.keys(this.item.sub)
                         this.shelfSelect.options = []
                         for (let i = 0; i < arrProductIdShelfId.length; i++) {

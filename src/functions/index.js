@@ -1,5 +1,6 @@
 import mutations from "../store/mutations"
 import state from "@/store/state"
+import store from "../store/"
 
 export const funcComputeAlertLevel = (err_code) => {
     let type
@@ -311,7 +312,7 @@ const funcGetNewSelectData = (that, view, componentSelect, action) => {
             const text = objData[strKeyWord]
             arrOriSelectData.splice((currentPageCount - 1) * perPage + numIndex, 0, {value: _id, text})
         } else {
-        // delete
+            // delete
             if (!ifFindToUpdate) {
                 let numSelectIndex = (currentPageCount - 1) * perPage + numIndex
                 const value = arrOriSelectData[numSelectIndex] ? arrOriSelectData[numSelectIndex].value : ""
@@ -339,47 +340,26 @@ export const handleAfterSoftAction = (that, action) => {
     mutations.UPDATE_SELECT_DATA(state, {component: componentSelect, data: {data: arrOriSelectData}})
 }
 
-export const handleAfterRestore = (that) => {
-    console.log(that.arrOperatingRows)
-    handleBatchUpdateRow(that, that.arrOperatingRows, {isDeleted: false, status: 0})
-}
-
-export const handleAfterRowUpdate = () => {
-}
-
 export const handleUpdateTableRow = (that, index, objKV) => {
     const {view} = that
     let isSub = typeof index === "string"
-    // const objKV = {
-    //     status: 1,
-    //     [key]: value
-    // }
     if (isSub) {
         let subIndex
         [index, subIndex] = index.split('_')
-        that.updateTableSubRowData({view, index, subIndex, objKV})
+        store.dispatch('updateTableSubRowData', {view, index, subIndex, objKV})
     } else {
-        that.updateTableRowData({view, index, objKV})
+        store.dispatch('updateTableRowData', {view, index, objKV})
     }
-}
-
-export const handleUpdateTableSubRow = (that, view, strIndex, key, value) => {
-    const tmp = strIndex.split('_').map(Number)
-    const index = tmp[0]
-    const subIndex = tmp[1]
-    if (value === that[view].table.data[index]['sub'][subIndex][key]) return
-    const objKV = {
-        status: 1
-    }
-    objKV[key] = value
-    that.updateTableSubRowData({view, index, subIndex, objKV})
 }
 
 export const handleSubmitTableRow = (that, index, arrKeys) => {
     const {view} = that
-    const objData = that[view].table.data[index]
+    let isSub = typeof index === "string"
+    let subIndex
+    if (isSub) [index, subIndex] = index.split('_')
+    let objData
+    isSub ? objData = state[view].table.data[index].sub[subIndex] : objData = that[view].table.data[index]
     if (objData.status !== 1) return
-
     const idKey = funcGetLikeIdKey(objData)
     const objUpdateData = {}
     objUpdateData[idKey] = objData[idKey]
@@ -393,76 +373,28 @@ export const handleSubmitTableRow = (that, index, arrKeys) => {
         type: funcComputeAlertLevel(-1),
         title: "正在更新数据"
     })
-    that.updateTableRowData({view, index, objKV: {status: 2}})
-    that.submitUpdateData({view, objUpdateData, index}).then(() => {
-        const {err_code, message} = that[view].table
+    store.dispatch('updateTableRowData', {view, index, objKV: {status: 2}})
+    store.dispatch('submitUpdateData', {view, objUpdateData, index}).then(() => {
+        const {err_code, message} = state[view].table
         that.$notify({
             type: funcComputeAlertLevel(err_code),
             title: message
         })
+        let status = 1
         if (err_code === 0) {
             const select = `${view.substring(0, view.length - 4)}Select`
-            if (that.commonView.publicVariable.arrSelect.indexOf(select) !== -1) {
-                that.increaseRequestingTasksCount(1)
-                that.updateCommonSelectSubValue({
+            if (state.commonView.publicVariable.arrSelect.indexOf(select) !== -1) {
+                store.dispatch('increaseRequestingTasksCount', 1)
+                store.dispatch('updateCommonSelectSubValue', {
                     key: `${view.substring(0, view.length - 4)}Select`,
                     subKey: 'isLoading',
                     value: true
                 })
             }
-            let status
-            view === 'userView' ? status = 1 : status = 0
-            that.updateTableRowData({view, index, objKV: {status}})
-        } else {
-            that.updateTableRowData({view, index, objKV: {status: 1}})
+            if (view !== 'userView') status = 0
         }
-    })
-}
-
-export const handleSubmitTableSubRow = (that, view, strIndex, arrKeys) => {
-    const tmp = strIndex.split('_').map(Number)
-    const index = tmp[0]
-    const subIndex = tmp[1]
-    const objData = that[view].table.data[index]
-    const objSubData = that[view].table.data[index]['sub'][subIndex]
-    if (objSubData.status !== 1) return
-
-    const objUpdateData = {}
-    const idKey = funcGetLikeIdKey(objData)
-    objUpdateData[idKey] = objData[idKey]
-
-    const subIdKey = funcGetLikeIdKey(objSubData)
-    objUpdateData[subIdKey] = objSubData[subIdKey]
-
-    for (let i = 0; i < arrKeys.length; i++) {
-        let key = arrKeys[i]
-        objUpdateData[key] = objSubData[key]
-    }
-
-    that.$notify({
-        type: funcComputeAlertLevel(-1),
-        title: "正在更新数据"
-    })
-    that.updateTableSubRowData({view, index, subIndex, objKV: {status: 2}})
-    // that.submitUpdateSubData({view, objUpdateData, index, subIndex})
-
-    that.submitUpdateData({view, objUpdateData, index, subIndex}).then(() => {
-        const {err_code, message} = that[view].table
-        that.$notify({
-            type: funcComputeAlertLevel(err_code),
-            title: message
-        })
-        if (err_code === 0) {
-            that.increaseRequestingTasksCount(1)
-            that.updateCommonSelectSubValue({
-                key: `${view.substring(0, view.length - 4)}Select`,
-                subKey: 'isLoading',
-                value: true
-            })
-            that.updateTableSubRowData({view, index, subIndex, objKV: {status: 0}})
-        } else {
-            that.updateTableSubRowData({view, index, subIndex, objKV: {status: 1}})
-        }
+        console.log(isSub)
+        isSub ? store.dispatch('updateTableSubRowData', {view, index, subIndex, objKV: {status}}) : store.dispatch('updateTableRowData', {view, index, objKV: {status}})
     })
 }
 
@@ -523,8 +455,6 @@ export const handleModalConfirmClick = (that) => {
             title: message
         })
         if (err_code === 0) {
-            // handleReloadTableAndOptionData(that, view, 'afterRestore')
-            // handleBatchUpdateRow(that, that.arrOperatingRows, {isDeleted: action !== 0, status: 0})
             (view === 'warehouseView' || view === 'shelfView') ? handleReloadTableAndOptionData(that, view, 'afterRestore') : handleAfterSoftAction(that, action)
         } else {
             // delete fail, the row should be still here
@@ -532,6 +462,7 @@ export const handleModalConfirmClick = (that) => {
         }
     })
 }
+
 
 
 export const handleDeleteTableRow = (that, view, index) => {

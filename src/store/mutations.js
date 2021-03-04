@@ -42,7 +42,6 @@ export default {
                 state.saleHistoryView.table.shelfSelect.selectedValue.text = shelfTextAll
 
                 // if (state.shelfView.form.select.selectedValue.value === "0")
-                console.log(data)
                 state.shelfView.form.select.selectedValue = data.data[0]
                 break
             }
@@ -101,12 +100,6 @@ export default {
         const {view, index, objKV} = objData
         let tmp = {...state[view]["table"]["data"][index], ...objKV}
         Vue.set(state[view]["table"]["data"], index, tmp)
-    },
-    UPDATE__BATCH_TABLE_ROW_DATA(state, objData) {
-        console.log(state, objData)
-        // const {view, index, objKV} = objData
-        // let tmp = {...state[view]["table"]["data"][index], ...objKV}
-        // Vue.set(state[view]["table"]["data"], index, tmp)
     },
     UPDATE_TABLE_ROW_SUB_DATA(state, objData) {
         const {view, index, objKV} = objData
