@@ -83,7 +83,7 @@ export default {
                         localStorage.setItem('qianhengma_stock_management_name', this.loginView.name)
                         localStorage.setItem('qianhengma_stock_management_user_level', this.loginView.level)
                     }
-                    this.$router.replace('/sale')
+                    this.$router.replace('/dashboard')
                 }
             })
         }

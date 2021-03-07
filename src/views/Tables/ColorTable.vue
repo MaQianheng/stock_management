@@ -84,7 +84,6 @@
 
 <script>
 import VSelect from '@alfsnd/vue-bootstrap-select'
-import {BSpinner} from 'bootstrap-vue'
 import {mapState, mapActions} from 'vuex'
 import {
     handleChangePage,
@@ -93,13 +92,10 @@ import {
     handleSubmitTableRow, handleSelectedValueChange, handleShowConfirmModal, handleModalConfirmClick,
 } from "@/functions"
 
-// import {FadeTransition} from 'vue2-transitions'
-
 export default {
     name: "ColorTable",
     components: {
-        VSelect,
-        BSpinner
+        VSelect
     },
     data: () => (
         {
@@ -147,9 +143,6 @@ export default {
         handleEditClick(e, index) {
             handleSubmitTableRow(this, index, ['color'])
         },
-        // handleDeleteClick(e, index) {
-        //     handleDeleteTableRow(this, 'colorView', index)
-        // },
         handleModalConfirmClick() {
             handleModalConfirmClick(this)
         },

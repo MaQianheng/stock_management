@@ -20,7 +20,7 @@
                               v-if="userLevel === 0"/>
                 <sidebar-item :link="{name: '库房信息', icon: 'ni ni-building text-gray', path: '/warehouse'}"/>
                 <sidebar-item :link="{name: '颜色信息', icon: 'ni ni-palette text-pink', path: '/color'}"/>
-                <sidebar-item :link="{name: '管理员信息', icon: 'ni ni-badge text-indigo', path: '/user'}"
+                <sidebar-item :link="{name: '管理员信息', icon: 'ni ni-badge text-indigo', path: '/operator'}"
                               v-if="userLevel === 0"/>
                 <!--                <sidebar-item :link="{name: '登陆', icon: 'ni ni-key-25 text-info', path: '/login'}"/>-->
                 <!--                <sidebar-item :link="{name: 'Register', icon: 'ni ni-circle-08 text-pink', path: '/register'}"/>-->
@@ -55,7 +55,7 @@ export default {
     },
     created() {
         let {arrView} = this.commonView.publicVariable
-        arrView = this.loginView.level === 0 ? ['dashboardView', 'colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView', 'driverView', 'userView'] : ['dashboardView', 'colorView', 'warehouseView', 'shelfView', 'saleView', 'saleHistoryView']
+        arrView = this.loginView.level === 0 ? ['dashboardView', 'colorView', 'warehouseView', 'shelfView', 'customerView', 'supplierView', 'productView', 'saleView', 'saleHistoryView', 'driverView', 'operatorView'] : ['dashboardView', 'colorView', 'warehouseView', 'shelfView', 'saleView', 'saleHistoryView']
         this.updateViewComponent({view: 'commonView', component: 'publicVariable', objKV: {arrView}})
     },
     mounted() {
@@ -104,7 +104,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "customerView", "supplierView", "productView", "saleView", "saleHistoryView", 'driverView', 'userView', 'loginView', 'dashboardView']),
+        ...mapState(["commonView", "colorView", "warehouseView", "shelfView", "customerView", "supplierView", "productView", "saleView", "saleHistoryView", 'driverView', 'operatorView', 'loginView', 'dashboardView']),
         userLevel() {
             return this.loginView.level
         }
@@ -146,24 +146,6 @@ export default {
                 })
             }
         },
-        // "commonView.codeSelect.isLoading": {
-        //     handler: function (newVal) {
-        //         const component = 'codeSelect'
-        //         // request code option
-        //         if (newVal === true) this.getSelect({component}).then(() => {
-        //             this.getSelectCallBack(component)
-        //         })
-        //     }
-        // },
-        // "commonView.productSelect.isLoading": {
-        //     handler: function (newVal) {
-        //         const component = 'productSelect'
-        //         // request product option
-        //         if (newVal === true) this.getSelect({component}).then(() => {
-        //             this.getSelectCallBack(component)
-        //         })
-        //     }
-        // },
         "commonView.colorSelect.isLoading": {
             handler: function (newVal) {
                 const component = 'colorSelect'
@@ -191,15 +173,6 @@ export default {
                 })
             }
         },
-        // "commonView.operatorSelect.isLoading": {
-        //     handler: function (newVal) {
-        //         const component = 'operatorSelect'
-        //         // request operator option
-        //         if (newVal === true) this.getSelect({component}).then(() => {
-        //             this.getSelectCallBack(component)
-        //         })
-        //     }
-        // },
         "commonView.cascadingWarehouseShelfSelect.isLoading": {
             handler: function (newVal) {
                 // cascadingWarehouseShelfSelect
@@ -282,9 +255,9 @@ export default {
                 })
             }
         },
-        "userView.table.isLoading": {
+        "operatorView.table.isLoading": {
             handler: function (newVal) {
-                const view = 'userView'
+                const view = 'operatorView'
                 if (newVal === true) this.getTable({view}).then(() => {
                     this.getTableCallBack(view)
                 })

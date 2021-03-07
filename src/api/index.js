@@ -1,12 +1,12 @@
 import httpRequest from "./http";
 export const baseUrl = "http://127.0.0.1:3000"
-
+// export const baseUrl = http://mjq1958.meibu.com:3000/
 // export const baseUrl = "http://192.168.1.20:3000"
 
 // export const requestQueryColor = (queryCondition) => httpRequest(baseUrl + '/test/test400', queryCondition, 'GET')
 
-export const requestLogin = (user) => httpRequest(baseUrl + '/users/login', user, 'POST')
-export const requestAddUser = (user) => httpRequest(baseUrl + '/users/add', user, 'POST')
+export const requestLogin = (operator) => httpRequest(baseUrl + '/operator/login', operator, 'POST')
+export const requestAddOperator = (operator) => httpRequest(baseUrl + '/operator/add', operator, 'POST')
 
 
 export const requestQueryDashboardData = (queryCondition) => httpRequest(baseUrl + '/dashboard/query', queryCondition, 'GET')
@@ -21,7 +21,7 @@ export const requestQueryDriverOptions = (queryCondition) => httpRequest(baseUrl
 export const requestQueryCodeOptions = (queryCondition) => httpRequest(baseUrl + '/product/query_code_options', queryCondition, 'GET')
 export const requestQueryProductOptions = (queryCondition) => httpRequest(baseUrl + '/product/query_product_options', queryCondition, 'GET')
 export const requestQueryCascadingWarehouseShelfOptions = (queryCondition) => httpRequest(baseUrl + '/shelf/query_cascading_warehouse_shelf', queryCondition, 'GET')
-export const requestQueryOperatorOptions = (queryCondition) => httpRequest(baseUrl + '/users/query_user_options', queryCondition, 'GET')
+export const requestQueryOperatorOptions = (queryCondition) => httpRequest(baseUrl + '/operator/query_operator_options', queryCondition, 'GET')
 
 
 
@@ -43,7 +43,7 @@ export const requestDeleteCustomer = (customerId) => httpRequest(baseUrl + '/cus
 export const requestDeleteSupplier = (supplierId) => httpRequest(baseUrl + '/supplier/delete', supplierId, 'GET')
 export const requestDeleteProduct = (productId) => httpRequest(baseUrl + '/product/delete', productId, 'GET')
 export const requestDeleteDriver = (driverId) => httpRequest(baseUrl + '/driver/delete', driverId, 'GET')
-export const requestDeleteUser = (userId) => httpRequest(baseUrl + '/users/delete', userId, 'GET')
+export const requestDeleteOperator = (operatorId) => httpRequest(baseUrl + '/operator/delete', operatorId, 'GET')
 
 
 
@@ -54,7 +54,7 @@ export const requestUpdateCustomer = (customer) => httpRequest(baseUrl + '/custo
 export const requestUpdateSupplier = (supplier) => httpRequest(baseUrl + '/supplier/update', supplier, 'GET')
 export const requestUpdateProduct = (product) => httpRequest(baseUrl + '/product/update', product, 'POST')
 export const requestUpdateDriver = (driver) => httpRequest(baseUrl + '/driver/update', driver, 'GET')
-export const requestUpdateUser = (user) => httpRequest(baseUrl + '/users/update', user, 'POST')
+export const requestUpdateOperator = (operator) => httpRequest(baseUrl + '/operator/update', operator, 'POST')
 
 
 
@@ -67,14 +67,14 @@ export const requestQueryProduct = (queryCondition) => httpRequest(baseUrl + '/p
 export const requestQuerySaleProduct = (queryCondition) => httpRequest(baseUrl + '/sale/query_product', queryCondition, 'GET')
 export const requestQuerySaleHistory = (queryCondition) => httpRequest(baseUrl + '/sale/query_history', queryCondition, 'GET')
 export const requestQueryDriver = (queryCondition) => httpRequest(baseUrl + '/driver/query', queryCondition, 'GET')
-export const requestQueryUser = (queryCondition) => httpRequest(baseUrl + '/users/query', queryCondition, 'GET')
+export const requestQueryOperator = (queryCondition) => httpRequest(baseUrl + '/operator/query', queryCondition, 'GET')
 
 
 
 export const requestFuzzyQueryCustomerName = (queryCondition) => httpRequest(baseUrl + '/customer/fuzzy_query_customer_name', queryCondition, 'GET')
 export const requestFuzzyQuerySupplierName = (queryCondition) => httpRequest(baseUrl + '/supplier/fuzzy_query_supplier_name', queryCondition, 'GET')
 export const requestFuzzyQueryDriverName = (queryCondition) => httpRequest(baseUrl + '/driver/fuzzy_query_driver_name', queryCondition, 'GET')
-export const requestFuzzyQueryOperatorName = (queryCondition) => httpRequest(baseUrl + '/users/fuzzy_query_operator_name', queryCondition, 'GET')
+export const requestFuzzyQueryOperatorName = (queryCondition) => httpRequest(baseUrl + '/operator/fuzzy_query_operator_name', queryCondition, 'GET')
 export const requestFuzzyQueryProductCode = (queryCondition) => httpRequest(baseUrl + '/product/fuzzy_query_product_code', queryCondition, 'GET')
 export const requestFuzzyQueryProductName = (queryCondition) => httpRequest(baseUrl + '/product/fuzzy_query_product_name', queryCondition, 'GET')
 
@@ -83,3 +83,4 @@ export const requestFuzzyQueryProductName = (queryCondition) => httpRequest(base
 export const requestUpdateDeleteMarkerColor = (objParameters) => httpRequest(baseUrl + '/color/update_delete_marker', objParameters, 'GET')
 export const requestUpdateDeleteMarkerWarehouse = (objParameters) => httpRequest(baseUrl + '/warehouse/update_delete_marker', objParameters, 'GET')
 export const requestUpdateDeleteMarkerShelf = (objParameters) => httpRequest(baseUrl + '/shelf/update_delete_marker', objParameters, 'GET')
+export const requestUpdateDeleteMarkerOperator = (objParameters) => httpRequest(baseUrl + '/operator/update_delete_marker', objParameters, 'GET')

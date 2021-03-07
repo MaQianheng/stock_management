@@ -8,7 +8,7 @@
         <div class="container-fluid mt--7">
             <div class="row">
                 <div class="col">
-                    <UserTable title="管理员详情"/>
+                    <OperatorTable title="管理员详情"/>
                 </div>
             </div>
         </div>
@@ -16,11 +16,11 @@
 </template>
 
 <script>
-import UserForm from "@/components/MyComponents/UserForm";
-import UserTable from "@/views/Tables/UserTable";
+import UserForm from "@/components/MyComponents/OperatorForm";
+import OperatorTable from "@/views/Tables/OperatorTable";
 export default {
     name: "User",
-    components: {UserTable, UserForm}
+    components: {OperatorTable, UserForm}
 }
 </script>
 

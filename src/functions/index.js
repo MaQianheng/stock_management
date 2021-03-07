@@ -1,6 +1,7 @@
 import mutations from "../store/mutations"
 import state from "@/store/state"
 import store from "../store/"
+import router from "@/router"
 
 export const funcComputeAlertLevel = (err_code) => {
     let type
@@ -615,11 +616,11 @@ export const handleSelectedValueChange = (newVal, oldVal, that, view) => {
     )
 }
 
-export const handleLogOut = async (that) => {
+export const handleLogOut = async () => {
     localStorage.removeItem('qianhengma_stock_management_token')
     localStorage.removeItem('qianhengma_stock_management_name')
     localStorage.removeItem('qianhengma_stock_management_level')
-    that.UPDATE_VIEW({
+    mutations.UPDATE_VIEW(state, {
         view: 'loginView',
         objKV: {
             err_code: 0,
@@ -630,5 +631,5 @@ export const handleLogOut = async (that) => {
             }
         }
     })
-    await that.$router.replace('/login')
+    if (router.currentRoute.fullPath !== '/login') await router.replace('/login')
 }

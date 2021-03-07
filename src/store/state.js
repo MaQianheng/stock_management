@@ -377,7 +377,7 @@ export default {
             data: []
         }
     },
-    userView: {
+    operatorView: {
         form: {
             username: '',
             password: '',

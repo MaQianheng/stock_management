@@ -6,7 +6,7 @@ import {
     requestAddSale,
     requestAddShelf,
     requestAddSupplier,
-    requestAddUser,
+    requestAddOperator,
     requestAddWarehouse,
     requestDeleteColor,
     requestDeleteCustomer,
@@ -14,7 +14,7 @@ import {
     requestDeleteProduct,
     requestDeleteShelf,
     requestDeleteSupplier,
-    requestDeleteUser,
+    requestDeleteOperator,
     requestDeleteWarehouse,
     requestLogin,
     requestQueryCascadingWarehouseShelfOptions,
@@ -35,7 +35,7 @@ import {
     requestQueryShelfOptions,
     requestQuerySupplier,
     requestQuerySupplierOptions,
-    requestQueryUser,
+    requestQueryOperator,
     requestQueryWarehouse,
     requestQueryWarehouseOptions,
     requestUpdateColor,
@@ -47,8 +47,8 @@ import {
     requestUpdateProduct,
     requestUpdateShelf,
     requestUpdateSupplier,
-    requestUpdateUser,
-    requestUpdateWarehouse
+    requestUpdateOperator,
+    requestUpdateWarehouse, requestUpdateDeleteMarkerOperator
 } from "@/api";
 
 const objServerErrorFeedBack = {err_code: 1, message: "服务器连接失败", data: []}
@@ -139,8 +139,8 @@ export default {
                 case "driverView":
                     data = (await requestQueryDriver(this.state.driverView.table.queryCondition)).data
                     break
-                case "userView":
-                    data = (await requestQueryUser(this.state.userView.table.queryCondition)).data
+                case "operatorView":
+                    data = (await requestQueryOperator(this.state.operatorView.table.queryCondition)).data
                     break
                 default:
                     return
@@ -240,8 +240,8 @@ export default {
                 case 'driverView':
                     data = (await requestAddDriver(objSubmitData)).data
                     break
-                case 'userView':
-                    data = (await requestAddUser(objSubmitData)).data
+                case 'operatorView':
+                    data = (await requestAddOperator(objSubmitData)).data
                     break
                 default:
                     return
@@ -283,8 +283,8 @@ export default {
                 case 'driverView':
                     data = (await requestUpdateDriver(objUpdateData)).data
                     break
-                case 'userView':
-                    data = (await requestUpdateUser(objUpdateData)).data
+                case 'operatorView':
+                    data = (await requestUpdateOperator(objUpdateData)).data
                     break
                 default:
                     return
@@ -329,8 +329,8 @@ export default {
                 case "driverView":
                     data = (await requestDeleteDriver({_id})).data
                     break
-                case "userView":
-                    data = (await requestDeleteUser({_id})).data
+                case "operatorView":
+                    data = (await requestDeleteOperator({_id})).data
                     break
                 default:
                     return
@@ -372,9 +372,9 @@ export default {
                 // case "driverView":
                 //     data = (await requestDeleteDriver({_id})).data
                 //     break
-                // case "userView":
-                //     data = (await requestDeleteUser({_id})).data
-                //     break
+                case "operatorView":
+                    data = (await requestUpdateDeleteMarkerOperator(objData)).data
+                    break
                 default:
                     return
             }

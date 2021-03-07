@@ -18,9 +18,9 @@
                                 placeholder="用户名"
                                 input-classes="form-control-alternative"
                                 name="username"
-                                v-model="userView.form.username"
+                                v-model="operatorView.form.username"
                                 @input="getInput"
-                                :disabled="userView.form.isLoading"/>
+                                :disabled="operatorView.form.isLoading"/>
                         </div>
                         <div class="col-lg-6">
                             <base-input
@@ -29,9 +29,9 @@
                                 placeholder="密码"
                                 input-classes="form-control-alternative"
                                 name="password"
-                                v-model="userView.form.password"
+                                v-model="operatorView.form.password"
                                 @input="getInput"
-                                :disabled="userView.form.isLoading"/>
+                                :disabled="operatorView.form.isLoading"/>
                         </div>
                         <div class="col-lg-6">
                             <base-input
@@ -40,23 +40,23 @@
                                 placeholder="姓名"
                                 input-classes="form-control-alternative"
                                 name="name"
-                                v-model="userView.form.name"
+                                v-model="operatorView.form.name"
                                 @input="getInput"
-                                :disabled="userView.form.isLoading"/>
+                                :disabled="operatorView.form.isLoading"/>
                         </div>
                         <div class="col-lg-6">
                             <label class="form-control-label">管理员等级</label>
                             <v-select
                                 :searchable=true
                                 :options="commonView.levelSelect.data"
-                                v-model="userView.form.levelSelect.selectedValue"
+                                v-model="operatorView.form.levelSelect.selectedValue"
                                 :labelSearchPlaceholder="commonView.labelSearchPlaceholder"
-                                :disabled="userView.form.isLoading"/>
+                                :disabled="operatorView.form.isLoading"/>
                         </div>
                         <div class="col-lg-12" style="text-align: right">
                             <base-button type="primary" :outline="true" size="sm" @click="handleSubmit"
-                                         :disabled="userView.form.isLoading">
-                                <b-spinner small type="grow" v-if="userView.form.isLoading"/>
+                                         :disabled="operatorView.form.isLoading">
+                                <b-spinner small type="grow" v-if="operatorView.form.isLoading"/>
                                 提交
                             </base-button>
                         </div>
@@ -104,19 +104,19 @@ export default {
         ...mapActions(["updateViewComponent", "submitForm", "updateFormSingleData", "updateCommonSelectSubValue", "increaseRequestingTasksCount"]),
         getInput(key, value) {
             if (key === 'username' || key === 'password') value = validateInputAlphaBetAndNumber(value)
-            handleUpdateForm(this, 'userView', key, value)
+            handleUpdateForm(this, 'operatorView', key, value)
         },
         handleSubmit() {
-            handleSubmitForm(this, 'userView', this.userFormKeys)
+            handleSubmitForm(this, 'operatorView', this.userFormKeys)
         }
     },
     computed: {
-        ...mapState(['userView', 'commonView'])
+        ...mapState(['operatorView', 'commonView'])
     },
     watch: {
-        "userView.form.levelSelect.selectedValue.value": {
+        "operatorView.form.levelSelect.selectedValue.value": {
             handler: function (newVal) {
-                this.updateFormSingleData({view: 'userView', key: 'level', value: newVal})
+                this.updateFormSingleData({view: 'operatorView', key: 'level', value: newVal})
             }
         }
     }

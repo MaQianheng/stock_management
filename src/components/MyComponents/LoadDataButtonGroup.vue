@@ -1,13 +1,13 @@
 <template>
     <li>
         <base-button type="secondary" icon="ni ni-air-baloon" @click="handleReloadThisPageDataClick"
-                     :disabled="isDataLoading" :style="isMobile ? 'border-radius: 0; box-shadow: 0 0 0; width: 100%; background-color: transparent; border: 0px;' : ''" :class="isMobile ? 'dropdown-item' : ''">
-            <b-spinner small type="grow" v-if="isDataLoading"/>
+                     :disabled="isLoadingData" :style="isMobile ? 'border-radius: 0; box-shadow: 0 0 0; width: 100%; background-color: transparent; border: 0px;' : ''" :class="isMobile ? 'dropdown-item' : ''">
+            <b-spinner small type="grow" v-if="isLoadingData"/>
             {{ reloadPageText }}
         </base-button>
         <base-button type="secondary" icon="ni ni-bulb-61" @click="handleReloadAllPageDataClick"
-                     :disabled="isDataLoading" :style="isMobile ? 'border-radius: 0; box-shadow: 0 0 0; width: 100%; background-color: transparent; border: 0px;' : ''" :class="isMobile ? 'dropdown-item' : ''">
-            <b-spinner small type="grow" v-if="isDataLoading"/>
+                     :disabled="isLoadingData" :style="isMobile ? 'border-radius: 0; box-shadow: 0 0 0; width: 100%; background-color: transparent; border: 0px;' : ''" :class="isMobile ? 'dropdown-item' : ''">
+            <b-spinner small type="grow" v-if="isLoadingData"/>
             {{ reloadAllText }}
         </base-button>
     </li>
@@ -28,7 +28,7 @@ export default {
         ...mapActions(["updateViewComponent", "increaseRequestingTasksCount"]),
         ...mapMutations(['UPDATE_VIEW']),
         handleReloadThisPageDataClick() {
-            if (this.isDataLoading) return
+            if (this.isLoadingData) return
             this.increaseRequestingTasksCount(this.arrSelect.length + this.arrView.length)
             for (let i = 0; i < this.arrSelect.length; i++) {
                 this.updateViewComponent({view: 'commonView', component: this.arrSelect[i], objKV: {isLoading: true}})
@@ -38,7 +38,7 @@ export default {
             }
         },
         handleReloadAllPageDataClick() {
-            if (this.isDataLoading) return
+            if (this.isLoadingData) return
             const {arrSelect, arrView} = this.commonView.publicVariable
             this.increaseRequestingTasksCount(arrSelect.length + arrView.length)
             for (let i = 0; i < arrSelect.length; i++) {
@@ -63,6 +63,8 @@ export default {
                     return ['colorSelect']
                 case '/sale_history':
                     return ['colorSelect', 'cascadingWarehouseShelfSelect', 'warehouseSelect', 'shelfSelect', 'operatorSelect', 'driverSelect']
+                case '/operator':
+                    return ['operatorSelect']
                 default:
                     return []
             }
@@ -71,8 +73,6 @@ export default {
             // 当给select重新赋值时会触发watch来reload table
             switch (this.$route.path) {
                 case '/color':
-                    // if (String(this.colorView.table._id) === "0") arr.push('colorView')
-                    // break
                     return ['colorView']
                 case '/warehouse':
                     return ['warehouseView', 'shelfView']
@@ -88,15 +88,15 @@ export default {
                     return ['saleHistoryView']
                 case '/driver':
                     return ['driverView']
-                case '/user':
-                    return ['userView']
+                case '/operator':
+                    return ['operatorView']
                 case '/dashboard':
                     return ['dashboardView']
                 default:
                     return []
             }
         },
-        isDataLoading: function () {
+        isLoadingData: function () {
             return this.commonView.publicVariable.requestingTasksCount !== 0
         },
         reloadPageText: function () {

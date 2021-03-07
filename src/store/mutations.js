@@ -89,7 +89,6 @@ export default {
     },
     UPDATE_VIEW_COMPONENT(state, objData) {
         const {view, component, objKV} = objData
-        // Vue.set(state[view], component, {objKV})
         state[view][component] = {...state[view][component], ...objKV}
     },
     UPDATE_SALE_SUMMARY_SUB(state, objData) {

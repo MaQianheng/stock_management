@@ -107,15 +107,17 @@
                         <td v-if="i===0" :rowspan="item.sub.length" v-html="item.remark"
                             style="text-align: left !important;"></td>
                         <td v-if="i===0" :rowspan="item.sub.length">
-                            <base-button type="primary" :outline="true" size="sm"
+                            <base-button type="primary" :outline="true"
+                                         :row-id="item.row" size="sm"
                                          :disabled="item.status === 2"
                                          @click="handleEditClick(index)">
                                 <b-spinner small type="grow" v-if="item.status === 2"/>
                                 编辑
                             </base-button>
-                            <base-button type="warning" :outline="true" size="sm"
+                            <base-button type="warning" :outline="true"
+                                         :row-id="item.row" size="sm"
                                          :disabled="item.status === 2"
-                                         @click="handleDeleteClick(index)">
+                                         @click="showModalSingle('softDelete', index)">
                                 <b-spinner small type="grow" v-if="item.status === 2"/>
                                 删除
                             </base-button>
@@ -124,24 +126,25 @@
                 </template>
                 </tbody>
             </table>
+            <common-modal :modals="modals" :handle-modal-confirm-click="handleModalConfirmClick"/>
         </div>
-        <modal :show.sync="modals.danger.isShow"
-               gradient="danger"
-               modal-classes="modal-danger modal-dialog-centered">
-            <h6 slot="header" class="modal-title" id="modal-title-notification">{{ modalHeader }}</h6>
+<!--        <modal :show.sync="specialModals.danger.isShow"-->
+<!--               gradient="danger"-->
+<!--               modal-classes="modal-danger modal-dialog-centered">-->
+<!--            <h6 slot="header" class="modal-title" id="modal-title-notification">{{ modalHeader }}</h6>-->
 
-            <div class="py-3 text-center">
-                <i class="ni ni-bell-55 ni-3x"></i>
-                <h4 class="heading mt-4">确定是否删除该条信息？</h4>
-                <p>{{ modalContent }}</p>
-            </div>
+<!--            <div class="py-3 text-center">-->
+<!--                <i class="ni ni-bell-55 ni-3x"></i>-->
+<!--                <h4 class="heading mt-4">确定是否删除该条信息？</h4>-->
+<!--                <p>{{ modalContent }}</p>-->
+<!--            </div>-->
 
-            <template slot="footer">
-                <base-button type="danger" @click="handleConfirmDeleteClick">确定</base-button>
-                <base-button type="secondary" @click="modals.danger.isShow = false">取消</base-button>
-            </template>
-        </modal>
-        <modal :show.sync="modals.primary.isShow">
+<!--            <template slot="footer">-->
+<!--                <base-button type="danger" @click="handleConfirmDeleteClick">确定</base-button>-->
+<!--                <base-button type="secondary" @click="specialModals.danger.isShow = false">取消</base-button>-->
+<!--            </template>-->
+<!--        </modal>-->
+        <modal :show.sync="specialModals.primary.isShow">
             <h6 slot="header" class="modal-title" id="modal-title-default">正在编辑一条客户信息</h6>
             <div class="row">
                 <base-input
@@ -152,7 +155,7 @@
                     class="col-6"
                     style="text-align: left;"
                     name="code"
-                    v-model="modals.dataSource.code"
+                    v-model="specialModals.dataSource.code"
                     @input="getInput"
                 />
                 <base-input
@@ -163,7 +166,7 @@
                     class="col-6"
                     style="text-align: left;"
                     name="name"
-                    v-model="modals.dataSource.name"
+                    v-model="specialModals.dataSource.name"
                     @input="getInput"
                 />
                 <div class="form-group col-6 has-label">
@@ -171,7 +174,7 @@
                     <v-select
                         :searchable=true
                         :options="commonView.colorSelect.data"
-                        v-model="modals.dataSource.colorRef"
+                        v-model="specialModals.dataSource.colorRef"
                         :labelSearchPlaceholder="commonView.labelSearchPlaceholder"/>
                 </div>
                 <base-input
@@ -182,18 +185,18 @@
                     class="col-6"
                     style="text-align: left;"
                     name="price"
-                    v-model="modals.dataSource.price"
+                    v-model="specialModals.dataSource.price"
                     @input="getInput"
                 />
             </div>
             <div class="col-12">
-                <yimo-vue-editor v-html="modals.dataSource.remark" @input="updateRemark"/>
+                <yimo-vue-editor v-html="specialModals.dataSource.remark" @input="updateRemark"/>
             </div>
             <div class="row" style="margin-top: 15px;">
                 <div class="img-upload" @click="handleChangeImageClick">
-                    <img v-show="modals.dataSource.imageURLs[0]" :src="base64ImageSrc"/>
-                    <i v-show="!modals.dataSource.imageURLs[0]" class="ni ni-cloud-upload-96"></i>
-                    <i v-show="modals.dataSource.imageURLs[0]"
+                    <img v-show="specialModals.dataSource.imageURLs[0]" :src="base64ImageSrc"/>
+                    <i v-show="!specialModals.dataSource.imageURLs[0]" class="ni ni-cloud-upload-96"></i>
+                    <i v-show="specialModals.dataSource.imageURLs[0]"
                        class="ni ni-fat-remove"
                        @click.stop="handleRemoveImgClick"/>
                     <input type="file" style="display: none;" ref="inputFile" @change="onChangeImage" accept="image/*">
@@ -214,7 +217,12 @@
 import VSelect from '@alfsnd/vue-bootstrap-select'
 import {mapActions, mapState} from "vuex";
 import {BSkeletonTable} from 'bootstrap-vue'
-import {funcComputeAlertLevel, handleChangePage, handleConfirmSoftDeleteTableRow} from "@/functions";
+import {
+    funcComputeAlertLevel,
+    handleChangePage,
+    handleModalConfirmClick,
+    handleShowConfirmModal
+} from "@/functions";
 import {requestFuzzyQueryProductCode, requestFuzzyQueryProductName} from "@/api";
 import Autocomplete from '@trevoreyre/autocomplete-vue'
 import {baseUrl} from '@/api'
@@ -239,9 +247,15 @@ export default {
     },
     data: () => (
         {
+            view: 'productView',
+            arrOperatingRows: [],
+            modals: {
+                objConfig: {},
+                isShow: false
+            },
             arrOperatingRow: [],
             arrDeleteRow: [],
-            modals: {
+            specialModals: {
                 tmpRemark: '',
                 dataSource: {
                     row: 0,
@@ -265,11 +279,11 @@ export default {
                 value = validateInputNumber(value)
                 if (!value) value = 0
             }
-            this.modals.dataSource[key] = value
+            this.specialModals.dataSource[key] = value
             // this.updateTableRowData({view: 'productView', index: this.arrOperatingRow[0], objKV})
         },
         updateRemark(v) {
-            this.modals.tmpRemark = v
+            this.specialModals.tmpRemark = v
         },
         searchCode(input) {
             if (input.length === 0) {
@@ -341,27 +355,26 @@ export default {
         },
 
         handleRemoveImgClick() {
-            // this.modals.primary.imgIsRemoved = true
-            this.$set(this.modals.dataSource, "imageURLs", [])
+            // this.specialModals.primary.imgIsRemoved = true
+            this.$set(this.specialModals.dataSource, "imageURLs", [])
             this.$refs.inputFile.value = ''
         },
         handleEditClick(index) {
             this.arrOperatingRow[0] = index
-            this.modals.dataSource = {...this.productView.table.data[index]}
-            this.$set(this.modals.dataSource, 'remark', this.modals.dataSource.remark)
-            this.modals.tmpRemark = this.modals.dataSource.remark
-            console.log(this.modals.tmpRemark)
+            this.specialModals.dataSource = {...this.productView.table.data[index]}
+            this.$set(this.specialModals.dataSource, 'remark', this.specialModals.dataSource.remark)
+            this.specialModals.tmpRemark = this.specialModals.dataSource.remark
             // no ref
-            this.modals.dataSource.imageURLs = [...this.productView.table.data[index].imageURLs]
-            this.modals.primary.imgIsRemoved = false
-            this.modals.primary.isShow = true
+            this.specialModals.dataSource.imageURLs = [...this.productView.table.data[index].imageURLs]
+            this.specialModals.primary.imgIsRemoved = false
+            this.specialModals.primary.isShow = true
         },
         handleCancelUpdateClick() {
-            this.modals.primary.isShow = false
+            this.specialModals.primary.isShow = false
             this.$refs.inputFile.value = ''
         },
         handleConfirmUpdateClick() {
-            const {dataSource} = this.modals
+            const {dataSource} = this.specialModals
             const objUpdateData = {}
             const index = this.arrOperatingRow[0]
             const tmp = this.productView.table.data[index]
@@ -370,9 +383,9 @@ export default {
             if (tmp.name !== dataSource.name) objUpdateData.name = dataSource.name
             if (dataSource.colorRef && tmp.colorRef.value !== dataSource.colorRef.value) objUpdateData.colorRef = dataSource.colorRef.value
             if (tmp.price !== dataSource.price) objUpdateData.price = dataSource.price
-            if (this.modals.tmpRemark !== dataSource.remark) {
-                objUpdateData.remark = this.modals.tmpRemark
-                this.modals.tmpRemark = ''
+            if (this.specialModals.tmpRemark !== dataSource.remark) {
+                objUpdateData.remark = this.specialModals.tmpRemark
+                this.specialModals.tmpRemark = ''
             }
             // remove image
             if (dataSource.imageURLs.length === 0 && tmp.imageURLs.length !== 0) objUpdateData.imageURLs = []
@@ -380,15 +393,7 @@ export default {
             if (this.$refs.inputFile.files.length !== 0) {
                 objUpdateData.productImages = this.$refs.inputFile.files[0]
             }
-            // if (index > 0) {
-            //     console.log(objUpdateData)
-            //     return
-            // }
-            this.modals.primary.isShow = false
-            // console.log(index, objUpdateData, this.modals.dataSource)
-            // if (dataSource !== {}) {
-            //     return
-            // }
+            this.specialModals.primary.isShow = false
             this.$notify({
                 type: 'info',
                 title: "正在更新数据"
@@ -408,17 +413,36 @@ export default {
                 }
             })
         },
-        handleDeleteClick(index) {
-            this.modals.dataSource = {...this.productView.table.data[index]}
-            this.arrDeleteRow[0] = index
-            this.modals.danger.isShow = true
+        showModalSingle(mode, index) {
+            this.arrOperatingRows = [index]
+            const objTmp = {
+                restore: {
+                    header: '确定是否恢复该条信息？',
+                    heading: '正在恢复一条商品信息',
+                },
+                softDelete: {
+                    header: '确定是否删除该条信息？',
+                    heading: '正在删除一条商品信息'
+                }
+            }
+            const {data} = this.productView.table
+            objTmp.body = `商品名称：${data[index].name}。`
+            handleShowConfirmModal(this, mode, objTmp)
         },
-        handleConfirmDeleteClick() {
-            this.modals.danger.isShow = false
-            handleConfirmSoftDeleteTableRow(this, 'productView')
+        handleModalConfirmClick() {
+            handleModalConfirmClick(this)
         },
+        // handleDeleteClick(index) {
+        //     this.specialModals.dataSource = {...this.productView.table.data[index]}
+        //     this.arrDeleteRow[0] = index
+        //     this.specialModals.danger.isShow = true
+        // },
+        // handleConfirmDeleteClick() {
+        //     this.specialModals.danger.isShow = false
+        //     handleConfirmSoftDeleteTableRow(this, 'productView')
+        // },
         changePage(value) {
-            handleChangePage(this, 'productView', value)
+            handleChangePage(this, value)
         },
         handleChangeImageClick() {
             this.$refs.inputFile.click()
@@ -436,7 +460,7 @@ export default {
                 //在这里就可以进行图片地址的获取了，到时候后台上传的图片就是根据这个来的
                 //that.uploadImgUrl = dataURL这个就是展示了上传的图片
                 // that.uploadImgUrl = reader.result
-                this.$set(this.modals.dataSource.imageURLs, 0, reader.result)
+                this.$set(this.specialModals.dataSource.imageURLs, 0, reader.result)
             }
         },
         imageSrc: function (imageURLs) {
@@ -465,18 +489,18 @@ export default {
         perPage: function () {
             return this.productView.table.perPage
         },
-        modalHeader: function () {
-            return `正在删除一条商品信息`
-        },
-        modalContent: function () {
-            const {dataSource} = this.modals
-            return `名称：${dataSource.name}，货号：${dataSource.code}。（会影响相关出入库记录）`
-        },
-        modalRow: function () {
-            return this.modals.dataSource.row
-        },
+        // modalHeader: function () {
+        //     return `正在删除一条商品信息`
+        // },
+        // modalContent: function () {
+        //     const {dataSource} = this.specialModals
+        //     return `名称：${dataSource.name}，货号：${dataSource.code}。（会影响相关出入库记录）`
+        // },
+        // modalRow: function () {
+        //     return this.specialModals.dataSource.row
+        // },
         base64ImageSrc: function () {
-            const {imageURLs} = this.modals.dataSource
+            const {imageURLs} = this.specialModals.dataSource
             if (imageURLs[0]) {
                 return imageURLs[0].indexOf('data:image') !== -1 ? imageURLs[0] : `${baseUrl}/images/${imageURLs[0]}`
             }
